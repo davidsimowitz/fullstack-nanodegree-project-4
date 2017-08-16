@@ -1,24 +1,31 @@
-import sqlite3
-conn = sqlite3.connect('events.db')
+import sys
 
-c = conn.cursor()
-c.execute('''
-          CREATE TABLE activity
-          (
-           id INTEGER PRIMARY KEY ASC,
-           name varchar(250) NOT NULL
-          )
-          ''')
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy import create_engine
 
-c.execute('''
-          CREATE TABLE event
-          (
-           id INTEGER PRIMARY KEY ASC,
-           name varchar(250) NOT NULL,
-           activity_id INTEGER NOT NULL,
-           FOREIGN KEY(activity_id) REFERENCES activity(id)
-          )
-          ''')
 
-conn.commit()
-conn.close()
+Base = declarative_base()
+
+
+class Activity(Base):
+    """Activity Table"""
+    __tablename__ = 'activity'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+
+
+class Event(Base):
+    """Event Table"""
+    __tablename__ = 'event'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    activity_id = Column(Integer, ForeignKey('activity.id'))
+    activity = relationship(Activity)
+
+
+engine = create_engine('sqlite:///events.db')
+Base.metadata.create_all(engine)
