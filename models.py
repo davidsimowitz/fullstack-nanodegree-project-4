@@ -27,5 +27,5 @@ class Event(Base):
     activity = relationship(Activity)
 
 
-engine = create_engine('sqlite:///events.db')
+engine = create_engine('postgresql:///events.db')
 Base.metadata.create_all(engine)
