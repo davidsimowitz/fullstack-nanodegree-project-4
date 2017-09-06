@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 app = Flask(__name__)
 
 
@@ -6,7 +6,8 @@ app = Flask(__name__)
 @app.route('/activities/')
 def display_activities():
     """Display activities"""
-    return 'display activities'
+    test = [{'title':'Camp David', 'description':'Hiking and relaxing outdoors under the stars', 'date':'09-16-2017'}, {'title':'Halloween Party', 'description':'Costume contest and snacks', 'date':'10-31-2017'}, {'title':'Birthday Party!', 'description':'Celebrate my 35th birthday!', 'date':'11-27-2017'}]
+    return render_template('activities.html', title='Activities', events=test)
 
 
 @app.route('/login/')

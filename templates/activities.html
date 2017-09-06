@@ -3,15 +3,33 @@
 
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="static/css/test.css">
   </head>
 
   <body>
 
     <header>
-      <h1>Main Page</h1>
+      <h1>{{ title }}</h1>
     </header>
 
     <main>
+      <section>
+
+        {% for event in events %}
+
+        <article class="row">
+          <div class="date">
+            <p>{{ event['date'] }}</p>
+          </div>
+          <div class="text">
+            <p>{{ event['title'] }}</p>
+            <p>{{ event['description'] }}</p>
+          </div>
+        </article>
+
+        {% endfor %}
+
+      </section>
     </main>
 
     <footer>
