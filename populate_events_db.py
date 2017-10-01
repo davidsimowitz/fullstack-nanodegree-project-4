@@ -6,10 +6,7 @@ populate events database with test data
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Activity, Base, Event
-
-
-DB = 'postgresql:///events.db'
+from models import Activity, Base, DB, Event
 
 
 def create_activities(session):
