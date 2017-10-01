@@ -5,6 +5,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+DB = 'postgresql:///events.db'
 
 Base = declarative_base()
 
@@ -27,5 +28,5 @@ class Event(Base):
     activity = relationship(Activity)
 
 
-engine = create_engine('postgresql:///events.db')
+engine = create_engine(DB)
 Base.metadata.create_all(engine)
