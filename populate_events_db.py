@@ -40,7 +40,9 @@ def create_events(session):
         events = event_lookup[activity_entry.name]
 
         for event in events:
-            new_event = Event(name='{}'.format(event), activity=activity_entry)
+            new_event = Event(name='{}'.format(event),
+                              activity=activity_entry,
+                              description='{} event description.'.format(event))
             session.add(new_event)
             session.commit()
 
@@ -68,7 +70,7 @@ def print_events(session):
     print('\nEvents: ')
     for event in events:
         activity = session.query(Activity).filter_by(id=event.activity_id).one()
-        print('{} -> {}'.format(activity.name.title(), event.name))
+        print('{} -> {}: {}'.format(activity.name.title(), event.name, event.description))
 
 
 def print_db(session):
