@@ -3,7 +3,6 @@
 
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="static/css/test.css">
   </head>
 
   <body>
@@ -17,11 +16,11 @@
 
         {% for event in events %}
 
-        <article class="row">
-          <div class="date">
+        <article>
+          <div>
             <p>{{ event['date'] }}</p>
           </div>
-          <div class="text">
+          <div>
             <p>{{ event['title'] }}</p>
             <p>{{ event['description'] }}</p>
           </div>
