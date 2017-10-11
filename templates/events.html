@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+
+    <header>
+      <h1>{{ title }}</h1>
+    </header>
+
+    <main>
+      <section>
+
+        {% for event in events %}
+
+        <article>
+          <div>
+            <p>{{ event['date'] }}</p>
+          </div>
+          <div>
+            <p>{{ event['title'] }}</p>
+          </div>
+          <div>
+            <p>{{ event['description'] }}</p>
+          </div>
+        </article>
+
+        {% endfor %}
+
+      </section>
+    </main>
+
+    <footer>
+    </footer>
+
+  </body>
+
+</html>
