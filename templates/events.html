@@ -8,29 +8,30 @@
   <body>
 
     <header>
-      <h1>{{ title }}</h1>
+      <h1>{{ activity.name }}</h1>
     </header>
 
     <main>
-      <section>
 
         {% for event in events %}
 
-        <article>
+        <section>
           <div>
-            <p>{{ event['date'] }}</p>
+            <p>event.id: {{ event.id }} -> {{ event.name }}</p>
           </div>
           <div>
-            <p>{{ event['title'] }}</p>
+            <p>Start: {{ event.start_date }} at {{ event.start_time }}</p>
           </div>
           <div>
-            <p>{{ event['description'] }}</p>
+            <p>End: {{ event.end_date }} at {{ event.end_time }}</p>
           </div>
-        </article>
+          <div>
+            <p>{{ event.description }}</p>
+          </div>
+        </section>
 
         {% endfor %}
 
-      </section>
     </main>
 
     <footer>

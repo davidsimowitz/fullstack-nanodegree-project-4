@@ -8,26 +8,24 @@
   <body>
 
     <header>
-      <h1>{{ title }}</h1>
+      <h1>Coordinate</h1>
     </header>
 
     <main>
-      <section>
 
-        {% for event in events %}
+        {% for activity in activities %}
 
-        <article>
+        <section>
           <div>
-            <p>{{ event['date'] }}</p>
+            <p>{{ activity.id }}</p>
           </div>
           <div>
-            <p>{{ event['title'] }}</p>
+            <p>{{ activity.name }}</p>
           </div>
-        </article>
+        </section>
 
         {% endfor %}
 
-      </section>
     </main>
 
     <footer>

@@ -1,13 +1,24 @@
 from flask import Flask, render_template
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Activity, Base, DB, Event
+
+
 app = Flask(__name__)
+
+engine = create_engine(DB)
+Base.metadata.bind = engine
+
+create_session = sessionmaker(bind=engine)
+session = create_session()
 
 
 @app.route('/')
 @app.route('/activities/')
 def display_activities():
     """Display activities"""
-    test = [{'title':'Camp David', 'description':'Hiking and relaxing outdoors under the stars', 'date':'09-16-2017'}, {'title':'Halloween Party', 'description':'Costume contest and snacks', 'date':'10-31-2017'}, {'title':'Birthday Party!', 'description':'Celebrate my 35th birthday!', 'date':'11-27-2017'}]
-    return render_template('activities.html', title='Activities', events=test)
+    activities = session.query(Activity)
+    return render_template('activities.html', activities=activities)
 
 
 @app.route('/login/')
@@ -20,7 +31,9 @@ def login():
 @app.route('/activities/<int:activity_id>/events/')
 def display_activity(activity_id):
     """Get activity"""
-    return 'display activity {}'.format(activity_id)
+    activity = session.query(Activity).filter_by(id=activity_id).one()
+    events = session.query(Event).filter_by(activity_id=activity_id).all()
+    return render_template('events.html', activity=activity, events=events)
 
 
 @app.route('/activities/new/')
