@@ -57,7 +57,9 @@ def delete_activity(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
 def display_event(activity_id, event_id):
     """Display event"""
-    return 'display event {} for activity {}'.format(event_id, activity_id)
+    event = session.query(Event).filter_by(id=event_id,
+                                           activity_id=activity_id).one()
+    return render_template('event.html', event=event)
 
 
 @app.route('/activities/<int:activity_id>/events/new/')
