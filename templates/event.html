@@ -13,6 +13,12 @@
 
     <main>
 
+        <div>
+          <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}">
+              <h1>Edit {{ event.name }}</h1>
+          </a>
+        </div>
+
         <section>
           <div>
             <p>Start: {{ event.start_date }} at {{ event.start_time }}</p>
