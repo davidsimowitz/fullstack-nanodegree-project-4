@@ -34,6 +34,12 @@
           <div>
             <p>{{ event.description }}</p>
           </div>
+
+          <div>
+            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
+              <p>view event details</p>
+            </a>
+          </div>
         </section>
 
         {% endfor %}
