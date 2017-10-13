@@ -57,7 +57,6 @@ def delete_activity(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
 def display_event(activity_id, event_id):
     """Display event"""
-
     activity = session.query(Activity).filter_by(id=activity_id).one()
     event = session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
@@ -87,10 +86,37 @@ def make_event(activity_id):
         return render_template('new-event.html', activity=activity)
 
 
-@app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/')
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
+           methods=['GET', 'POST'])
 def update_event(activity_id, event_id):
     """Edit event"""
-    return 'update event {} for activity {}'.format(event_id, activity_id)
+    activity = session.query(Activity).filter_by(id=activity_id).one()
+    event = session.query(Event).filter_by(id=event_id,
+                                           activity_id=activity_id).one()
+
+    if request.method == 'POST':
+        if request.form['name']:
+            event.name = request.form['name']
+        if request.form['description']:
+            event.description = request.form['description']
+        if request.form['start_date']:
+            event.start_date = request.form['start_date']
+        if request.form['start_time']:
+            event.start_time = request.form['start_time']
+        if request.form['end_date']:
+            event.end_date = request.form['end_date']
+        if request.form['end_time']:
+            event.end_time = request.form['end_time']
+        session.add(event)
+        session.commit()
+
+        return redirect(url_for('display_event',
+                                activity_id=activity_id,
+                                event_id=event.id))
+    else:
+        return render_template('edit-event.html',
+                               activity=activity,
+                               event=event)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/')

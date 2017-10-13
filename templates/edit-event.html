@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+
+    <header>
+      <h1>Edit {{ activity.name }} Event</h1>
+    </header>
+
+    <main>
+
+        <form action="{{ url_for('update_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="edit-event">
+
+          <section>
+
+            <fieldset>
+              <legend>
+                <label for="name">Name:</label>
+              </legend>
+              <input type="text" size="32" id="name" name="name" value="{{event.name}}">
+            </fieldset>
+
+            <fieldset>
+              <legend>Start</legend>
+              <div>
+                <label for="start_date">Date:</label>
+                <input type="date" size="16" id="start_date" name="start_date" value="{{event.start_date}}">
+              </div>
+              <div>
+                <label for="start_time">Time:</label>
+                <input type="time" size="16" id="start_time" name="start_time" value="{{event.start_time}}">
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>End</legend>
+              <div>
+                <label for="end_date">Date:</label>
+                <input type="date" size="16" id="end_date" name="end_date" value="{{event.end_date}}">
+              </div>
+              <div>
+                <label for="end_time">Time:</label>
+                <input type="time" size="16" id="end_time" name="end_time" value="{{event.end_time}}">
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>
+                <label for="description">Description:</label>
+              </legend>
+              <textarea rows="5" cols="80"  maxlength="250" id="description" name="description">{{event.description}}</textarea>
+            </fieldset>
+
+            <input type="submit" value="Edit Event">
+
+          </section>
+
+        </form>
+
+    </main>
+
+    <footer>
+    </footer>
+
+  </body>
+
+</html>
