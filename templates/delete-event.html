@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+
+    <header>
+      <h1>Delete {{ activity.name }} Event</h1>
+    </header>
+
+    <main>
+
+      <section>
+        <div>
+          <p>Name: {{ event.name }}</p>
+        </div>
+        <div>
+          <p>Start: {{ event.start_date }} at {{ event.start_time }}</p>
+        </div>
+        <div>
+          <p>End: {{ event.end_date }} at {{ event.end_time }}</p>
+        </div>
+        <div>
+          <p>{{ event.description }}</p>
+        </div>
+      </section>
+
+      <section>
+        <form action="{{ url_for('delete_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="delete-event">
+          <input type="submit" value="Delete Event">
+        </form>
+
+        <div>
+          <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
+              <h1>Cancel</h1>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+    </footer>
+
+  </body>
+
+</html>

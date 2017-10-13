@@ -119,10 +119,23 @@ def update_event(activity_id, event_id):
                                event=event)
 
 
-@app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/')
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
+           methods=['GET', 'POST'])
 def delete_event(activity_id, event_id):
     """Delete event"""
-    return 'delete event {} for activity {}'.format(event_id, activity_id)
+    activity = session.query(Activity).filter_by(id=activity_id).one()
+    event = session.query(Event).filter_by(id=event_id,
+                                           activity_id=activity_id).one()
+
+    if request.method == 'POST':
+        session.delete(event)
+        session.commit()
+        return redirect(url_for('display_activity', activity_id=activity_id))
+
+    else:
+        return render_template('delete-event.html',
+                               activity=activity,
+                               event=event)
 
 
 if __name__ == '__main__':
