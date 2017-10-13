@@ -12,6 +12,11 @@
     </header>
 
     <main>
+        <div>
+          <a href="{{url_for('display_activities')}}">
+              <h1>Search another activity</h1>
+          </a>
+        </div>
 
         <div>
           <a href="{{url_for('make_event', activity_id=activity.id)}}">
