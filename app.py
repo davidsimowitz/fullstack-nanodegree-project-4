@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
@@ -62,10 +62,27 @@ def display_event(activity_id, event_id):
     return render_template('event.html', event=event)
 
 
-@app.route('/activities/<int:activity_id>/events/new/')
+@app.route('/activities/<int:activity_id>/events/new/',
+           methods=['GET', 'POST'])
 def make_event(activity_id):
     """Create event"""
-    return 'make event for activity {}'.format(activity_id)
+    if request.method == 'POST':
+        new_event = Event(name=request.form['name'],
+                          description=request.form['description'],
+                          start_date=request.form['start_date'],
+                          start_time=request.form['start_time'],
+                          end_date=request.form['end_date'],
+                          end_time=request.form['end_time'],
+                          activity_id=activity_id)
+        session.add(new_event)
+        session.commit()
+
+        return redirect(url_for('display_event',
+                                activity_id=activity_id,
+                                event_id=new_event.id))
+    else:
+        activity = session.query(Activity).filter_by(id=activity_id).one()
+        return render_template('new-event.html', activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/')

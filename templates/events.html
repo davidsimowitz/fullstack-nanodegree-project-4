@@ -13,6 +13,12 @@
 
     <main>
 
+        <div>
+          <a href="{{url_for('make_event', activity_id=activity.id)}}">
+              <h1>Create {{ activity.name }} Event</h1>
+          </a>
+        </div>
+
         {% for event in events %}
 
         <section>
