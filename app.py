@@ -68,10 +68,19 @@ def update_activity(activity_id):
                                activity=activity)
 
 
-@app.route('/activities/<int:activity_id>/delete/')
+@app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 def delete_activity(activity_id):
     """Delete activity"""
-    return 'delete activity {}'.format(activity_id)
+    activity = session.query(Activity).filter_by(id=activity_id).one()
+
+    if request.method == 'POST':
+        session.delete(activity)
+        session.commit()
+        return redirect(url_for('display_activities'))
+
+    else:
+        return render_template('delete-activity.html',
+                               activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')

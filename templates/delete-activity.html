@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+
+    <header>
+      <h1>Delete {{ activity.name }}</h1>
+    </header>
+
+    <main>
+
+      <section>
+        <div>
+          <p>Name: {{ activity.name }}</p>
+        </div>
+      </section>
+
+      <section>
+        <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="delete-activity">
+          <input type="submit" value="Delete Activity">
+        </form>
+
+        <div>
+          <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+              <h1>Cancel</h1>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+    </footer>
+
+  </body>
+
+</html>
