@@ -36,10 +36,18 @@ def display_activity(activity_id):
     return render_template('events.html', activity=activity, events=events)
 
 
-@app.route('/activities/new/')
+@app.route('/activities/new/', methods=['GET', 'POST'])
 def make_activity():
     """Create activity"""
-    return 'make activity'
+    if request.method == 'POST':
+        new_activity = Activity(name=request.form['name'])
+        session.add(new_activity)
+        session.commit()
+
+        return redirect(url_for('display_activity',
+                                activity_id=new_activity.id))
+    else:
+        return render_template('new-activity.html')
 
 
 @app.route('/activities/<int:activity_id>/edit/')
