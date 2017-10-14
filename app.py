@@ -50,10 +50,22 @@ def make_activity():
         return render_template('new-activity.html')
 
 
-@app.route('/activities/<int:activity_id>/edit/')
+@app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 def update_activity(activity_id):
     """Edit activity"""
-    return 'update activity {}'.format(activity_id)
+    activity = session.query(Activity).filter_by(id=activity_id).one()
+
+    if request.method == 'POST':
+        if request.form['name']:
+            activity.name = request.form['name']
+        session.add(activity)
+        session.commit()
+
+        return redirect(url_for('display_activity',
+                                activity_id=activity.id))
+    else:
+        return render_template('edit-activity.html',
+                               activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/delete/')
