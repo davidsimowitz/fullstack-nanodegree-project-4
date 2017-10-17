@@ -13,6 +13,24 @@ create_session = sessionmaker(bind=engine)
 session = create_session()
 
 
+def set_event_fields(event):
+    """Use in a POST method to return an updated Event obj"""
+    if request.form['name']:
+        event.name = request.form['name']
+    if request.form['description']:
+        event.description = request.form['description']
+    if request.form['start_date']:
+        event.start_date = request.form['start_date']
+    if request.form['start_time']:
+        event.start_time = request.form['start_time']
+    if request.form['end_date']:
+        event.end_date = request.form['end_date']
+    if request.form['end_time']:
+        event.end_time = request.form['end_time']
+
+    return event
+
+
 @app.route('/')
 @app.route('/activities/')
 def display_activities():
@@ -106,12 +124,8 @@ def make_event(activity_id):
     """Create event"""
     if request.method == 'POST':
         new_event = Event(name=request.form['name'],
-                          description=request.form['description'],
-                          start_date=request.form['start_date'],
-                          start_time=request.form['start_time'],
-                          end_date=request.form['end_date'],
-                          end_time=request.form['end_time'],
                           activity_id=activity_id)
+        new_event = set_event_fields(new_event)
         session.add(new_event)
         session.commit()
 
@@ -132,18 +146,7 @@ def update_event(activity_id, event_id):
                                            activity_id=activity_id).one()
 
     if request.method == 'POST':
-        if request.form['name']:
-            event.name = request.form['name']
-        if request.form['description']:
-            event.description = request.form['description']
-        if request.form['start_date']:
-            event.start_date = request.form['start_date']
-        if request.form['start_time']:
-            event.start_time = request.form['start_time']
-        if request.form['end_date']:
-            event.end_date = request.form['end_date']
-        if request.form['end_time']:
-            event.end_time = request.form['end_time']
+        event = set_event_fields(event)
         session.add(event)
         session.commit()
 
