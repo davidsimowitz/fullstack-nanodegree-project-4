@@ -13,6 +13,12 @@
 
     <main>
 
+      {% if error_msg %}
+      <section>
+        <h5>ERROR: {{ error_msg }}</h5>
+      </section>
+      {% endif %}
+
       <section>
         <div>
           <p>Name: {{ activity.name }}</p>

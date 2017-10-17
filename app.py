@@ -74,9 +74,17 @@ def delete_activity(activity_id):
     activity = session.query(Activity).filter_by(id=activity_id).one()
 
     if request.method == 'POST':
-        session.delete(activity)
-        session.commit()
-        return redirect(url_for('display_activities'))
+        events = session.query(Event).filter_by(activity_id=activity_id).all()
+        if events:
+            error_msg = 'Activity cannot be deleted, events ' \
+                        'are associated with this activity.'
+            return render_template('delete-activity.html',
+                                    activity=activity,
+                                    error_msg=error_msg)
+        else:
+            session.delete(activity)
+            session.commit()
+            return redirect(url_for('display_activities'))
 
     else:
         return render_template('delete-activity.html',
