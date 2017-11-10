@@ -3,6 +3,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
 
+import logging
+from logging.handlers import RotatingFileHandler
+
 
 app = Flask(__name__)
 
@@ -179,5 +182,10 @@ def delete_event(activity_id, event_id):
 
 
 if __name__ == '__main__':
+    logging_handler = RotatingFileHandler('APP.log',
+                                          maxBytes=16384,
+                                          backupCount=4)
+    logging_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(logging_handler)
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
