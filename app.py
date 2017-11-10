@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
 
+import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -14,6 +15,14 @@ Base.metadata.bind = engine
 
 create_session = sessionmaker(bind=engine)
 session = create_session()
+
+
+def timestamp_gen():
+    """
+    Generate the current time <YYYY-MM-DD_HH:MM:SS.ssssss> format as str
+    """
+    timestamp = datetime.datetime.now().isoformat('_')
+    return timestamp
 
 
 def set_event_fields(event):
@@ -182,7 +191,7 @@ def delete_event(activity_id, event_id):
 
 
 if __name__ == '__main__':
-    logging_handler = RotatingFileHandler('APP.log',
+    logging_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen()),
                                           maxBytes=16384,
                                           backupCount=4)
     logging_handler.setLevel(logging.ERROR)
