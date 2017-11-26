@@ -195,10 +195,13 @@ def delete_event(activity_id, event_id):
 
 
 if __name__ == '__main__':
-    logging_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
+    file_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
                                           maxBytes=16384,
                                           backupCount=4)
-    logging_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(logging_handler)
+    file_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
+
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
