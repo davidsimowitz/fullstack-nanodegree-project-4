@@ -32,6 +32,55 @@ def timestamp_gen(file_ext=False):
         return current_time.ctime()
 
 
+_MONTHS = 'january|february|march|april|may|june|july' \
+          '|august|september|october|november|december'
+
+month_to_int = {month: i for i, month in enumerate(_MONTHS.split('|'),
+                                                   start=1)}
+
+def parse_date(str_input):
+    """ parse str_input and return date match """
+    patterns = ['(?P<year>[\d]{4})[-/]?' \
+                '(?P<month>[\d]{1,2})[-/]?' \
+                '(?P<day>[\d]{1,2})', #YYYY_MM_DD
+                '(?P<month>[\d]{1,2})[-/]?' \
+                '(?P<day>[\d]{1,2})[-/]?' \
+                '(?P<year>[\d]{4})', #MM_DD_YYYY
+                '(?P<month>' + _MONTHS + '){1}\s' \
+                '(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})'] #MONTH_DD_YYYY
+
+    for pattern in patterns:
+        if re.match(pattern, str_input, re.IGNORECASE):
+            return re.match(pattern, str_input, re.IGNORECASE).groupdict()
+
+
+def verify_date(date_dict):
+    """ check date to verify it is acceptable """
+    try:
+        date_dict['month'] = month_to_int[date_dict['month'].lower()]
+    except:
+        pass
+
+    try:
+        event_date = datetime.date(int(date_dict['year']),
+                                   int(date_dict['month']),
+                                   int(date_dict['day']))
+    except (TypeError, ValueError) as err:
+        return None
+    else:
+        return event_date
+
+
+def date_checker(date):
+    """
+    checks date values
+    """
+    date = parse_date(date)
+    date = verify_date(date)
+
+    return date
+
+
 def set_event_fields(event):
     """Use in a POST method to return an updated Event obj"""
     if request.form['name']:
@@ -39,11 +88,17 @@ def set_event_fields(event):
     if request.form['description']:
         event.description = request.form['description']
     if request.form['start_date']:
-        event.start_date = request.form['start_date']
+        start_date = request.form['start_date']
+        start_date = date_checker(start_date)
+        if start_date:
+            event.start_date = start_date
     if request.form['start_time']:
         event.start_time = request.form['start_time']
     if request.form['end_date']:
-        event.end_date = request.form['end_date']
+        end_date = request.form['end_date']
+        end_date = date_checker(end_date)
+        if end_date:
+            event.end_date = end_date
     if request.form['end_time']:
         event.end_time = request.form['end_time']
     return event
