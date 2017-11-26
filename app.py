@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
 
-import datetime
+import datetime, re
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -17,12 +17,19 @@ create_session = sessionmaker(bind=engine)
 session = create_session()
 
 
-def timestamp_gen():
+def timestamp_gen(file_ext=False):
     """
-    Generate the current time <YYYY-MM-DD_HH:MM:SS.ssssss> format as str
+    for file extensions, generate the current time
+    <YYYY-MM-DD_HH:MM:SS.ssssss> format as str.
+
+    for logging, generate in <Weekday Month DD HH:MM:SS YYYY> format.
     """
-    timestamp = datetime.datetime.now().isoformat('_')
-    return timestamp
+    current_time = datetime.datetime.now()
+
+    if file_ext:
+        return current_time.isoformat('_')
+    else:
+        return current_time.ctime()
 
 
 def set_event_fields(event):
@@ -39,7 +46,6 @@ def set_event_fields(event):
         event.end_date = request.form['end_date']
     if request.form['end_time']:
         event.end_time = request.form['end_time']
-
     return event
 
 
@@ -140,7 +146,6 @@ def make_event(activity_id):
         new_event = set_event_fields(new_event)
         session.add(new_event)
         session.commit()
-
         return redirect(url_for('display_event',
                                 activity_id=activity_id,
                                 event_id=new_event.id))
@@ -161,7 +166,6 @@ def update_event(activity_id, event_id):
         event = set_event_fields(event)
         session.add(event)
         session.commit()
-
         return redirect(url_for('display_event',
                                 activity_id=activity_id,
                                 event_id=event.id))
@@ -191,7 +195,7 @@ def delete_event(activity_id, event_id):
 
 
 if __name__ == '__main__':
-    logging_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen()),
+    logging_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
                                           maxBytes=16384,
                                           backupCount=4)
     logging_handler.setLevel(logging.ERROR)
