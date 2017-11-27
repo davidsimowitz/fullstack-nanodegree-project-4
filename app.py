@@ -6,6 +6,7 @@ from models import Activity, Base, DB, Event
 import datetime, re
 import logging
 from logging.handlers import RotatingFileHandler
+from functools import wraps
 
 
 app = Flask(__name__)
@@ -17,6 +18,52 @@ create_session = sessionmaker(bind=engine)
 session = create_session()
 
 
+def entry_and_exit_logger(func):
+    """
+    prints function input arguments to logger
+    when entering and exiting decorated function
+    """
+    @wraps(func)
+    def entry_and_exit_wrapper(*args, **kwargs):
+        """log wrapper"""
+        try:
+            input_args = ', '.join(str(arg) for arg in args)
+        except:
+            input_args = ''
+
+        try:
+            input_kwargs = ', '.join('{}={}'.format(k, v)
+                                     for k, v in kwargs.items())
+        except:
+            input_kwargs = ''
+
+        if input_args and input_kwargs:
+            arguments = '{}, {}'.format(input_args, input_kwargs)
+        elif input_args:
+            arguments = input_args
+        elif input_kwargs:
+            arguments = input_kwargs
+        else:
+            arguments = ''
+
+        message = '[{timestamp}] - - {action:8} {arguments}'
+        func_params = {'arguments': '{}({})'.format(func.__name__, arguments),
+                       'timestamp': datetime.datetime.now().ctime(),
+                       'action': 'ENTER'}
+        app.logger.debug(message.format(**func_params))
+
+        result = func(*args, **kwargs)
+
+        func_params['arguments'] = '{}({}={})'.format(func.__name__,
+                                                      'result', result)
+        func_params['timestamp'] = datetime.datetime.now().ctime()
+        func_params['action'] = 'EXIT'
+        app.logger.debug(message.format(**func_params))
+        return result
+    return entry_and_exit_wrapper
+
+
+@entry_and_exit_logger
 def timestamp_gen(file_ext=False):
     """
     for file extensions, generate the current time
@@ -38,6 +85,7 @@ _MONTHS = 'january|february|march|april|may|june|july' \
 month_to_int = {month: i for i, month in enumerate(_MONTHS.split('|'),
                                                    start=1)}
 
+@entry_and_exit_logger
 def parse_date(str_input):
     """ parse str_input and return date match """
     patterns = ['(?P<year>[\d]{4})[-/]?' \
@@ -54,6 +102,7 @@ def parse_date(str_input):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
 
 
+@entry_and_exit_logger
 def verify_date(date_dict):
     """ check date to verify it is acceptable """
     try:
@@ -71,6 +120,7 @@ def verify_date(date_dict):
         return event_date
 
 
+@entry_and_exit_logger
 def date_checker(date):
     """
     checks date values
@@ -81,6 +131,7 @@ def date_checker(date):
     return date
 
 
+@entry_and_exit_logger
 def set_event_fields(event):
     """Use in a POST method to return an updated Event obj"""
     if request.form['name']:
@@ -106,13 +157,14 @@ def set_event_fields(event):
 
 @app.route('/')
 @app.route('/activities/')
+@entry_and_exit_logger
 def display_activities():
     """Display activities"""
     activities = session.query(Activity)
     return render_template('activities.html', activities=activities)
 
-
 @app.route('/login/')
+@entry_and_exit_logger
 def login():
     """Login"""
     return 'login'
@@ -120,6 +172,7 @@ def login():
 
 @app.route('/activities/<int:activity_id>/')
 @app.route('/activities/<int:activity_id>/events/')
+@entry_and_exit_logger
 def display_activity(activity_id):
     """Get activity"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
@@ -128,6 +181,7 @@ def display_activity(activity_id):
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
+@entry_and_exit_logger
 def make_activity():
     """Create activity"""
     if request.method == 'POST':
@@ -142,6 +196,7 @@ def make_activity():
 
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
+@entry_and_exit_logger
 def update_activity(activity_id):
     """Edit activity"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
@@ -160,6 +215,7 @@ def update_activity(activity_id):
 
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
+@entry_and_exit_logger
 def delete_activity(activity_id):
     """Delete activity"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
@@ -183,6 +239,7 @@ def delete_activity(activity_id):
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
+@entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display event"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
@@ -193,6 +250,7 @@ def display_event(activity_id, event_id):
 
 @app.route('/activities/<int:activity_id>/events/new/',
            methods=['GET', 'POST'])
+@entry_and_exit_logger
 def make_event(activity_id):
     """Create event"""
     if request.method == 'POST':
@@ -211,6 +269,7 @@ def make_event(activity_id):
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
            methods=['GET', 'POST'])
+@entry_and_exit_logger
 def update_event(activity_id, event_id):
     """Edit event"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
@@ -232,6 +291,7 @@ def update_event(activity_id, event_id):
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
            methods=['GET', 'POST'])
+@entry_and_exit_logger
 def delete_event(activity_id, event_id):
     """Delete event"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
