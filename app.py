@@ -103,6 +103,31 @@ def parse_date(str_input):
 
 
 @entry_and_exit_logger
+def parse_time(str_input):
+    """ parse str_input and return date match """
+    patterns = ['(?P<hours>[\d]{1,2})[:]{1}' \
+                '(?P<minutes>[\d]{2})[:]{1}' \
+                '(?P<seconds>[\d]{2})' \
+                '(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})', #HH:MM:SS(+/-)TT:TT
+                '(?P<hours>[\d]{1,2})[:]{1}' \
+                '(?P<minutes>[\d]{2})[:]{1}' \
+                '(?P<seconds>[\d]{2})\s?' \
+                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}', #HH:MM:SS (AM/PM)
+                '(?P<hours>[\d]{1,2})[:]{1}' \
+                '(?P<minutes>[\d]{2})\s?' \
+                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}', #HH:MM (AM/PM)
+                '(?P<hours>[\d]{1,2})[:]{1}' \
+                '(?P<minutes>[\d]{2})[:]{1}' \
+                '(?P<seconds>[\d]{2})', #HH:MM:SS (24-hour notation)
+                '(?P<hours>[\d]{1,2})[:]{1}' \
+                '(?P<minutes>[\d]{2})'] #HH:MM (24-hour notation)
+    for pattern in patterns:
+        if re.match(pattern, str_input, re.IGNORECASE):
+            return re.match(pattern, str_input, re.IGNORECASE).groupdict()
+
+pattern = '(?P<hours>[\d]{1,2})[:]?(?P<minutes>[\d]{2})[:]?(?P<seconds>[\d]{2})\s?(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}'
+
+@entry_and_exit_logger
 def verify_date(date_dict):
     """ check date to verify it is acceptable """
     try:
@@ -121,6 +146,31 @@ def verify_date(date_dict):
 
 
 @entry_and_exit_logger
+def verify_time(time_dict):
+    """ check date to verify it is acceptable """
+    try:
+        time_dict['hours'] = int(time_dict['hours'])
+        time_dict['minutes'] = int(time_dict['minutes'])
+        time_dict['seconds'] = int(time_dict['seconds'])
+    except:
+        pass
+
+    try:
+        if time_dict['twelve_hr'].lower()[0] is 'p':
+            time_dict['hours'] = time_dict['hours'] + 12
+    except:
+        pass
+
+    try:
+        event_time = datetime.time(hour=time_dict['hours'],
+                                   minute=time_dict['minutes'])
+    except (TypeError, ValueError) as err:
+        return None
+    else:
+        return event_time
+
+
+@entry_and_exit_logger
 def date_checker(date):
     """
     checks date values
@@ -130,6 +180,16 @@ def date_checker(date):
 
     return date
 
+
+@entry_and_exit_logger
+def time_checker(time):
+    """
+    checks time values
+    """
+    time = parse_time(time)
+    time = verify_time(time)
+
+    return time
 
 @entry_and_exit_logger
 def set_event_fields(event):
@@ -144,14 +204,20 @@ def set_event_fields(event):
         if start_date:
             event.start_date = start_date
     if request.form['start_time']:
-        event.start_time = request.form['start_time']
+        start_time = request.form['start_time']
+        start_time = time_checker(start_time)
+        if start_time:
+            event.start_time = start_time
     if request.form['end_date']:
         end_date = request.form['end_date']
         end_date = date_checker(end_date)
         if end_date:
             event.end_date = end_date
     if request.form['end_time']:
-        event.end_time = request.form['end_time']
+        end_time = request.form['end_time']
+        end_time = time_checker(end_time)
+        if end_time:
+            event.end_time = end_time
     return event
 
 
