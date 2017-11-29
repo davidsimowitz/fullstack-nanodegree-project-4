@@ -27,11 +27,29 @@ class Event(Base):
     name = Column(String(250), nullable=False)
     description = Column(String(250))
     start_date = Column(Date)
-    start_time = Column(Time)
+    _start_time = Column(Time)
     end_date = Column(Date)
-    end_time = Column(Time)
+    _end_time = Column(Time)
     activity_id = Column(Integer, ForeignKey('activity.id'))
     activity = relationship(Activity)
+
+    @property
+    def start_time(self):
+        start_time = str(self._start_time)
+        return start_time[:5]
+
+    @start_time.setter
+    def start_time(self, start_time):
+        self._start_time = start_time
+
+    @property
+    def end_time(self):
+        end_time = str(self._end_time)
+        return end_time[:5]
+
+    @end_time.setter
+    def end_time(self, end_time):
+        self._end_time = end_time
 
 
 engine = create_engine(DB)
