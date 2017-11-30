@@ -51,6 +51,44 @@ class Event(Base):
     def end_time(self, end_time):
         self._end_time = end_time
 
+    @property
+    def start_time_12_hour_notation(self):
+        try:
+            start_time = str(self._start_time)
+            hour = int(start_time[:2])
+        except:
+            pass
+        else:
+            if hour > 11:
+                hour = hour - 12 if hour > 12 else hour
+                return '{}:{} PM'.format(hour, start_time[3:5])
+            else:
+                hour = 12 if hour is 0 else hour
+                return '{}:{} AM'.format(hour, start_time[3:5])
+
+    @start_time_12_hour_notation.setter
+    def start_time_12_hour_notation(self, start_time):
+        raise AttributeError('<start_time_12_hour_notation> is read-only')
+
+    @property
+    def end_time_12_hour_notation(self):
+        try:
+            end_time = str(self._end_time)
+            hour = int(end_time[:2])
+        except:
+            pass
+        else:
+            if hour > 11:
+                hour = hour - 12 if hour > 12 else hour
+                return '{}:{} PM'.format(hour, end_time[3:5])
+            else:
+                hour = 12 if hour is 0 else hour
+                return '{}:{} AM'.format(hour, end_time[3:5])
+
+    @end_time_12_hour_notation.setter
+    def end_time_12_hour_notation(self, end_time):
+        raise AttributeError('<start_time_12_hour_notation> is read-only')
+
 
 engine = create_engine(DB)
 Base.metadata.create_all(engine)
