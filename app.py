@@ -125,7 +125,6 @@ def parse_time(str_input):
         if re.match(pattern, str_input, re.IGNORECASE):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
 
-pattern = '(?P<hours>[\d]{1,2})[:]?(?P<minutes>[\d]{2})[:]?(?P<seconds>[\d]{2})\s?(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}'
 
 @entry_and_exit_logger
 def verify_date(date_dict):
