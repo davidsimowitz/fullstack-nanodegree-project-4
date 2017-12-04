@@ -19,13 +19,24 @@ session = create_session()
 
 
 def entry_and_exit_logger(func):
-    """
-    prints function input arguments to logger
-    when entering and exiting decorated function
+    """Performs DEBUG level logging when entering and exiting function.
+
+    Logs function name and arguments when entering the function.
+    Logs function name and any return values when exiting the function.
+
+    Args:
+        func: Function to be decorated by entry_and_exit_logger.
+
+    Returns:
+        entry_and_exit_wrapper: Wrapper that extends the behavior of func
+            to include entry and exit logging.
+
+    Dependencies:
+        functools.wraps
     """
     @wraps(func)
     def entry_and_exit_wrapper(*args, **kwargs):
-        """log wrapper"""
+        """Entry and exit log wrapper."""
         try:
             input_args = ', '.join(str(arg) for arg in args)
         except:
@@ -65,11 +76,21 @@ def entry_and_exit_logger(func):
 
 @entry_and_exit_logger
 def timestamp_gen(file_ext=False):
-    """
-    for file extensions, generate the current time
-    <YYYY-MM-DD_HH:MM:SS.ssssss> format as str.
+    """Timestamp generator.
 
-    for logging, generate in <Weekday Month DD HH:MM:SS YYYY> format.
+    Generates a str representation of the current UTC time.
+
+    Args:
+        file_ext: Set to True to return the current UTC time in ISO 8601
+            format <YYYY-MM-DD_HH:MM:SS.ssssss>. Defaults to False.
+
+    Returns:
+        Current UTC time in <Weekday Month DD HH:MM:SS YYYY>
+        format, unless file_ext is set to True.
+
+        Examples:
+            'Sun Dec  3 20:30:18 2017' if file_ext is False.
+            '2017-12-03_20:30:18.817695' if file_ext is True.
     """
     current_time = datetime.datetime.now()
 
@@ -87,7 +108,37 @@ month_to_int = {month: i for i, month in enumerate(_MONTHS.split('|'),
 
 @entry_and_exit_logger
 def parse_date(str_input):
-    """ parse str_input and return date match """
+    """Parses input and extracts date.
+
+    Extracts date from input str.
+
+    Args:
+        str_input: str representation of date value.
+
+    Returns:
+        A dict mapping date keys to their corresponding values.
+
+    Examples:
+        str_input: 'November 23, 2017'
+        returns: {'month': 'November', 'day': '23', 'year': '2017'}
+
+        str_input: 'november 23 2017'
+        returns: {'month': 'november', 'day': '23', 'year': '2017'}
+
+        str_input: '2/3/2017'
+        returns: {'month': '2', 'day': '3', 'year': '2017'}
+
+        str_input: '2-3-2017'
+        returns: {'month': '2', 'day': '3', 'year': '2017'}
+
+        str_input: '02-03-2017'
+        returns: {'month': '02', 'day': '03', 'year': '2017'}
+
+    Dependencies:
+        _MONTHS
+        month_to_int
+        re
+    """
     patterns = ['(?P<year>[\d]{4})[-/]?' \
                 '(?P<month>[\d]{1,2})[-/]?' \
                 '(?P<day>[\d]{1,2})', #YYYY_MM_DD
@@ -104,7 +155,39 @@ def parse_date(str_input):
 
 @entry_and_exit_logger
 def parse_time(str_input):
-    """ parse str_input and return date match """
+    """Parses str input value and extracts time.
+
+    Args:
+        str_input: str representation of time value.
+
+    Returns:
+        A dict mapping time keys to their corresponding values.
+
+    Examples:
+        str_input: '7:00 AM'
+        returns: {'minutes': '00', 'twelve_hr': 'AM', 'hours': '7'}
+
+        str_input: '7:00 A.M.'
+        returns: {'minutes': '00', 'twelve_hr': 'A.M.', 'hours': '7'}
+
+        str_input: '7:00'
+        returns: {'minutes': '00', 'hours': '7'}
+
+        str_input: '07:00'
+        returns: {'minutes': '00', 'hours': '07'}
+
+        str_input: '5:00 pm'
+        returns: {'minutes': '00', 'twelve_hr': 'pm', 'hours': '5'}
+
+        str_input: '5:00 p.m.'
+        returns: {'minutes': '00', 'twelve_hr': 'p.m.', 'hours': '5'}
+
+        str_input: '17:00'
+        returns: {'minutes': '00', 'hours': '17'}
+
+    Dependencies:
+        re
+    """
     patterns = ['(?P<hours>[\d]{1,2})[:]{1}' \
                 '(?P<minutes>[\d]{2})[:]{1}' \
                 '(?P<seconds>[\d]{2})' \
@@ -128,7 +211,30 @@ def parse_time(str_input):
 
 @entry_and_exit_logger
 def verify_date(date_dict):
-    """ check date to verify it is acceptable """
+    """Verifies value received and converts to an acceptable date format.
+
+    Args:
+        date_dict: Dictionary representation of a date value. Mandatory keys
+            include 'year', 'month', and 'days'.
+    Returns:
+        A datetime.date object.
+
+    Examples:
+        date_dict: {'month': 'November', 'day': '23', 'year': '2017'}
+        returns: datetime.date(2017, 11, 23)
+
+        date_dict: {'month': 'november', 'day': '23', 'year': '2017'}
+        returns: datetime.date(2017, 11, 23)
+
+        date_dict: {'month': '2', 'day': '3', 'year': '2017'}
+        returns: datetime.date(2017, 2, 3)
+
+        date_dict: {'month': '02', 'day': '03', 'year': '2017'}
+        returns: datetime.date(2017, 2, 3)
+
+    Dependencies:
+        datetime
+    """
     try:
         date_dict['month'] = month_to_int[date_dict['month'].lower()]
     except:
@@ -146,7 +252,40 @@ def verify_date(date_dict):
 
 @entry_and_exit_logger
 def verify_time(time_dict):
-    """ check date to verify it is acceptable """
+    """Verifies value received and converts to an acceptable time format.
+
+    Args:
+        time_dict: Dictionary representation of a time value. Mandatory keys
+            include 'hours' and 'minutes'. The 'twelve_hr' key is only needed
+            if the 'hours' value is in 12-hour-notation.
+    Returns:
+        A datetime.time object that includes hours and minutes.
+
+    Examples:
+        time_dict: {'minutes': '00', 'twelve_hr': 'AM', 'hours': '7'}
+        returns: datetime.time(7, 0)
+
+        time_dict: {'minutes': '00', 'twelve_hr': 'A.M.', 'hours': '7'}
+        returns: datetime.time(7, 0)
+
+        time_dict: {'minutes': '00', 'hours': '7'}
+        returns: datetime.time(7, 0)
+
+        time_dict: {'minutes': '00', 'hours': '07'}
+        returns: datetime.time(7, 0)
+
+        time_dict: {'minutes': '00', 'twelve_hr': 'pm', 'hours': '5'}
+        returns: datetime.time(17, 0)
+
+        time_dict: {'minutes': '00', 'twelve_hr': 'p.m.', 'hours': '5'}
+        returns: datetime.time(17, 0)
+
+        time_dict: {'minutes': '00', 'hours': '17'}
+        returns: datetime.time(17, 0)
+
+    Dependencies:
+        datetime
+    """
     try:
         time_dict['hours'] = int(time_dict['hours'])
         time_dict['minutes'] = int(time_dict['minutes'])
@@ -171,8 +310,17 @@ def verify_time(time_dict):
 
 @entry_and_exit_logger
 def date_checker(date):
-    """
-    checks date values
+    """Authenticates date value.
+
+    Args:
+        date: A str representation of a date value.
+
+    Returns:
+        A datetime.date object if input date is a valid date. Else, None.
+
+    Dependencies:
+        parse_date()
+        verify_date()
     """
     date = parse_date(date)
     date = verify_date(date)
@@ -182,8 +330,17 @@ def date_checker(date):
 
 @entry_and_exit_logger
 def time_checker(time):
-    """
-    checks time values
+    """Authenticates time value.
+
+    Args:
+        time: A str representation of a time value.
+
+    Returns:
+        A datetime.time object if input time is a valid time. Else, None.
+
+    Dependencies:
+        parse_time()
+        verify_time()
     """
     time = parse_time(time)
     time = verify_time(time)
@@ -192,7 +349,22 @@ def time_checker(time):
 
 @entry_and_exit_logger
 def set_event_fields(event):
-    """Use in a POST method to return an updated Event obj"""
+    """Set or update Event object fields.
+
+    Use in a POST method to return an updated Event object. Event
+    fields will be updated from str values pulled from form data.
+
+    Args:
+        event: Event object.
+
+    Returns:
+        event: Updated Event object.
+
+    Dependencies:
+        models.Event
+        date_checker()
+        time_checker()
+    """
     if request.form['name']:
         event.name = request.form['name']
     if request.form['description']:
@@ -224,7 +396,7 @@ def set_event_fields(event):
 @app.route('/activities/')
 @entry_and_exit_logger
 def display_activities():
-    """Display activities"""
+    """Display all Activity records from DB."""
     activities = session.query(Activity)
     return render_template('activities.html', activities=activities)
 
@@ -239,7 +411,10 @@ def login():
 @app.route('/activities/<int:activity_id>/events/')
 @entry_and_exit_logger
 def display_activity(activity_id):
-    """Get activity"""
+    """Display Activity record from DB with matching activity_id.
+
+    Display Activity and list all Event records corresponding to it.
+    """
     activity = session.query(Activity).filter_by(id=activity_id).one()
     events = session.query(Event).filter_by(activity_id=activity_id).all()
     return render_template('events.html', activity=activity, events=events)
@@ -248,7 +423,7 @@ def display_activity(activity_id):
 @app.route('/activities/new/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def make_activity():
-    """Create activity"""
+    """Create new Activity record in DB"""
     if request.method == 'POST':
         new_activity = Activity(name=request.form['name'])
         session.add(new_activity)
@@ -263,7 +438,7 @@ def make_activity():
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def update_activity(activity_id):
-    """Edit activity"""
+    """Update Activity record in DB with matching activity_id"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
 
     if request.method == 'POST':
@@ -282,7 +457,7 @@ def update_activity(activity_id):
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def delete_activity(activity_id):
-    """Delete activity"""
+    """Delete Activity record in DB with matching activity_id"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
 
     if request.method == 'POST':
@@ -306,7 +481,7 @@ def delete_activity(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
-    """Display event"""
+    """Display Event record from DB with matching event_id"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
     event = session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
@@ -317,7 +492,7 @@ def display_event(activity_id, event_id):
            methods=['GET', 'POST'])
 @entry_and_exit_logger
 def make_event(activity_id):
-    """Create event"""
+    """Create new Event record in DB"""
     if request.method == 'POST':
         new_event = Event(name=request.form['name'],
                           activity_id=activity_id)
@@ -336,7 +511,7 @@ def make_event(activity_id):
            methods=['GET', 'POST'])
 @entry_and_exit_logger
 def update_event(activity_id, event_id):
-    """Edit event"""
+    """Update Event record in DB with matching event_id"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
     event = session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
@@ -358,7 +533,7 @@ def update_event(activity_id, event_id):
            methods=['GET', 'POST'])
 @entry_and_exit_logger
 def delete_event(activity_id, event_id):
-    """Delete event"""
+    """Delete Event record in DB with matching event_id"""
     activity = session.query(Activity).filter_by(id=activity_id).one()
     event = session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
@@ -375,6 +550,7 @@ def delete_event(activity_id, event_id):
 
 
 if __name__ == '__main__':
+    """Setup logging and run app"""
     file_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
                                           maxBytes=16384,
                                           backupCount=4)

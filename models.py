@@ -12,7 +12,20 @@ Base = declarative_base()
 
 
 class Activity(Base):
-    """Activity Table"""
+    """Activity object
+
+    An Activity represents a description used to categorize one or more Events.
+
+    Attributes:
+        id: Integer primary key for the Activity record.
+        name: The name of the Activity.
+
+    Dependencies:
+        Base
+        sqlalchemy.Column
+        sqlalchemy.Integer
+        sqlalchemy.String
+    """
     __tablename__ = 'activity'
 
     id = Column(Integer, primary_key=True)
@@ -20,7 +33,31 @@ class Activity(Base):
 
 
 class Event(Base):
-    """Event Table"""
+    """Event object
+
+    An Event represents a planned occassion. Each Event is associated with the
+    Activity which best represents it.
+
+    Attributes:
+        id: Integer primary key for the Event record.
+        name: The name of the event.
+        description: The description of the event.
+        start_date: The date the event starts.
+        _start_time: The time the event starts.
+        end_date: The date the event ends.
+        _end_time: The time the event ends.
+        activity_id: The id for the Activity record associated with this event.
+
+    Dependencies:
+        Base
+        sqlalchemy.Column
+        sqlalchemy.Date
+        sqlalchemy.ForeignKey
+        sqlalchemy.Integer
+        sqlalchemy.orm.relationship
+        sqlalchemy.String
+        sqlalchemy.Time
+    """
     __tablename__ = 'event'
 
     id = Column(Integer, primary_key=True)
@@ -35,24 +72,29 @@ class Event(Base):
 
     @property
     def start_time(self):
+        """Return start time in <HH:MM> format"""
         start_time = str(self._start_time)
         return start_time[:5]
 
     @start_time.setter
     def start_time(self, start_time):
+        """Set start time"""
         self._start_time = start_time
 
     @property
     def end_time(self):
+        """Return end time in <HH:MM> format"""
         end_time = str(self._end_time)
         return end_time[:5]
 
     @end_time.setter
     def end_time(self, end_time):
+        """Set end time"""
         self._end_time = end_time
 
     @property
     def start_time_12_hour_notation(self):
+        """Return the start time in <HH:MM AM/PM> format"""
         try:
             start_time = str(self._start_time)
             hour = int(start_time[:2])
@@ -68,10 +110,12 @@ class Event(Base):
 
     @start_time_12_hour_notation.setter
     def start_time_12_hour_notation(self, start_time):
+        """12-hour-notation version of start time is read-only"""
         raise AttributeError('<start_time_12_hour_notation> is read-only')
 
     @property
     def end_time_12_hour_notation(self):
+        """Return the end time in <HH:MM AM/PM> format"""
         try:
             end_time = str(self._end_time)
             hour = int(end_time[:2])
@@ -87,6 +131,7 @@ class Event(Base):
 
     @end_time_12_hour_notation.setter
     def end_time_12_hour_notation(self, end_time):
+        """12-hour-notation version of end time is read-only"""
         raise AttributeError('<start_time_12_hour_notation> is read-only')
 
 
