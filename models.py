@@ -1,17 +1,17 @@
 import sqlalchemy
+import sqlalchemy.ext.declarative
 import sys
 
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy import Date, Time
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 DB = 'postgresql:///events.db'
 
-Base = declarative_base()
+declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
 
-class Activity(Base):
+class Activity(declarative_base):
     """Activity object
 
     An Activity represents a description used to categorize one or more Events.
@@ -21,8 +21,8 @@ class Activity(Base):
         name: The name of the Activity.
 
     Dependencies:
-        Base
         sqlalchemy.Column
+        sqlalchemy.ext.declarative.declarative_base
         sqlalchemy.Integer
         sqlalchemy.String
     """
@@ -32,7 +32,7 @@ class Activity(Base):
     name = Column(String(250), nullable=False)
 
 
-class Event(Base):
+class Event(declarative_base):
     """Event object
 
     An Event represents a planned occassion. Each Event is associated with the
@@ -49,9 +49,9 @@ class Event(Base):
         activity_id: The id for the Activity record associated with this event.
 
     Dependencies:
-        Base
         sqlalchemy.Column
         sqlalchemy.Date
+        sqlalchemy.ext.declarative.declarative_base
         sqlalchemy.ForeignKey
         sqlalchemy.Integer
         sqlalchemy.orm.relationship
@@ -136,4 +136,4 @@ class Event(Base):
 
 
 engine = sqlalchemy.create_engine(DB)
-Base.metadata.create_all(engine)
+declarative_base.metadata.create_all(engine)
