@@ -4,9 +4,9 @@ populate events database with test data
 """
 
 
+import models
 import sqlalchemy
 import sqlalchemy.orm
-from models import Activity, Base, DB, Event
 
 
 def create_activities(session):
@@ -15,7 +15,7 @@ def create_activities(session):
     activities = ['outdoors', 'fitness', 'games', 'music', 'film', 'food',
                   'drink', 'shopping']
     for activity in activities:
-        new_entry = Activity(name='{}'.format(activity.lower()))
+        new_entry = models.Activity(name='{}'.format(activity.lower()))
         session.add(new_entry)
         session.commit()
 
@@ -52,13 +52,13 @@ def create_events(session):
     event_lookup['shopping'] = [
         ('back to school sale', '2017-8-14', '00:00', '2017-8-28', '23:59')]
 
-    activities = session.query(Activity)
+    activities = session.query(models.Activity)
 
     for activity_entry in activities:
         events = event_lookup[activity_entry.name]
 
         for event in events:
-            new_event = Event(
+            new_event = models.Event(
                           name='{}'.format(event[0]),
                           activity=activity_entry,
                           description='{} event description.'.format(event[0]),
@@ -80,7 +80,7 @@ def initialize_db(session):
 def print_activities(session):
     """print activity table records"""
 
-    activities = session.query(Activity)
+    activities = session.query(models.Activity)
     print('\nActivities: ')
     for activity in activities:
         print(activity.name.title())
@@ -89,10 +89,10 @@ def print_activities(session):
 def print_events(session):
     """print event table records"""
 
-    events = session.query(Event)
+    events = session.query(models.Event)
     print('\nEvents: ')
     for event in events:
-        activity = session.query(Activity).filter_by(
+        activity = session.query(models.Activity).filter_by(
                      id=event.activity_id).one()
         print('{} -> {}:\n          {}\n          start: {} {}' +
               '\n          end:   {} {}'.format(activity.name.title(),
@@ -114,8 +114,8 @@ def print_db(session):
 def main():
     """populate events database with test data"""
 
-    engine = sqlalchemy.create_engine(DB)
-    Base.metadata.bind = engine
+    engine = sqlalchemy.create_engine(models.DB)
+    models.declarative_base.metadata.bind = engine
 
     create_session = sqlalchemy.orm.sessionmaker(bind=engine)
     session = create_session()
