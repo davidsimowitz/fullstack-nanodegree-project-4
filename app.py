@@ -1,30 +1,29 @@
-from flask import Flask, redirect, render_template, request, url_for
-from flask import session as login_session
-from models import Activity, Base, DB, Event
-
-import datetime, random, re, string
-import logging
-from logging.handlers import RotatingFileHandler
-from functools import wraps
-
-import oauth2client.client
+import datetime
+import flask
+import functools
 import httplib2
 import json
-from flask import make_response
+import logging, logging.handlers
+import oauth2client.client
+import random
+import re
 import requests
 import sqlalchemy
+import string
+
+from models import Activity, Base, DB, Event
 
 
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 engine = sqlalchemy.create_engine(DB)
 Base.metadata.bind = engine
 
-create_session = sqlalchemy.orm.sessionmaker(bind=engine)
-session = create_session()
+create_sqlalchemy_session = sqlalchemy.orm.sessionmaker(bind=engine)
+sqlalchemy_session = create_sqlalchemy_session()
 
 
 def entry_and_exit_logger(func):
@@ -43,7 +42,7 @@ def entry_and_exit_logger(func):
     Dependencies:
         functools.wraps
     """
-    @wraps(func)
+    @functools.wraps(func)
     def entry_and_exit_wrapper(*args, **kwargs):
         """Entry and exit log wrapper."""
         try:
@@ -374,27 +373,27 @@ def set_event_fields(event):
         date_checker()
         time_checker()
     """
-    if request.form['name']:
-        event.name = request.form['name']
-    if request.form['description']:
-        event.description = request.form['description']
-    if request.form['start_date']:
-        start_date = request.form['start_date']
+    if flask.request.form['name']:
+        event.name = flask.request.form['name']
+    if flask.request.form['description']:
+        event.description = flask.request.form['description']
+    if flask.request.form['start_date']:
+        start_date = flask.request.form['start_date']
         start_date = date_checker(start_date)
         if start_date:
             event.start_date = start_date
-    if request.form['start_time']:
-        start_time = request.form['start_time']
+    if flask.request.form['start_time']:
+        start_time = flask.request.form['start_time']
         start_time = time_checker(start_time)
         if start_time:
             event.start_time = start_time
-    if request.form['end_date']:
-        end_date = request.form['end_date']
+    if flask.request.form['end_date']:
+        end_date = flask.request.form['end_date']
         end_date = date_checker(end_date)
         if end_date:
             event.end_date = end_date
-    if request.form['end_time']:
-        end_time = request.form['end_time']
+    if flask.request.form['end_time']:
+        end_time = flask.request.form['end_time']
         end_time = time_checker(end_time)
         if end_time:
             event.end_time = end_time
@@ -406,8 +405,9 @@ def set_event_fields(event):
 @entry_and_exit_logger
 def display_activities():
     """Display all Activity records from DB."""
-    activities = session.query(Activity)
-    return render_template('activities.html', activities=activities)
+    activities = sqlalchemy_session.query(Activity)
+    return flask.render_template('activities.html',
+                                 activities=activities)
 
 
 @app.route('/login/')
@@ -416,8 +416,9 @@ def user_login():
     """Create an anti-forgery state token and store it in the session"""
     state = ''.join(random.choice(string.ascii_letters + string.digits)
                     for x in range(64))
-    login_session['state'] = state
-    return render_template('login.html', STATE=state)
+    flask.session['state'] = state
+    return flask.render_template('login.html',
+                                 STATE=state)
 
 
 @app.route('/google.connect/', methods=['POST'])
@@ -425,14 +426,14 @@ def user_login():
 def google_connect():
     """OAuth via Google"""
     # Validate state token
-    if request.args.get('state') != login_session['state']:
-        response = make_response(
+    if flask.request.args.get('state') != flask.session['state']:
+        response = flask.make_response(
                        json.dumps('Invalid state parameter'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
     # Obtain authorization code
-    code = request.data
+    code = flask.request.data
 
     try:
         # Create flow from a clientsecrets file
@@ -444,17 +445,17 @@ def google_connect():
         credentials = oauth_flow.step2_exchange(code)
     except oauth2client.client.InvalidClientSecretsError:
         # Format of ClientSecrets file is invalid.
-        response = make_response(json.dumps('Format of ClientSecrets' +
-                                            ' file is invalid.'),
-                                 401)
+        response = flask.make_response(json.dumps('Format of ClientSecrets' +
+                                                  ' file is invalid.'),
+                                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
     except oauth2client.client.FlowExchangeError:
         # Error trying to exchange an authorization grant for an access token.
-        response = make_response(json.dumps('Error trying to exchange an' +
-                                            ' authorization grant for an' +
-                                            ' access token.'),
-                                 401)
+        response = flask.make_response(json.dumps('Error trying to exchange' + 
+                                                  ' an authorization grant' +
+                                                  ' for an access token.'),
+                                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -467,34 +468,34 @@ def google_connect():
 
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
-        response = make_response(json.dumps(result.get('error')),
-                                 500)
+        response = flask.make_response(json.dumps(result.get('error')),
+                                       500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Verify that the access token is used for the intended user.
     user_id = credentials.id_token['sub']
     if result['user_id'] != user_id:
-        response = make_response(json.dumps("Token's user ID does not match" +
-                                            " given user ID."),
-                                 401)
+        response = flask.make_response(json.dumps("Token's user ID does not" +
+                                                  " match given user ID."),
+                                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
-        response = make_response(
+        response = flask.make_response(
                        json.dumps("Token's client ID does not match app's."),
                        401)
         print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    stored_access_token = login_session.get('access_token')
-    stored_user_id = login_session.get('user_id')
+    stored_access_token = flask.session.get('access_token')
+    stored_user_id = flask.session.get('user_id')
     if stored_access_token is not None and user_id == stored_user_id:
-        response = make_response(
+        response = flask.make_response(
                        json.dumps('Current user is already connected.'),
                        200)
         response.headers['Content-Type'] = 'application/json'
@@ -502,8 +503,8 @@ def google_connect():
 
 
     # Store the access token in the session for later use.
-    login_session['access_token'] = credentials.access_token
-    login_session['user_id'] = user_id
+    flask.session['access_token'] = credentials.access_token
+    flask.session['user_id'] = user_id
 
     # Get user info
     userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
@@ -511,17 +512,17 @@ def google_connect():
     answer = requests.get(userinfo_url, params=params)
     data = answer.json()
 
-    login_session['username'] = data['name']
-    login_session['picture'] = data['picture']
-    login_session['email'] = data['email']
+    flask.session['username'] = data['name']
+    flask.session['picture'] = data['picture']
+    flask.session['email'] = data['email']
 
     output = ''
     output += '<h1>Welcome, '
-    output += login_session['username']
+    output += flask.session['username']
     output += '!</h1>'
 
     output += '<img src="'
-    output += login_session['picture']
+    output += flask.session['picture']
     output += '" style="max-width: 325px; height: auto;">'
 
     return output
@@ -535,77 +536,81 @@ def display_activity(activity_id):
 
     Display Activity and list all Event records corresponding to it.
     """
-    activity = session.query(Activity).filter_by(id=activity_id).one()
-    events = session.query(Event).filter_by(activity_id=activity_id).all()
-    return render_template('events.html', activity=activity, events=events)
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    events = sqlalchemy_session.query(Event).filter_by(activity_id=activity_id).all()
+    return flask.render_template('events.html',
+                                 activity=activity,
+                                 events=events)
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def make_activity():
     """Create new Activity record in DB"""
-    if request.method == 'POST':
-        new_activity = Activity(name=request.form['name'])
-        session.add(new_activity)
-        session.commit()
+    if flask.request.method == 'POST':
+        new_activity = Activity(name=flask.request.form['name'])
+        sqlalchemy_session.add(new_activity)
+        sqlalchemy_session.commit()
 
-        return redirect(url_for('display_activity',
-                                activity_id=new_activity.id))
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=new_activity.id))
     else:
-        return render_template('new-activity.html')
+        return flask.render_template('new-activity.html')
 
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
-    activity = session.query(Activity).filter_by(id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
 
-    if request.method == 'POST':
-        if request.form['name']:
-            activity.name = request.form['name']
-        session.add(activity)
-        session.commit()
+    if flask.request.method == 'POST':
+        if flask.request.form['name']:
+            activity.name = flask.request.form['name']
+        sqlalchemy_session.add(activity)
+        sqlalchemy_session.commit()
 
-        return redirect(url_for('display_activity',
-                                activity_id=activity.id))
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity.id))
     else:
-        return render_template('edit-activity.html',
-                               activity=activity)
+        return flask.render_template('edit-activity.html',
+                                     activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 @entry_and_exit_logger
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
-    activity = session.query(Activity).filter_by(id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
 
-    if request.method == 'POST':
-        events = session.query(Event).filter_by(activity_id=activity_id).all()
+    if flask.request.method == 'POST':
+        events = sqlalchemy_session.query(Event).filter_by(activity_id=activity_id).all()
         if events:
             error_msg = 'Activity cannot be deleted, events ' \
                         'are associated with this activity.'
-            return render_template('delete-activity.html',
-                                    activity=activity,
-                                    error_msg=error_msg)
+            return flask.render_template('delete-activity.html',
+                                         activity=activity,
+                                         error_msg=error_msg)
         else:
-            session.delete(activity)
-            session.commit()
-            return redirect(url_for('display_activities'))
+            sqlalchemy_session.delete(activity)
+            sqlalchemy_session.commit()
+            return flask.redirect(flask.url_for('display_activities'))
 
     else:
-        return render_template('delete-activity.html',
-                               activity=activity)
+        return flask.render_template('delete-activity.html',
+                                     activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    activity = session.query(Activity).filter_by(id=activity_id).one()
-    event = session.query(Event).filter_by(id=event_id,
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
-    return render_template('event.html', activity=activity, event=event)
+    return flask.render_template('event.html',
+                                 activity=activity,
+                                 event=event)
 
 
 @app.route('/activities/<int:activity_id>/events/new/',
@@ -613,18 +618,19 @@ def display_event(activity_id, event_id):
 @entry_and_exit_logger
 def make_event(activity_id):
     """Create new Event record in DB"""
-    if request.method == 'POST':
-        new_event = Event(name=request.form['name'],
+    if flask.request.method == 'POST':
+        new_event = Event(name=flask.request.form['name'],
                           activity_id=activity_id)
         new_event = set_event_fields(new_event)
-        session.add(new_event)
-        session.commit()
-        return redirect(url_for('display_event',
-                                activity_id=activity_id,
-                                event_id=new_event.id))
+        sqlalchemy_session.add(new_event)
+        sqlalchemy_session.commit()
+        return flask.redirect(flask.url_for('display_event',
+                                            activity_id=activity_id,
+                                            event_id=new_event.id))
     else:
-        activity = session.query(Activity).filter_by(id=activity_id).one()
-        return render_template('new-event.html', activity=activity)
+        activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+        return flask.render_template('new-event.html',
+                                     activity=activity)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
@@ -632,21 +638,21 @@ def make_event(activity_id):
 @entry_and_exit_logger
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
-    activity = session.query(Activity).filter_by(id=activity_id).one()
-    event = session.query(Event).filter_by(id=event_id,
-                                           activity_id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
+                                                      activity_id=activity_id).one()
 
-    if request.method == 'POST':
+    if flask.request.method == 'POST':
         event = set_event_fields(event)
-        session.add(event)
-        session.commit()
-        return redirect(url_for('display_event',
-                                activity_id=activity_id,
-                                event_id=event.id))
+        sqlalchemy_session.add(event)
+        sqlalchemy_session.commit()
+        return flask.redirect(flask.url_for('display_event',
+                                            activity_id=activity_id,
+                                            event_id=event.id))
     else:
-        return render_template('edit-event.html',
-                               activity=activity,
-                               event=event)
+        return flask.render_template('edit-event.html',
+                                     activity=activity,
+                                     event=event)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
@@ -654,26 +660,28 @@ def update_event(activity_id, event_id):
 @entry_and_exit_logger
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
-    activity = session.query(Activity).filter_by(id=activity_id).one()
-    event = session.query(Event).filter_by(id=event_id,
+    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
                                            activity_id=activity_id).one()
 
-    if request.method == 'POST':
-        session.delete(event)
-        session.commit()
-        return redirect(url_for('display_activity', activity_id=activity_id))
+    if flask.request.method == 'POST':
+        sqlalchemy_session.delete(event)
+        sqlalchemy_session.commit()
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity_id))
 
     else:
-        return render_template('delete-event.html',
-                               activity=activity,
-                               event=event)
+        return flask.render_template('delete-event.html',
+                                     activity=activity,
+                                     event=event)
 
 
 if __name__ == '__main__':
     """Setup logging and run app"""
-    #file_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
-    #                                      maxBytes=16384,
-    #                                      backupCount=4)
+    #file_handler = logging.handlers.RotatingFileHandler(
+    #                   'APP_{}.log'.format(timestamp_gen(file_ext=True)),
+    #                   maxBytes=16384,
+    #                   backupCount=4)
     #file_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
     #file_handler.setFormatter(file_formatter)
     #file_handler.setLevel(logging.DEBUG)
