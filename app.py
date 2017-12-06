@@ -3,7 +3,8 @@ import flask
 import functools
 import httplib2
 import json
-import logging, logging.handlers
+import logging
+import logging.handlers
 import oauth2client.client
 import random
 import re
@@ -114,6 +115,7 @@ _MONTHS = 'january|february|march|april|may|june|july' \
 month_to_int = {month: i for i, month in enumerate(_MONTHS.split('|'),
                                                    start=1)}
 
+
 @entry_and_exit_logger
 def parse_date(str_input):
     """Parses input and extracts date.
@@ -147,14 +149,19 @@ def parse_date(str_input):
         month_to_int
         re
     """
-    patterns = ['(?P<year>[\d]{4})[-/]?' \
-                '(?P<month>[\d]{1,2})[-/]?' \
-                '(?P<day>[\d]{1,2})', #YYYY_MM_DD
-                '(?P<month>[\d]{1,2})[-/]?' \
-                '(?P<day>[\d]{1,2})[-/]?' \
-                '(?P<year>[\d]{4})', #MM_DD_YYYY
-                '(?P<month>' + _MONTHS + '){1}\s' \
-                '(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})'] #MONTH_DD_YYYY
+    # patterns = [
+    #             YYYY_MM_DD ,
+    #             MM_DD_YYYY ,
+    #             MONTH_DD_YYYY
+    #            ]
+    patterns = ['(?P<year>[\d]{4})[-/]?'
+                '(?P<month>[\d]{1,2})[-/]?'
+                '(?P<day>[\d]{1,2})',
+                '(?P<month>[\d]{1,2})[-/]?'
+                '(?P<day>[\d]{1,2})[-/]?'
+                '(?P<year>[\d]{4})',
+                '(?P<month>' + _MONTHS + '){1}\s'
+                '(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})']
 
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
@@ -196,22 +203,29 @@ def parse_time(str_input):
     Dependencies:
         re
     """
-    patterns = ['(?P<hours>[\d]{1,2})[:]{1}' \
-                '(?P<minutes>[\d]{2})[:]{1}' \
-                '(?P<seconds>[\d]{2})' \
-                '(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})', #HH:MM:SS(+/-)TT:TT
-                '(?P<hours>[\d]{1,2})[:]{1}' \
-                '(?P<minutes>[\d]{2})[:]{1}' \
-                '(?P<seconds>[\d]{2})\s?' \
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}', #HH:MM:SS (AM/PM)
-                '(?P<hours>[\d]{1,2})[:]{1}' \
-                '(?P<minutes>[\d]{2})\s?' \
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}', #HH:MM (AM/PM)
-                '(?P<hours>[\d]{1,2})[:]{1}' \
-                '(?P<minutes>[\d]{2})[:]{1}' \
-                '(?P<seconds>[\d]{2})', #HH:MM:SS (24-hour notation)
-                '(?P<hours>[\d]{1,2})[:]{1}' \
-                '(?P<minutes>[\d]{2})'] #HH:MM (24-hour notation)
+    # patterns = [
+    #             HH:MM:SS(+/-)TT:TT ,
+    #             HH:MM:SS (AM/PM) ,
+    #             HH:MM (AM/PM) ,
+    #             HH:MM:SS (24-hour notation) ,
+    #             HH:MM (24-hour notation)
+    #            ]
+    patterns = ['(?P<hours>[\d]{1,2})[:]{1}'
+                '(?P<minutes>[\d]{2})[:]{1}'
+                '(?P<seconds>[\d]{2})'
+                '(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})',
+                '(?P<hours>[\d]{1,2})[:]{1}'
+                '(?P<minutes>[\d]{2})[:]{1}'
+                '(?P<seconds>[\d]{2})\s?'
+                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                '(?P<hours>[\d]{1,2})[:]{1}'
+                '(?P<minutes>[\d]{2})\s?'
+                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                '(?P<hours>[\d]{1,2})[:]{1}'
+                '(?P<minutes>[\d]{2})[:]{1}'
+                '(?P<seconds>[\d]{2})',
+                '(?P<hours>[\d]{1,2})[:]{1}'
+                '(?P<minutes>[\d]{2})']
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
@@ -355,6 +369,7 @@ def time_checker(time):
 
     return time
 
+
 @entry_and_exit_logger
 def set_event_fields(event):
     """Set or update Event object fields.
@@ -452,7 +467,7 @@ def google_connect():
         return response
     except oauth2client.client.FlowExchangeError:
         # Error trying to exchange an authorization grant for an access token.
-        response = flask.make_response(json.dumps('Error trying to exchange' + 
+        response = flask.make_response(json.dumps('Error trying to exchange' +
                                                   ' an authorization grant' +
                                                   ' for an access token.'),
                                        401)
@@ -482,7 +497,6 @@ def google_connect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = flask.make_response(
@@ -500,7 +514,6 @@ def google_connect():
                        200)
         response.headers['Content-Type'] = 'application/json'
         return response
-
 
     # Store the access token in the session for later use.
     flask.session['access_token'] = credentials.access_token
@@ -536,8 +549,10 @@ def display_activity(activity_id):
 
     Display Activity and list all Event records corresponding to it.
     """
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
-    events = sqlalchemy_session.query(Event).filter_by(activity_id=activity_id).all()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
+    events = sqlalchemy_session.query(Event).filter_by(
+               activity_id=activity_id).all()
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events)
@@ -562,7 +577,8 @@ def make_activity():
 @entry_and_exit_logger
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
 
     if flask.request.method == 'POST':
         if flask.request.form['name']:
@@ -581,10 +597,12 @@ def update_activity(activity_id):
 @entry_and_exit_logger
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
 
     if flask.request.method == 'POST':
-        events = sqlalchemy_session.query(Event).filter_by(activity_id=activity_id).all()
+        events = sqlalchemy_session.query(Event).filter_by(
+                   activity_id=activity_id).all()
         if events:
             error_msg = 'Activity cannot be deleted, events ' \
                         'are associated with this activity.'
@@ -605,9 +623,11 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
-                                           activity_id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(
+              id=event_id,
+              activity_id=activity_id).one()
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event)
@@ -628,7 +648,8 @@ def make_event(activity_id):
                                             activity_id=activity_id,
                                             event_id=new_event.id))
     else:
-        activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
+        activity = sqlalchemy_session.query(Activity).filter_by(
+                     id=activity_id).one()
         return flask.render_template('new-event.html',
                                      activity=activity)
 
@@ -638,9 +659,11 @@ def make_event(activity_id):
 @entry_and_exit_logger
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
-                                                      activity_id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(
+              id=event_id,
+              activity_id=activity_id).one()
 
     if flask.request.method == 'POST':
         event = set_event_fields(event)
@@ -660,9 +683,11 @@ def update_event(activity_id, event_id):
 @entry_and_exit_logger
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
-    activity = sqlalchemy_session.query(Activity).filter_by(id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(id=event_id,
-                                           activity_id=activity_id).one()
+    activity = sqlalchemy_session.query(Activity).filter_by(
+                 id=activity_id).one()
+    event = sqlalchemy_session.query(Event).filter_by(
+              id=event_id,
+              activity_id=activity_id).one()
 
     if flask.request.method == 'POST':
         sqlalchemy_session.delete(event)
@@ -678,17 +703,19 @@ def delete_event(activity_id, event_id):
 
 if __name__ == '__main__':
     """Setup logging and run app"""
-    #file_handler = logging.handlers.RotatingFileHandler(
-    #                   'APP_{}.log'.format(timestamp_gen(file_ext=True)),
-    #                   maxBytes=16384,
-    #                   backupCount=4)
-    #file_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
-    #file_handler.setFormatter(file_formatter)
-    #file_handler.setLevel(logging.DEBUG)
-    #app.logger.addHandler(file_handler)
+#    file_handler = logging.handlers.RotatingFileHandler(
+#                       'APP_{}.log'.format(timestamp_gen(file_ext=True)),
+#                       maxBytes=16384,
+#                       backupCount=4)
+#    file_formatter = logging.Formatter('{levelname:9} {name:10} {message}',
+#                                        style='{')
+#    file_handler.setFormatter(file_formatter)
+#    file_handler.setLevel(logging.DEBUG)
+#    app.logger.addHandler(file_handler)
 
     screen_handler = logging.StreamHandler()
-    screen_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
+    screen_formatter = logging.Formatter('{levelname:9} {name:10} {message}',
+                                         style='{')
     screen_handler.setFormatter(screen_formatter)
     screen_handler.setLevel(logging.DEBUG)
     app.logger.addHandler(screen_handler)
