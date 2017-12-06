@@ -674,13 +674,13 @@ def delete_event(activity_id, event_id):
 
 if __name__ == '__main__':
     """Setup logging and run app"""
-    file_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
-                                          maxBytes=16384,
-                                          backupCount=4)
-    file_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
-    file_handler.setFormatter(file_formatter)
-    file_handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(file_handler)
+    #file_handler = RotatingFileHandler('APP_{}.log'.format(timestamp_gen(file_ext=True)),
+    #                                      maxBytes=16384,
+    #                                      backupCount=4)
+    #file_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
+    #file_handler.setFormatter(file_formatter)
+    #file_handler.setLevel(logging.DEBUG)
+    #app.logger.addHandler(file_handler)
 
     app.debug = True
     app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
