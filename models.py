@@ -64,7 +64,8 @@ class Event(declarative_base):
     _start_time = sqlalchemy.Column(sqlalchemy.Time)
     end_date = sqlalchemy.Column(sqlalchemy.Date)
     _end_time = sqlalchemy.Column(sqlalchemy.Time)
-    activity_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('activity.id'))
+    activity_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                    sqlalchemy.ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
 
     @property
