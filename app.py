@@ -7,9 +7,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from functools import wraps
 
-
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+import oauth2client.client
 import httplib2
 import json
 from flask import make_response
@@ -438,20 +436,20 @@ def google_connect():
 
     try:
         # Create flow from a clientsecrets file
-        oauth_flow = flow_from_clientsecrets(
+        oauth_flow = oauth2client.client.flow_from_clientsecrets(
                          'client_secret.json',
                          scope=['email', 'openid'],
                          redirect_uri='postmessage')
         # Exchange authorization code for a Credentials object
         credentials = oauth_flow.step2_exchange(code)
-    except InvalidClientSecretsError:
+    except oauth2client.client.InvalidClientSecretsError:
         # Format of ClientSecrets file is invalid.
         response = make_response(json.dumps('Format of ClientSecrets' +
                                             ' file is invalid.'),
                                  401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    except FlowExchangeError:
+    except oauth2client.client.FlowExchangeError:
         # Error trying to exchange an authorization grant for an access token.
         response = make_response(json.dumps('Error trying to exchange an' +
                                             ' authorization grant for an' +
