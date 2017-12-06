@@ -15,7 +15,7 @@ import requests
 import sqlalchemy
 import string
 
-from models import Activity, Event
+from models import Activity
 
 
 CLIENT_ID = json.loads(
@@ -553,7 +553,7 @@ def display_activity(activity_id):
     """
     activity = sqlalchemy_session.query(Activity).filter_by(
                  id=activity_id).one()
-    events = sqlalchemy_session.query(Event).filter_by(
+    events = sqlalchemy_session.query(models.Event).filter_by(
                activity_id=activity_id).all()
     return flask.render_template('events.html',
                                  activity=activity,
@@ -603,7 +603,7 @@ def delete_activity(activity_id):
                  id=activity_id).one()
 
     if flask.request.method == 'POST':
-        events = sqlalchemy_session.query(Event).filter_by(
+        events = sqlalchemy_session.query(models.Event).filter_by(
                    activity_id=activity_id).all()
         if events:
             error_msg = 'Activity cannot be deleted, events ' \
@@ -627,7 +627,7 @@ def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
     activity = sqlalchemy_session.query(Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(
+    event = sqlalchemy_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
     return flask.render_template('event.html',
@@ -641,7 +641,7 @@ def display_event(activity_id, event_id):
 def make_event(activity_id):
     """Create new Event record in DB"""
     if flask.request.method == 'POST':
-        new_event = Event(name=flask.request.form['name'],
+        new_event = models.Event(name=flask.request.form['name'],
                           activity_id=activity_id)
         new_event = set_event_fields(new_event)
         sqlalchemy_session.add(new_event)
@@ -663,7 +663,7 @@ def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
     activity = sqlalchemy_session.query(Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(
+    event = sqlalchemy_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
 
@@ -687,7 +687,7 @@ def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
     activity = sqlalchemy_session.query(Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(Event).filter_by(
+    event = sqlalchemy_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
 
