@@ -5,7 +5,7 @@ populate events database with test data
 
 
 import sqlalchemy
-from sqlalchemy.orm import sessionmaker
+import sqlalchemy.orm
 from models import Activity, Base, DB, Event
 
 
@@ -117,7 +117,7 @@ def main():
     engine = sqlalchemy.create_engine(DB)
     Base.metadata.bind = engine
 
-    create_session = sessionmaker(bind=engine)
+    create_session = sqlalchemy.orm.sessionmaker(bind=engine)
     session = create_session()
 
     # initialize_db(session)
