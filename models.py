@@ -3,7 +3,7 @@ import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import sys
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer
 
 DB = 'postgresql:///events.db'
 
@@ -28,7 +28,7 @@ class Activity(declarative_base):
     __tablename__ = 'activity'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(sqlalchemy.String(250), nullable=False)
 
 
 class Event(declarative_base):
@@ -60,8 +60,8 @@ class Event(declarative_base):
     __tablename__ = 'event'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    description = Column(String(250))
+    name = Column(sqlalchemy.String(250), nullable=False)
+    description = Column(sqlalchemy.String(250))
     start_date = Column(sqlalchemy.Date)
     _start_time = Column(sqlalchemy.Time)
     end_date = Column(sqlalchemy.Date)
