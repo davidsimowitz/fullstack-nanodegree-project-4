@@ -1,11 +1,13 @@
 import datetime
 import flask
 import functools
+import hashlib
 import httplib2
 import json
 import logging
 import logging.handlers
 import oauth2client.client
+import os
 import random
 import re
 import requests
@@ -429,8 +431,7 @@ def display_activities():
 @entry_and_exit_logger
 def user_login():
     """Create an anti-forgery state token and store it in the session"""
-    state = ''.join(random.choice(string.ascii_letters + string.digits)
-                    for x in range(64))
+    state = hashlib.sha256(os.urandom(1024)).hexdigest()
     flask.session['state'] = state
     return flask.render_template('login.html',
                                  STATE=state)
