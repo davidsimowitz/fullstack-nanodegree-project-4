@@ -682,6 +682,12 @@ if __name__ == '__main__':
     #file_handler.setLevel(logging.DEBUG)
     #app.logger.addHandler(file_handler)
 
+    screen_handler = logging.StreamHandler()
+    screen_formatter = logging.Formatter('{levelname:9} {name:10} {message}', style='{')
+    screen_handler.setFormatter(screen_formatter)
+    screen_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(screen_handler)
+
     app.debug = True
     app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
     app.run(host='0.0.0.0', port=5000)
