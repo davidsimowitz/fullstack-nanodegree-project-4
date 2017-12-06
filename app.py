@@ -25,7 +25,7 @@ engine = sqlalchemy.create_engine(models.DB)
 models.declarative_base.metadata.bind = engine
 
 create_sqlalchemy_session = sqlalchemy.orm.sessionmaker(bind=engine)
-sqlalchemy_session = create_sqlalchemy_session()
+db_session = create_sqlalchemy_session()
 
 
 def entry_and_exit_logger(func):
@@ -421,7 +421,7 @@ def set_event_fields(event):
 @entry_and_exit_logger
 def display_activities():
     """Display all Activity records from DB."""
-    activities = sqlalchemy_session.query(models.Activity)
+    activities = db_session.query(models.Activity)
     return flask.render_template('activities.html',
                                  activities=activities)
 
@@ -549,9 +549,9 @@ def display_activity(activity_id):
 
     Display Activity and list all Event records corresponding to it.
     """
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
-    events = sqlalchemy_session.query(models.Event).filter_by(
+    events = db_session.query(models.Event).filter_by(
                activity_id=activity_id).all()
     return flask.render_template('events.html',
                                  activity=activity,
@@ -564,8 +564,8 @@ def make_activity():
     """Create new Activity record in DB"""
     if flask.request.method == 'POST':
         new_activity = models.Activity(name=flask.request.form['name'])
-        sqlalchemy_session.add(new_activity)
-        sqlalchemy_session.commit()
+        db_session.add(new_activity)
+        db_session.commit()
 
         return flask.redirect(flask.url_for('display_activity',
                                             activity_id=new_activity.id))
@@ -577,14 +577,14 @@ def make_activity():
 @entry_and_exit_logger
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
 
     if flask.request.method == 'POST':
         if flask.request.form['name']:
             activity.name = flask.request.form['name']
-        sqlalchemy_session.add(activity)
-        sqlalchemy_session.commit()
+        db_session.add(activity)
+        db_session.commit()
 
         return flask.redirect(flask.url_for('display_activity',
                                             activity_id=activity.id))
@@ -597,11 +597,11 @@ def update_activity(activity_id):
 @entry_and_exit_logger
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
 
     if flask.request.method == 'POST':
-        events = sqlalchemy_session.query(models.Event).filter_by(
+        events = db_session.query(models.Event).filter_by(
                    activity_id=activity_id).all()
         if events:
             error_msg = 'Activity cannot be deleted, events ' \
@@ -610,8 +610,8 @@ def delete_activity(activity_id):
                                          activity=activity,
                                          error_msg=error_msg)
         else:
-            sqlalchemy_session.delete(activity)
-            sqlalchemy_session.commit()
+            db_session.delete(activity)
+            db_session.commit()
             return flask.redirect(flask.url_for('display_activities'))
 
     else:
@@ -623,9 +623,9 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(models.Event).filter_by(
+    event = db_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
     return flask.render_template('event.html',
@@ -642,13 +642,13 @@ def make_event(activity_id):
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id)
         new_event = set_event_fields(new_event)
-        sqlalchemy_session.add(new_event)
-        sqlalchemy_session.commit()
+        db_session.add(new_event)
+        db_session.commit()
         return flask.redirect(flask.url_for('display_event',
                                             activity_id=activity_id,
                                             event_id=new_event.id))
     else:
-        activity = sqlalchemy_session.query(models.Activity).filter_by(
+        activity = db_session.query(models.Activity).filter_by(
                      id=activity_id).one()
         return flask.render_template('new-event.html',
                                      activity=activity)
@@ -659,16 +659,16 @@ def make_event(activity_id):
 @entry_and_exit_logger
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(models.Event).filter_by(
+    event = db_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
 
     if flask.request.method == 'POST':
         event = set_event_fields(event)
-        sqlalchemy_session.add(event)
-        sqlalchemy_session.commit()
+        db_session.add(event)
+        db_session.commit()
         return flask.redirect(flask.url_for('display_event',
                                             activity_id=activity_id,
                                             event_id=event.id))
@@ -683,15 +683,15 @@ def update_event(activity_id, event_id):
 @entry_and_exit_logger
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
-    activity = sqlalchemy_session.query(models.Activity).filter_by(
+    activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
-    event = sqlalchemy_session.query(models.Event).filter_by(
+    event = db_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
 
     if flask.request.method == 'POST':
-        sqlalchemy_session.delete(event)
-        sqlalchemy_session.commit()
+        db_session.delete(event)
+        db_session.commit()
         return flask.redirect(flask.url_for('display_activity',
                                             activity_id=activity_id))
 
