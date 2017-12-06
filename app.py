@@ -642,7 +642,7 @@ def make_event(activity_id):
     """Create new Event record in DB"""
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
-                          activity_id=activity_id)
+                                 activity_id=activity_id)
         new_event = set_event_fields(new_event)
         sqlalchemy_session.add(new_event)
         sqlalchemy_session.commit()
