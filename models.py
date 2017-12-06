@@ -3,10 +3,8 @@ import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import sys
 
-from sqlalchemy import Column
 
 DB = 'postgresql:///events.db'
-
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
 
@@ -27,8 +25,8 @@ class Activity(declarative_base):
     """
     __tablename__ = 'activity'
 
-    id = Column(sqlalchemy.Integer, primary_key=True)
-    name = Column(sqlalchemy.String(250), nullable=False)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
 
 
 class Event(declarative_base):
@@ -59,14 +57,14 @@ class Event(declarative_base):
     """
     __tablename__ = 'event'
 
-    id = Column(sqlalchemy.Integer, primary_key=True)
-    name = Column(sqlalchemy.String(250), nullable=False)
-    description = Column(sqlalchemy.String(250))
-    start_date = Column(sqlalchemy.Date)
-    _start_time = Column(sqlalchemy.Time)
-    end_date = Column(sqlalchemy.Date)
-    _end_time = Column(sqlalchemy.Time)
-    activity_id = Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('activity.id'))
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    description = sqlalchemy.Column(sqlalchemy.String(250))
+    start_date = sqlalchemy.Column(sqlalchemy.Date)
+    _start_time = sqlalchemy.Column(sqlalchemy.Time)
+    end_date = sqlalchemy.Column(sqlalchemy.Date)
+    _end_time = sqlalchemy.Column(sqlalchemy.Time)
+    activity_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
 
     @property
