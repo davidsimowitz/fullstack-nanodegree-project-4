@@ -1,6 +1,6 @@
+import sqlalchemy
 import sys
 
-from sqlalchemy import create_engine
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy import Date, Time
 from sqlalchemy.ext.declarative import declarative_base
@@ -135,5 +135,5 @@ class Event(Base):
         raise AttributeError('<start_time_12_hour_notation> is read-only')
 
 
-engine = create_engine(DB)
+engine = sqlalchemy.create_engine(DB)
 Base.metadata.create_all(engine)
