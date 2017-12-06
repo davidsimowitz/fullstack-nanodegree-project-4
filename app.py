@@ -1,7 +1,5 @@
 from flask import Flask, redirect, render_template, request, url_for
 from flask import session as login_session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
 
 import datetime, random, re, string
@@ -16,6 +14,7 @@ import httplib2
 import json
 from flask import make_response
 import requests
+import sqlalchemy
 
 
 CLIENT_ID = json.loads(
@@ -23,10 +22,10 @@ CLIENT_ID = json.loads(
 
 app = Flask(__name__)
 
-engine = create_engine(DB)
+engine = sqlalchemy.create_engine(DB)
 Base.metadata.bind = engine
 
-create_session = sessionmaker(bind=engine)
+create_session = sqlalchemy.orm.sessionmaker(bind=engine)
 session = create_session()
 
 
