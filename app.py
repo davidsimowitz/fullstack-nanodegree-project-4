@@ -15,7 +15,7 @@ import requests
 import sqlalchemy
 import string
 
-from models import Activity, DB, Event
+from models import Activity, Event
 
 
 CLIENT_ID = json.loads(
@@ -23,7 +23,7 @@ CLIENT_ID = json.loads(
 
 app = flask.Flask(__name__)
 
-engine = sqlalchemy.create_engine(DB)
+engine = sqlalchemy.create_engine(models.DB)
 models.declarative_base.metadata.bind = engine
 
 create_sqlalchemy_session = sqlalchemy.orm.sessionmaker(bind=engine)
