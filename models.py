@@ -4,7 +4,7 @@ import sqlalchemy.orm
 import sys
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy import Date, Time
+from sqlalchemy import Time
 
 DB = 'postgresql:///events.db'
 
@@ -63,9 +63,9 @@ class Event(declarative_base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     description = Column(String(250))
-    start_date = Column(Date)
+    start_date = Column(sqlalchemy.Date)
     _start_time = Column(Time)
-    end_date = Column(Date)
+    end_date = Column(sqlalchemy.Date)
     _end_time = Column(Time)
     activity_id = Column(Integer, ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
