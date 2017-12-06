@@ -1,13 +1,25 @@
 from flask import Flask, redirect, render_template, request, url_for
+from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Activity, Base, DB, Event
 
-import datetime, re
+import datetime, random, re, string
 import logging
 from logging.handlers import RotatingFileHandler
 from functools import wraps
 
+
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
+
+
+CLIENT_ID = json.loads(
+    open('client_secret.json', 'r').read())['web']['client_id']
 
 app = Flask(__name__)
 
@@ -400,11 +412,122 @@ def display_activities():
     activities = session.query(Activity)
     return render_template('activities.html', activities=activities)
 
+
 @app.route('/login/')
 @entry_and_exit_logger
-def login():
-    """Login"""
-    return 'login'
+def user_login():
+    """Create an anti-forgery state token and store it in the session"""
+    state = ''.join(random.choice(string.ascii_letters + string.digits)
+                    for x in range(64))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
+
+
+@app.route('/google.connect/', methods=['POST'])
+@entry_and_exit_logger
+def google_connect():
+    """OAuth via Google"""
+    # Validate state token
+    if request.args.get('state') != login_session['state']:
+        response = make_response(
+                       json.dumps('Invalid state parameter'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    # Obtain authorization code
+    code = request.data
+
+    try:
+        # Create flow from a clientsecrets file
+        oauth_flow = flow_from_clientsecrets(
+                         'client_secret.json',
+                         scope=['email', 'openid'],
+                         redirect_uri='postmessage')
+        # Exchange authorization code for a Credentials object
+        credentials = oauth_flow.step2_exchange(code)
+    except InvalidClientSecretsError:
+        # Format of ClientSecrets file is invalid.
+        response = make_response(json.dumps('Format of ClientSecrets' +
+                                            ' file is invalid.'),
+                                 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    except FlowExchangeError:
+        # Error trying to exchange an authorization grant for an access token.
+        response = make_response(json.dumps('Error trying to exchange an' +
+                                            ' authorization grant for an' +
+                                            ' access token.'),
+                                 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Check that the access token is valid.
+    access_token = credentials.access_token
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+           % access_token)
+    http = httplib2.Http()
+    result = json.loads(str(http.request(url, 'GET')[1], 'utf-8'))
+
+    # If there was an error in the access token info, abort.
+    if result.get('error') is not None:
+        response = make_response(json.dumps(result.get('error')),
+                                 500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is used for the intended user.
+    user_id = credentials.id_token['sub']
+    if result['user_id'] != user_id:
+        response = make_response(json.dumps("Token's user ID does not match" +
+                                            " given user ID."),
+                                 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
+    # Verify that the access token is valid for this app.
+    if result['issued_to'] != CLIENT_ID:
+        response = make_response(
+                       json.dumps("Token's client ID does not match app's."),
+                       401)
+        print("Token's client ID does not match app's.")
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    stored_access_token = login_session.get('access_token')
+    stored_user_id = login_session.get('user_id')
+    if stored_access_token is not None and user_id == stored_user_id:
+        response = make_response(
+                       json.dumps('Current user is already connected.'),
+                       200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
+    # Store the access token in the session for later use.
+    login_session['access_token'] = credentials.access_token
+    login_session['user_id'] = user_id
+
+    # Get user info
+    userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+    data = answer.json()
+
+    login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
+
+    output = ''
+    output += '<h1>Welcome, '
+    output += login_session['username']
+    output += '!</h1>'
+
+    output += '<img src="'
+    output += login_session['picture']
+    output += '" style="max-width: 325px; height: auto;">'
+
+    return output
 
 
 @app.route('/activities/<int:activity_id>/')
@@ -560,4 +683,5 @@ if __name__ == '__main__':
     app.logger.addHandler(file_handler)
 
     app.debug = True
+    app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
     app.run(host='0.0.0.0', port=5000)
