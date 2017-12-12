@@ -541,6 +541,50 @@ def google_connect():
     return output
 
 
+@app.route('/google.disconnect/')
+@entry_and_exit_logger
+def google_disconnect():
+    """Disconnect a login session that was setup with Google"""
+    access_token = flask.session.get('access_token')
+    if access_token is None:
+        app.logger.info('google_disconnect() - - MSG'
+                        '     [Access Token is None]')
+        response = flask.make_response(
+                     json.dumps('Current user not connected.'),
+                     401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    app.logger.info('google_disconnect() - - VARS'
+                    '    [Access Token: {}]'.format(access_token))
+    app.logger.info('google_disconnect() - - VARS'
+                    '    [User Name: {}]'.format(flask.session['username']))
+    url = 'https://accounts.google.com/o/oauth2/revoke?token={}'.format(
+            flask.session['access_token'])
+    http = httplib2.Http()
+    result = http.request(url, 'GET')[0]
+    app.logger.info('google_disconnect() - - VARS    [Result: {}]'.format(
+      result))
+
+    if result['status'] == '200':
+        del flask.session['access_token']
+        del flask.session['user_id']
+        del flask.session['username']
+        del flask.session['email']
+        del flask.session['picture']
+        response = flask.make_response(
+                     json.dumps('Successfully disconnected.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = flask.make_response(json.dumps(
+                     'Failed to revoke token for given user.',
+                     400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
 @app.route('/activities/<int:activity_id>/')
 @app.route('/activities/<int:activity_id>/events/')
 @entry_and_exit_logger
