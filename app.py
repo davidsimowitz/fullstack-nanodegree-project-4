@@ -606,6 +606,10 @@ def display_activity(activity_id):
 @entry_and_exit_logger
 def make_activity():
     """Create new Activity record in DB"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     if flask.request.method == 'POST':
         new_activity = models.Activity(name=flask.request.form['name'])
         db_session.add(new_activity)
@@ -621,6 +625,10 @@ def make_activity():
 @entry_and_exit_logger
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
 
@@ -641,6 +649,10 @@ def update_activity(activity_id):
 @entry_and_exit_logger
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
 
@@ -682,6 +694,10 @@ def display_event(activity_id, event_id):
 @entry_and_exit_logger
 def make_event(activity_id):
     """Create new Event record in DB"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id)
@@ -703,6 +719,10 @@ def make_event(activity_id):
 @entry_and_exit_logger
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
     event = db_session.query(models.Event).filter_by(
@@ -727,6 +747,10 @@ def update_event(activity_id, event_id):
 @entry_and_exit_logger
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
+    # User login required
+    if 'username' not in flask.session:
+        return flask.redirect('/login/')
+
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
     event = db_session.query(models.Event).filter_by(
