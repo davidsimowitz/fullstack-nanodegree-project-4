@@ -432,8 +432,13 @@ def user_login():
     """Create an anti-forgery state token and store it in the session"""
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     flask.session['state'] = state
+
+    if 'prelogin_page' not in flask.session:
+        flask.session['prelogin_page'] = '/'
+
     return flask.render_template('login.html',
-                                 STATE=state)
+                                 STATE=state,
+                                 redirect_to=flask.session['prelogin_page'])
 
 
 @app.route('/google.connect/', methods=['POST'])
@@ -572,6 +577,8 @@ def google_disconnect():
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
+        del flask.session['prelogin_page']
+
         response = flask.make_response(
                      json.dumps('Successfully disconnected.'),
                      200)
@@ -608,6 +615,8 @@ def make_activity():
     """Create new Activity record in DB"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for('make_activity')
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
@@ -627,6 +636,10 @@ def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'update_activity',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
@@ -651,6 +664,10 @@ def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'delete_activity',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
@@ -696,6 +713,10 @@ def make_event(activity_id):
     """Create new Event record in DB"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'make_event',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
@@ -721,6 +742,11 @@ def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'update_event',
+                                         activity_id=activity_id,
+                                         event_id=event_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
@@ -749,6 +775,11 @@ def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'delete_event',
+                                         activity_id=activity_id,
+                                         event_id=event_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
