@@ -7,6 +7,29 @@ import sys
 DB = 'postgresql:///events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
+class User(declarative_base):
+    """User object
+
+    A User represents a user login to create/modify events.
+
+    Attributes:
+        id: Integer primary key for the User record.
+        name: The name of the user.
+        email: The primary email of the user.
+        picture: An image associated with the user's login.
+
+    Dependencies:
+        sqlalchemy.Column
+        sqlalchemy.ext.declarative.declarative_base
+        sqlalchemy.Integer
+    """
+    __tablename__ = 'user'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    email = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    picture = sqlalchemy.Column(sqlalchemy.String(250))
+
 
 class Activity(declarative_base):
     """Activity object
