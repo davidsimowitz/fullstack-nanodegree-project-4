@@ -39,6 +39,7 @@ class Activity(declarative_base):
     Attributes:
         id: Integer primary key for the Activity record.
         name: The name of the Activity.
+        user_id: The id for the User record associated with this Activity.
 
     Dependencies:
         sqlalchemy.Column
@@ -50,6 +51,9 @@ class Activity(declarative_base):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey('user.id'))
+    user = sqlalchemy.orm.relationship(User)
 
 
 class Event(declarative_base):
@@ -66,6 +70,7 @@ class Event(declarative_base):
         _start_time: The time the event starts.
         end_date: The date the event ends.
         _end_time: The time the event ends.
+        user_id: The id for the User record associated with this event.
         activity_id: The id for the Activity record associated with this event.
 
     Dependencies:
@@ -87,6 +92,9 @@ class Event(declarative_base):
     _start_time = sqlalchemy.Column(sqlalchemy.Time)
     end_date = sqlalchemy.Column(sqlalchemy.Date)
     _end_time = sqlalchemy.Column(sqlalchemy.Time)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey('user.id'))
+    user = sqlalchemy.orm.relationship(User)
     activity_id = sqlalchemy.Column(sqlalchemy.Integer,
                                     sqlalchemy.ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
