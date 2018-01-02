@@ -494,8 +494,8 @@ def google_connect():
         return response
 
     # Verify that the access token is used for the intended user.
-    user_id = credentials.id_token['sub']
-    if result['user_id'] != user_id:
+    google_account_id = credentials.id_token['sub']
+    if result['user_id'] != google_account_id:
         response = flask.make_response(json.dumps("Token's user ID does not" +
                                                   " match given user ID."),
                                        401)
@@ -512,8 +512,8 @@ def google_connect():
         return response
 
     stored_access_token = flask.session.get('access_token')
-    stored_user_id = flask.session.get('user_id')
-    if stored_access_token is not None and user_id == stored_user_id:
+    stored_google_account_id = flask.session.get('google_account_id')
+    if stored_access_token is not None and google_account_id == stored_google_account_id:
         response = flask.make_response(
                        json.dumps('Current user is already connected.'),
                        200)
@@ -522,7 +522,7 @@ def google_connect():
 
     # Store the access token in the session for later use.
     flask.session['access_token'] = credentials.access_token
-    flask.session['user_id'] = user_id
+    flask.session['google_account_id'] = google_account_id
 
     # Get user info
     userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
@@ -533,6 +533,12 @@ def google_connect():
     flask.session['username'] = data['name']
     flask.session['picture'] = data['picture']
     flask.session['email'] = data['email']
+
+    # Add new user if not already in system
+    user_id = user_exists(user_email=flask.session['email'])
+    if not user_id:
+        user_id = make_user(session=flask.session)
+    flask.session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -573,7 +579,7 @@ def google_disconnect():
 
     if result['status'] == '200':
         del flask.session['access_token']
-        del flask.session['user_id']
+        del flask.session['google_account_id']
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
@@ -798,6 +804,71 @@ def delete_event(activity_id, event_id):
         return flask.render_template('delete-event.html',
                                      activity=activity,
                                      event=event)
+
+
+@entry_and_exit_logger
+def make_user(*, session):
+    """Create User object.
+
+    Create a new user and insert into DB. Return its id field.
+
+    Args:
+        session: flask session.
+
+    Returns:
+        The id field of the created User record.
+
+    Dependencies:
+        models.User
+        flask.session
+        sqlalchemy
+    """
+    new_user = models.User(name = session['username'],
+                           email = session['email'],
+                           picture = session['picture'])
+    db_session.add(new_user)
+    db_session.commit()
+    user = db_session.query(models.User).filter_by(email = session['email']).one()
+    return user.id
+
+
+@entry_and_exit_logger
+def get_user(*, user_id):
+    """Returns User object corresponding to the id passed to function.
+
+    Args:
+        user_id = id field corresponding to user record.
+
+    Returns:
+        User record matching the user_id.
+
+    Dependencies:
+        models.User
+        sqlalchemy
+    """
+    user = db_session.query(models.User).filter_by(id = user_id).one()
+    return user
+
+
+@entry_and_exit_logger
+def user_exists(*, user_email):
+    """If email matches a user record, returns its id field. Else, None.
+
+    Args:
+        user_email = email used to search for corresponding user record.
+
+    Returns:
+        id field from User record matching user_email. Else, None.
+
+    Dependencies:
+        models.User
+        sqlalchemy
+    """
+    try:
+        user = db_session.query(models.User).filter_by(email = user_email).one()
+        return user.id
+    except:
+        return None
 
 
 if __name__ == '__main__':
