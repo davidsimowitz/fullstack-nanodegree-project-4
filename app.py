@@ -810,43 +810,43 @@ def delete_event(activity_id, event_id):
 def make_user(*, session):
     """Create User object.
 
-    Create a new user and insert into DB. Return its id field.
+    Create a new user account and insert into DB. Return its id field.
 
     Args:
         session: flask session.
 
     Returns:
-        The id field of the created User record.
+        The id field of the created user account record.
 
     Dependencies:
-        models.User
+        models.UserAccount
         flask.session
         sqlalchemy
     """
-    new_user = models.User(name = session['username'],
-                           email = session['email'],
-                           picture = session['picture'])
+    new_user = models.UserAccount(name = session['username'],
+                                  email = session['email'],
+                                  picture = session['picture'])
     db_session.add(new_user)
     db_session.commit()
-    user = db_session.query(models.User).filter_by(email = session['email']).one()
+    user = db_session.query(models.UserAccount).filter_by(email = session['email']).one()
     return user.id
 
 
 @entry_and_exit_logger
 def get_user(*, user_id):
-    """Returns User object corresponding to the id passed to function.
+    """Returns user account object corresponding to the id passed to function.
 
     Args:
         user_id = id field corresponding to user record.
 
     Returns:
-        User record matching the user_id.
+        User account record matching the user_id.
 
     Dependencies:
-        models.User
+        models.UserAccount
         sqlalchemy
     """
-    user = db_session.query(models.User).filter_by(id = user_id).one()
+    user = db_session.query(models.UserAccount).filter_by(id = user_id).one()
     return user
 
 
@@ -858,14 +858,14 @@ def user_exists(*, user_email):
         user_email = email used to search for corresponding user record.
 
     Returns:
-        id field from User record matching user_email. Else, None.
+        id field from user account record matching user_email. Else, None.
 
     Dependencies:
-        models.User
+        models.UserAccount
         sqlalchemy
     """
     try:
-        user = db_session.query(models.User).filter_by(email = user_email).one()
+        user = db_session.query(models.UserAccount).filter_by(email = user_email).one()
         return user.id
     except:
         return None

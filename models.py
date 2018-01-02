@@ -7,23 +7,23 @@ import sys
 DB = 'postgresql:///events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
-class User(declarative_base):
-    """User object
+class UserAccount(declarative_base):
+    """User account object
 
-    A User represents a user login to create/modify events.
+    Represents a user login account to create/modify events.
 
     Attributes:
-        id: Integer primary key for the User record.
+        id: Integer primary key for the user account record.
         name: The name of the user.
         email: The primary email of the user.
-        picture: An image associated with the user's login.
+        picture: An image associated with the user account.
 
     Dependencies:
         sqlalchemy.Column
         sqlalchemy.ext.declarative.declarative_base
         sqlalchemy.Integer
     """
-    __tablename__ = 'user'
+    __tablename__ = 'user_account'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
@@ -34,12 +34,12 @@ class User(declarative_base):
 class Activity(declarative_base):
     """Activity object
 
-    An Activity represents a description used to categorize one or more Events.
+    An activity represents a description used to categorize one or more events.
 
     Attributes:
-        id: Integer primary key for the Activity record.
-        name: The name of the Activity.
-        user_id: The id for the User record associated with this Activity.
+        id: Integer primary key for the activity record.
+        name: The name of the activity.
+        user_id: The id for the user account record associated with this activity.
 
     Dependencies:
         sqlalchemy.Column
@@ -52,26 +52,26 @@ class Activity(declarative_base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey('user.id'))
-    user = sqlalchemy.orm.relationship(User)
+                                sqlalchemy.ForeignKey('user_account.id'))
+    user_account = sqlalchemy.orm.relationship(UserAccount)
 
 
 class Event(declarative_base):
     """Event object
 
-    An Event represents a planned occassion. Each Event is associated with the
-    Activity which best represents it.
+    An event represents a planned occassion. Each event is associated with the
+    activity which best represents it.
 
     Attributes:
-        id: Integer primary key for the Event record.
+        id: Integer primary key for the event record.
         name: The name of the event.
         description: The description of the event.
         start_date: The date the event starts.
         _start_time: The time the event starts.
         end_date: The date the event ends.
         _end_time: The time the event ends.
-        user_id: The id for the User record associated with this event.
-        activity_id: The id for the Activity record associated with this event.
+        user_id: The id for the user account record associated with this event.
+        activity_id: The id for the activity record associated with this event.
 
     Dependencies:
         sqlalchemy.Column
@@ -93,8 +93,8 @@ class Event(declarative_base):
     end_date = sqlalchemy.Column(sqlalchemy.Date)
     _end_time = sqlalchemy.Column(sqlalchemy.Time)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey('user.id'))
-    user = sqlalchemy.orm.relationship(User)
+                                sqlalchemy.ForeignKey('user_account.id'))
+    user_account = sqlalchemy.orm.relationship(UserAccount)
     activity_id = sqlalchemy.Column(sqlalchemy.Integer,
                                     sqlalchemy.ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
