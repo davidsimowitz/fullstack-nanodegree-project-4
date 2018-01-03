@@ -626,7 +626,8 @@ def make_activity():
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
-        new_activity = models.Activity(name=flask.request.form['name'])
+        new_activity = models.Activity(name=flask.request.form['name'],
+                                       user_id=user_exists(user_email=flask.session['email']))
         db_session.add(new_activity)
         db_session.commit()
 
@@ -650,6 +651,11 @@ def update_activity(activity_id):
 
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
+
+    # Activity can only be edited by its owner
+    if activity.user_id != user_exists(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity.id))
 
     if flask.request.method == 'POST':
         if flask.request.form['name']:
@@ -678,6 +684,11 @@ def delete_activity(activity_id):
 
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
+
+    # Activity can only be deleted by its owner
+    if activity.user_id != user_exists(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity.id))
 
     if flask.request.method == 'POST':
         events = db_session.query(models.Event).filter_by(
