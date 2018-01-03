@@ -432,8 +432,13 @@ def user_login():
     """Create an anti-forgery state token and store it in the session"""
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     flask.session['state'] = state
+
+    if 'prelogin_page' not in flask.session:
+        flask.session['prelogin_page'] = '/'
+
     return flask.render_template('login.html',
-                                 STATE=state)
+                                 STATE=state,
+                                 redirect_to=flask.session['prelogin_page'])
 
 
 @app.route('/google.connect/', methods=['POST'])
@@ -489,8 +494,8 @@ def google_connect():
         return response
 
     # Verify that the access token is used for the intended user.
-    user_id = credentials.id_token['sub']
-    if result['user_id'] != user_id:
+    google_account_id = credentials.id_token['sub']
+    if result['user_id'] != google_account_id:
         response = flask.make_response(json.dumps("Token's user ID does not" +
                                                   " match given user ID."),
                                        401)
@@ -507,8 +512,8 @@ def google_connect():
         return response
 
     stored_access_token = flask.session.get('access_token')
-    stored_user_id = flask.session.get('user_id')
-    if stored_access_token is not None and user_id == stored_user_id:
+    stored_google_account_id = flask.session.get('google_account_id')
+    if stored_access_token is not None and google_account_id == stored_google_account_id:
         response = flask.make_response(
                        json.dumps('Current user is already connected.'),
                        200)
@@ -517,7 +522,7 @@ def google_connect():
 
     # Store the access token in the session for later use.
     flask.session['access_token'] = credentials.access_token
-    flask.session['user_id'] = user_id
+    flask.session['google_account_id'] = google_account_id
 
     # Get user info
     userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
@@ -528,6 +533,12 @@ def google_connect():
     flask.session['username'] = data['name']
     flask.session['picture'] = data['picture']
     flask.session['email'] = data['email']
+
+    # Add new user if not already in system
+    user_id = get_user_id(user_email=flask.session['email'])
+    if not user_id:
+        user_id = make_user(session=flask.session)
+    flask.session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -568,10 +579,12 @@ def google_disconnect():
 
     if result['status'] == '200':
         del flask.session['access_token']
-        del flask.session['user_id']
+        del flask.session['google_account_id']
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
+        del flask.session['prelogin_page']
+
         response = flask.make_response(
                      json.dumps('Successfully disconnected.'),
                      200)
@@ -608,10 +621,13 @@ def make_activity():
     """Create new Activity record in DB"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for('make_activity')
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
-        new_activity = models.Activity(name=flask.request.form['name'])
+        new_activity = models.Activity(name=flask.request.form['name'],
+                                       user_id=get_user_id(user_email=flask.session['email']))
         db_session.add(new_activity)
         db_session.commit()
 
@@ -627,10 +643,19 @@ def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'update_activity',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
+
+    # Activity can only be edited by its owner
+    if activity.user_id != get_user_id(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity.id))
 
     if flask.request.method == 'POST':
         if flask.request.form['name']:
@@ -651,10 +676,19 @@ def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'delete_activity',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
                  id=activity_id).one()
+
+    # Activity can only be deleted by its owner
+    if activity.user_id != get_user_id(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_activity',
+                                            activity_id=activity.id))
 
     if flask.request.method == 'POST':
         events = db_session.query(models.Event).filter_by(
@@ -696,11 +730,16 @@ def make_event(activity_id):
     """Create new Event record in DB"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'make_event',
+                                         activity_id=activity_id)
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
-                                 activity_id=activity_id)
+                                 activity_id=activity_id,
+                                 user_id=get_user_id(user_email=flask.session['email']))
         new_event = set_event_fields(new_event)
         db_session.add(new_event)
         db_session.commit()
@@ -721,6 +760,11 @@ def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'update_event',
+                                         activity_id=activity_id,
+                                         event_id=event_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
@@ -728,6 +772,12 @@ def update_event(activity_id, event_id):
     event = db_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
+
+    # Event can only be edited by its owner
+    if event.user_id != get_user_id(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_event',
+                                            activity_id=activity.id,
+                                            event_id=event.id))
 
     if flask.request.method == 'POST':
         event = set_event_fields(event)
@@ -749,6 +799,11 @@ def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
     # User login required
     if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                         'delete_event',
+                                         activity_id=activity_id,
+                                         event_id=event_id)
         return flask.redirect('/login/')
 
     activity = db_session.query(models.Activity).filter_by(
@@ -756,6 +811,12 @@ def delete_event(activity_id, event_id):
     event = db_session.query(models.Event).filter_by(
               id=event_id,
               activity_id=activity_id).one()
+
+    # Event can only be deleted by its owner
+    if event.user_id != get_user_id(user_email=flask.session['email']):
+        return flask.redirect(flask.url_for('display_event',
+                                            activity_id=activity.id,
+                                            event_id=event.id))
 
     if flask.request.method == 'POST':
         db_session.delete(event)
@@ -767,6 +828,71 @@ def delete_event(activity_id, event_id):
         return flask.render_template('delete-event.html',
                                      activity=activity,
                                      event=event)
+
+
+@entry_and_exit_logger
+def make_user(*, session):
+    """Create User object.
+
+    Create a new user account and insert into DB. Return its id field.
+
+    Args:
+        session: flask session.
+
+    Returns:
+        The id field of the created user account record.
+
+    Dependencies:
+        models.UserAccount
+        flask.session
+        sqlalchemy
+    """
+    new_user = models.UserAccount(name = session['username'],
+                                  email = session['email'],
+                                  picture = session['picture'])
+    db_session.add(new_user)
+    db_session.commit()
+    user = db_session.query(models.UserAccount).filter_by(email = session['email']).one()
+    return user.id
+
+
+@entry_and_exit_logger
+def get_user(*, user_id):
+    """Returns user account object corresponding to the id passed to function.
+
+    Args:
+        user_id = id field corresponding to user record.
+
+    Returns:
+        User account record matching the user_id.
+
+    Dependencies:
+        models.UserAccount
+        sqlalchemy
+    """
+    user = db_session.query(models.UserAccount).filter_by(id = user_id).one()
+    return user
+
+
+@entry_and_exit_logger
+def get_user_id(*, user_email):
+    """If email matches a user record, returns its id field. Else, None.
+
+    Args:
+        user_email = email used to search for corresponding user record.
+
+    Returns:
+        id field from user account record matching user_email. Else, None.
+
+    Dependencies:
+        models.UserAccount
+        sqlalchemy
+    """
+    try:
+        user = db_session.query(models.UserAccount).filter_by(email = user_email).one()
+        return user.id
+    except:
+        return None
 
 
 if __name__ == '__main__':
