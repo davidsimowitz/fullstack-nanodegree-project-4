@@ -535,7 +535,7 @@ def google_connect():
     flask.session['email'] = data['email']
 
     # Add new user if not already in system
-    user_id = user_exists(user_email=flask.session['email'])
+    user_id = get_user_id(user_email=flask.session['email'])
     if not user_id:
         user_id = make_user(session=flask.session)
     flask.session['user_id'] = user_id
@@ -627,7 +627,7 @@ def make_activity():
 
     if flask.request.method == 'POST':
         new_activity = models.Activity(name=flask.request.form['name'],
-                                       user_id=user_exists(user_email=flask.session['email']))
+                                       user_id=get_user_id(user_email=flask.session['email']))
         db_session.add(new_activity)
         db_session.commit()
 
@@ -653,7 +653,7 @@ def update_activity(activity_id):
                  id=activity_id).one()
 
     # Activity can only be edited by its owner
-    if activity.user_id != user_exists(user_email=flask.session['email']):
+    if activity.user_id != get_user_id(user_email=flask.session['email']):
         return flask.redirect(flask.url_for('display_activity',
                                             activity_id=activity.id))
 
@@ -686,7 +686,7 @@ def delete_activity(activity_id):
                  id=activity_id).one()
 
     # Activity can only be deleted by its owner
-    if activity.user_id != user_exists(user_email=flask.session['email']):
+    if activity.user_id != get_user_id(user_email=flask.session['email']):
         return flask.redirect(flask.url_for('display_activity',
                                             activity_id=activity.id))
 
@@ -739,7 +739,7 @@ def make_event(activity_id):
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id,
-                                 user_id=user_exists(user_email=flask.session['email']))
+                                 user_id=get_user_id(user_email=flask.session['email']))
         new_event = set_event_fields(new_event)
         db_session.add(new_event)
         db_session.commit()
@@ -774,7 +774,7 @@ def update_event(activity_id, event_id):
               activity_id=activity_id).one()
 
     # Event can only be edited by its owner
-    if event.user_id != user_exists(user_email=flask.session['email']):
+    if event.user_id != get_user_id(user_email=flask.session['email']):
         return flask.redirect(flask.url_for('display_event',
                                             activity_id=activity.id,
                                             event_id=event.id))
@@ -813,7 +813,7 @@ def delete_event(activity_id, event_id):
               activity_id=activity_id).one()
 
     # Event can only be deleted by its owner
-    if event.user_id != user_exists(user_email=flask.session['email']):
+    if event.user_id != get_user_id(user_email=flask.session['email']):
         return flask.redirect(flask.url_for('display_event',
                                             activity_id=activity.id,
                                             event_id=event.id))
@@ -875,7 +875,7 @@ def get_user(*, user_id):
 
 
 @entry_and_exit_logger
-def user_exists(*, user_email):
+def get_user_id(*, user_email):
     """If email matches a user record, returns its id field. Else, None.
 
     Args:
