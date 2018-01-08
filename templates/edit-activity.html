@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html lang="en-US">
-
-  <head>
-    <meta charset="utf-8">
-  </head>
-
-  <body>
+  {% extends "base.html" %}
+  {% block content %}
 
     <header>
       <h1>Edit {{ activity.name }}</h1>
@@ -35,6 +29,4 @@
     <footer>
     </footer>
 
-  </body>
-
-</html>
+  {% endblock %}

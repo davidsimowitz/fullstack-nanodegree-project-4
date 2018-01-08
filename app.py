@@ -436,9 +436,13 @@ def user_login():
     if 'prelogin_page' not in flask.session:
         flask.session['prelogin_page'] = '/'
 
+    google_oauth_2_0 = ("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
+                      "//apis.google.com/js/platform.js?onload=start")
+
     return flask.render_template('login.html',
                                  STATE=state,
-                                 redirect_to=flask.session['prelogin_page'])
+                                 redirect_to=flask.session['prelogin_page'],
+                                 load_scripts=(google_oauth_2_0))
 
 
 @app.route('/google.connect/', methods=['POST'])

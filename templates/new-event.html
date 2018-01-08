@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html lang="en-US">
-
-  <head>
-    <meta charset="utf-8">
-  </head>
-
-  <body>
+  {% extends "base.html" %}
+  {% block content %}
 
     <header>
       <h1>Create {{ activity.name }} Event</h1>
@@ -66,6 +60,4 @@
     <footer>
     </footer>
 
-  </body>
-
-</html>
+  {% endblock %}
