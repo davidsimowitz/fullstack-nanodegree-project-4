@@ -718,6 +718,56 @@ def facebook_connect():
     return output
 
 
+@app.route('/facebook.disconnect/')
+@entry_and_exit_logger
+def facebook_disconnect():
+    """Disconnect a login session that was setup with Facebook"""
+    facebook_id = flask.session.get('facebook_id')
+    if facebook_id is None:
+        app.logger.info('facebook_disconnect() - - MSG'
+                        '     [Facebook ID is None]')
+        response = flask.make_response(
+                     json.dumps('Current user not connected.'),
+                     401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    app.logger.info('facebook_disconnect() - - VARS'
+                    '    [Facebook ID: {}]'.format(facebook_id))
+    app.logger.info('facebook_disconnect() - - VARS'
+                    '    [User Name: {}]'.format(flask.session['username']))
+
+    url = 'https://graph.facebook.com/{}/permissions?access_token={}'.format(
+            facebook_id,
+            flask.session['access_token'])
+    http = httplib2.Http()
+    result = json.loads(str(http.request(url, 'DELETE')[1], 'utf-8'))
+
+    app.logger.info('facebook_disconnect() - - VARS    [Result: {}]'.format(
+      result))
+
+    logged_out = result.get('success')
+    if logged_out:
+        del flask.session['access_token']
+        del flask.session['facebook_id']
+        del flask.session['username']
+        del flask.session['email']
+        del flask.session['picture']
+        del flask.session['prelogin_page']
+
+        response = flask.make_response(
+                     json.dumps('Successfully disconnected.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = flask.make_response(json.dumps(
+                     'Failed to revoke token for given user.',
+                     400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
 @app.route('/activities/<int:activity_id>/')
 @app.route('/activities/<int:activity_id>/events/')
 @entry_and_exit_logger
