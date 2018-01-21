@@ -445,6 +445,29 @@ def user_login():
                                  load_scripts=(google_oauth_2_0))
 
 
+@app.route('/logout/')
+@entry_and_exit_logger
+def user_logout():
+    """Logout user"""
+    try:
+        oauth_provider = flask.session['oauth_provider']
+        app.logger.info('user_logout() - - VARS'
+                        '     [Oauth Provider: {}]'.format(oauth_provider))
+    except:
+        app.logger.info('user_logout() - - MSG'
+                        '     [Error: Oauth provider not detected.]')
+        response = flask.make_response(
+                     json.dumps('Current user not logged in.'),
+                     401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        if oauth_provider == 'google':
+            return flask.redirect(flask.url_for('google_disconnect'))
+        elif oauth_provider == 'facebook':
+            return flask.redirect(flask.url_for('facebook_disconnect'))
+
+
 @app.route('/google.connect/', methods=['POST'])
 @entry_and_exit_logger
 def google_connect():
@@ -534,6 +557,7 @@ def google_connect():
     answer = requests.get(userinfo_url, params=params)
     data = answer.json()
 
+    flask.session['oauth_provider'] = 'google'
     flask.session['username'] = data['name']
     flask.session['picture'] = data['picture']
     flask.session['email'] = data['email']
@@ -582,6 +606,7 @@ def google_disconnect():
       result))
 
     if result['status'] == '200':
+        del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['google_account_id']
         del flask.session['username']
@@ -683,7 +708,7 @@ def facebook_connect():
                     '    [Facebook API Call: {}]'.format(result))
 
     data = json.loads(result)
-    flask.session['provider'] = 'facebook'
+    flask.session['oauth_provider'] = 'facebook'
     flask.session['username'] = data["name"]
     flask.session['email'] = data["email"]
     flask.session['facebook_id'] = data["id"]
@@ -748,6 +773,7 @@ def facebook_disconnect():
 
     logged_out = result.get('success')
     if logged_out:
+        del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['facebook_id']
         del flask.session['username']
