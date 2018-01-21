@@ -436,8 +436,9 @@ def user_login():
     if 'prelogin_page' not in flask.session:
         flask.session['prelogin_page'] = '/'
 
-    google_oauth_2_0 = ("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
-                      "//apis.google.com/js/platform.js?onload=start")
+    google_oauth_2_0 = (
+        "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
+        "//apis.google.com/js/platform.js?onload=start")
 
     return flask.render_template('login.html',
                                  STATE=state,
@@ -451,11 +452,13 @@ def user_logout():
     """Logout user"""
     try:
         oauth_provider = flask.session['oauth_provider']
-        app.logger.info('user_logout() - - VARS'
-                        '     [Oauth Provider: {}]'.format(oauth_provider))
+        app.logger.info(
+            ('user_logout() - - VARS'
+             '     [Oauth Provider: {}]'.format(oauth_provider)))
     except:
-        app.logger.info('user_logout() - - MSG'
-                        '     [Error: Oauth provider not detected.]')
+        app.logger.info(
+            ('user_logout() - - MSG'
+             '     [Error: Oauth provider not detected.]'))
         response = flask.make_response(
                      json.dumps('Current user not logged in.'),
                      401)
@@ -492,17 +495,19 @@ def google_connect():
         credentials = oauth_flow.step2_exchange(code)
     except oauth2client.client.InvalidClientSecretsError:
         # Format of ClientSecrets file is invalid.
-        response = flask.make_response(json.dumps('Format of ClientSecrets' +
-                                                  ' file is invalid.'),
-                                       401)
+        response = flask.make_response(
+                       json.dumps(('Format of ClientSecrets'
+                                   ' file is invalid.')),
+                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
     except oauth2client.client.FlowExchangeError:
         # Error trying to exchange an authorization grant for an access token.
-        response = flask.make_response(json.dumps('Error trying to exchange' +
-                                                  ' an authorization grant' +
-                                                  ' for an access token.'),
-                                       401)
+        response = flask.make_response(
+                       json.dumps(('Error trying to exchange'
+                                   ' an authorization grant'
+                                   ' for an access token.')),
+                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -515,17 +520,19 @@ def google_connect():
 
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
-        response = flask.make_response(json.dumps(result.get('error')),
-                                       500)
+        response = flask.make_response(
+                       json.dumps(result.get('error')),
+                       500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Verify that the access token is used for the intended user.
     google_account_id = credentials.id_token['sub']
     if result['user_id'] != google_account_id:
-        response = flask.make_response(json.dumps("Token's user ID does not" +
-                                                  " match given user ID."),
-                                       401)
+        response = flask.make_response(
+                       json.dumps(("Token's user ID does not"
+                                   " match given user ID.")),
+                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -540,7 +547,8 @@ def google_connect():
 
     stored_access_token = flask.session.get('access_token')
     stored_google_account_id = flask.session.get('google_account_id')
-    if stored_access_token is not None and google_account_id == stored_google_account_id:
+    if (stored_access_token is not None and
+            google_account_id == stored_google_account_id):
         response = flask.make_response(
                        json.dumps('Current user is already connected.'),
                        200)
@@ -586,24 +594,28 @@ def google_disconnect():
     """Disconnect a login session that was setup with Google"""
     access_token = flask.session.get('access_token')
     if access_token is None:
-        app.logger.info('google_disconnect() - - MSG'
-                        '     [Access Token is None]')
+        app.logger.info(
+            ('google_disconnect() - - MSG'
+             '     [Access Token is None]'))
         response = flask.make_response(
                      json.dumps('Current user not connected.'),
                      401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    app.logger.info('google_disconnect() - - VARS'
-                    '    [Access Token: {}]'.format(access_token))
-    app.logger.info('google_disconnect() - - VARS'
-                    '    [User Name: {}]'.format(flask.session['username']))
-    url = 'https://accounts.google.com/o/oauth2/revoke?token={}'.format(
-            flask.session['access_token'])
+    app.logger.info(
+        ('google_disconnect() - - VARS'
+         '    [Access Token: {}]'.format(access_token)))
+    app.logger.info(
+        ('google_disconnect() - - VARS'
+         '    [User Name: {}]'.format(flask.session['username'])))
+    url = ('https://accounts.google.com/o/oauth2/revoke?'
+           'token={}'.format(flask.session['access_token']))
     http = httplib2.Http()
     result = http.request(url, 'GET')[0]
-    app.logger.info('google_disconnect() - - VARS    [Result: {}]'.format(
-      result))
+    app.logger.info(
+        ('google_disconnect() - - VARS'
+         '    [Result: {}]'.format(result)))
 
     if result['status'] == '200':
         del flask.session['oauth_provider']
@@ -615,14 +627,14 @@ def google_disconnect():
         del flask.session['prelogin_page']
 
         response = flask.make_response(
-                     json.dumps('Successfully disconnected.'),
-                     200)
+                       json.dumps('Successfully disconnected.'),
+                       200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = flask.make_response(json.dumps(
-                     'Failed to revoke token for given user.',
-                     400))
+        response = flask.make_response(
+                       json.dumps('Failed to revoke token for given user.'),
+                       400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -641,44 +653,57 @@ def facebook_connect():
 
     # Obtain short-lived access token and decode from bytes
     access_token = str(flask.request.data, 'utf-8')
-    app.logger.info('facebook_connect() - - VARS'
-                    '    [Short-Lived Access Token: {}]'.format(access_token))
+    app.logger.info(
+        ('facebook_connect() - - VARS'
+         '    [Short-Lived Access Token: {}]'.format(access_token)))
 
     # Construct url to request long-lived token from Facebook
-    app_id = json.loads(open('fb_client_secret.json', 'r').read())['web']['app_id']
-    app_secret = json.loads(open('fb_client_secret.json','r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id={}&client_secret={}&fb_exchange_token={}'.format(app_id, app_secret, access_token)
-    app.logger.info('facebook_connect() - - VARS'
-                    '    [url: {}]'.format(url))
+    fb_client_secret = json.loads(open('fb_client_secret.json', 'r').read())
+    app_id = fb_client_secret['web']['app_id']
+    app_secret = fb_client_secret['web']['app_secret']
+    url = ('https://graph.facebook.com/oauth/access_token?'
+           'grant_type=fb_exchange_token&client_id={}&client_secret={}&'
+           'fb_exchange_token={}'.format(app_id, app_secret, access_token))
+    app.logger.info(
+        ('facebook_connect() - - VARS'
+         '    [url: {}]'.format(url)))
 
     try:
         # Request long-lived token from Facebook.
         http = httplib2.Http()
         http_response, http_content = http.request(url, 'GET')
-        app.logger.info('facebook_connect() - - VARS'
-                        '    [http.request.response: {}]'.format(http_response))
-        app.logger.info('facebook_connect() - - VARS'
-                        '    [http.request.content: {}]'.format(http_content))
+        app.logger.info(
+            ('facebook_connect() - - VARS'
+             '    [http.request.response: {}]'.format(http_response)))
+        app.logger.info(
+            ('facebook_connect() - - VARS'
+             '    [http.request.content: {}]'.format(http_content)))
 
         # Convert from bytes to str to Python object.
         result = json.loads(str(http_content, 'utf-8'))
-        app.logger.info('facebook_connect() - - VARS'
-                        '    [result: {}]'.format(result))
+        app.logger.info(
+            ('facebook_connect() - - VARS'
+             '    [result: {}]'.format(result)))
     except json.decoder.JSONDecodeError:
-        app.logger.error('facebook_connect() - - VARS'
-                         '    [JSONDecodeError: {}]'.format("Exception when converting http_content to Python object."))
-        response = flask.make_response(json.dumps('Format of ``str`` instance' +
-                                                  ' containing a JSON' +
-                                                  ' document is invalid.'),
-                                       401)
+        app.logger.error(
+            ('facebook_connect() - - VARS'
+             '    [JSONDecodeError: {}]'.format(("Exception when converting"
+                                                 " http_content to Python"
+                                                 " object."))))
+        response = flask.make_response(
+                       json.dumps(('Format of ``str`` instance containing'
+                                   ' a JSON document is invalid.')),
+                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
     except httplib2.RelativeURIError:
-        app.logger.error('facebook_connect() - - VARS'
-                         '    [RelativeURIError: {}]'.format("Format of Facebook exchange token URL is invalid."))
-        response = flask.make_response(json.dumps('Format of Facebook exchange token' +
-                                                  ' URL is invalid.'),
-                                       401)
+        app.logger.error(
+            ('facebook_connect() - - VARS'
+             '    [RelativeURIError: {}]'.format(("Format of Facebook exchange"
+                                                  " token URL is invalid."))))
+        response = flask.make_response(
+            json.dumps('Format of Facebook exchange token URL is invalid.'),
+            401)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
@@ -689,23 +714,27 @@ def facebook_connect():
             app.logger.info('facebook_connect() - - VARS'
                             '    [Token: {}]'.format(token))
         else:
-            # Error trying to exchange short-lived token for a long-lived token.
-            response = flask.make_response(json.dumps('Error trying to exchange' +
-                                                      ' a short-lived access token' +
-                                                      ' for a long-lived access token.'),
-                                           500)
+            # Error exchanging short-lived token for a long-lived token.
+            response = flask.make_response(
+                           json.dumps(('Error trying to exchange a'
+                                       ' short-lived access token for'
+                                       ' a long-lived access token.')),
+                           500)
             response.headers['Content-Type'] = 'application/json'
             return response
 
-    app.logger.info('facebook_connect() - - VARS'
-                    '    [Long-Lived Token: {}]'.format(token))
+    app.logger.info(
+        ('facebook_connect() - - VARS'
+         '    [Long-Lived Token: {}]'.format(token)))
 
     # Get user info
-    url = 'https://graph.facebook.com/v2.11/me?access_token=%s&fields=name,id,email' % token
+    url = ('https://graph.facebook.com/v2.11/me?'
+           'access_token=%s&fields=name,id,email' % token)
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
-    app.logger.info('facebook_connect() - - VARS'
-                    '    [Facebook API Call: {}]'.format(result))
+    app.logger.info(
+        ('facebook_connect() - - VARS'
+         '    [Facebook API Call: {}]'.format(result)))
 
     data = json.loads(result)
     flask.session['oauth_provider'] = 'facebook'
@@ -714,11 +743,13 @@ def facebook_connect():
     flask.session['facebook_id'] = data["id"]
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.11/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+    url = ('https://graph.facebook.com/v2.11/me/picture?'
+           'access_token=%s&redirect=0&height=200&width=200' % token)
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
-    app.logger.info('facebook_connect() - - VARS'
-                    '    [Facebook Picture: {}]'.format(result))
+    app.logger.info(
+        ('facebook_connect() - - VARS'
+         '    [Facebook Picture: {}]'.format(result)))
     data = json.loads(result)
     flask.session['picture'] = data["data"]["url"]
 
@@ -749,27 +780,31 @@ def facebook_disconnect():
     """Disconnect a login session that was setup with Facebook"""
     facebook_id = flask.session.get('facebook_id')
     if facebook_id is None:
-        app.logger.info('facebook_disconnect() - - MSG'
-                        '     [Facebook ID is None]')
+        app.logger.info(
+            ('facebook_disconnect() - - MSG'
+             '    [Facebook ID is None]'))
         response = flask.make_response(
-                     json.dumps('Current user not connected.'),
-                     401)
+                       json.dumps('Current user not connected.'),
+                       401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    app.logger.info('facebook_disconnect() - - VARS'
-                    '    [Facebook ID: {}]'.format(facebook_id))
-    app.logger.info('facebook_disconnect() - - VARS'
-                    '    [User Name: {}]'.format(flask.session['username']))
+    app.logger.info(
+        ('facebook_disconnect() - - VARS'
+         '    [Facebook ID: {}]'.format(facebook_id)))
+    app.logger.info(
+        ('facebook_disconnect() - - VARS'
+         '    [User Name: {}]'.format(flask.session['username'])))
 
-    url = 'https://graph.facebook.com/{}/permissions?access_token={}'.format(
-            facebook_id,
-            flask.session['access_token'])
+    url = ('https://graph.facebook.com/{}/permissions?'
+           'access_token={}'.format(facebook_id,
+                                    flask.session['access_token']))
     http = httplib2.Http()
     result = json.loads(str(http.request(url, 'DELETE')[1], 'utf-8'))
 
-    app.logger.info('facebook_disconnect() - - VARS    [Result: {}]'.format(
-      result))
+    app.logger.info(
+        ('facebook_disconnect() - - VARS'
+         '    [Result: {}]'.format(result)))
 
     logged_out = result.get('success')
     if logged_out:
@@ -787,9 +822,9 @@ def facebook_disconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = flask.make_response(json.dumps(
-                     'Failed to revoke token for given user.',
-                     400))
+        response = flask.make_response(
+                     json.dumps('Failed to revoke token for given user.'),
+                     400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -802,10 +837,12 @@ def display_activity(activity_id):
 
     Display Activity and list all Event records corresponding to it.
     """
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
-    events = db_session.query(models.Event).filter_by(
-               activity_id=activity_id).all()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
+    events = db_session.query(models.Event) \
+                       .filter_by(activity_id=activity_id) \
+                       .all()
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events)
@@ -822,13 +859,17 @@ def make_activity():
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
-        new_activity = models.Activity(name=flask.request.form['name'],
-                                       user_id=get_user_id(user_email=flask.session['email']))
+        new_activity = models.Activity(
+                           name=flask.request.form['name'],
+                           user_id=get_user_id(
+                                       user_email=flask.session['email']))
         db_session.add(new_activity)
         db_session.commit()
 
-        return flask.redirect(flask.url_for('display_activity',
-                                            activity_id=new_activity.id))
+        return flask.redirect(
+                   flask.url_for(
+                       'display_activity',
+                       activity_id=new_activity.id))
     else:
         return flask.render_template('new-activity.html')
 
@@ -841,17 +882,19 @@ def update_activity(activity_id):
     if 'username' not in flask.session:
         # Store current page to redirect back to after login
         flask.session['prelogin_page'] = flask.url_for(
-                                         'update_activity',
-                                         activity_id=activity_id)
+                                             'update_activity',
+                                             activity_id=activity_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
 
     # Activity can only be edited by its owner
     if activity.user_id != get_user_id(user_email=flask.session['email']):
-        return flask.redirect(flask.url_for('display_activity',
-                                            activity_id=activity.id))
+        return flask.redirect(
+                   flask.url_for('display_activity',
+                                 activity_id=activity.id))
 
     if flask.request.method == 'POST':
         if flask.request.form['name']:
@@ -859,8 +902,9 @@ def update_activity(activity_id):
         db_session.add(activity)
         db_session.commit()
 
-        return flask.redirect(flask.url_for('display_activity',
-                                            activity_id=activity.id))
+        return flask.redirect(
+                   flask.url_for('display_activity',
+                                 activity_id=activity.id))
     else:
         return flask.render_template('edit-activity.html',
                                      activity=activity)
@@ -874,31 +918,35 @@ def delete_activity(activity_id):
     if 'username' not in flask.session:
         # Store current page to redirect back to after login
         flask.session['prelogin_page'] = flask.url_for(
-                                         'delete_activity',
-                                         activity_id=activity_id)
+                                             'delete_activity',
+                                             activity_id=activity_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
 
     # Activity can only be deleted by its owner
     if activity.user_id != get_user_id(user_email=flask.session['email']):
-        return flask.redirect(flask.url_for('display_activity',
-                                            activity_id=activity.id))
+        return flask.redirect(
+                   flask.url_for('display_activity',
+                                 activity_id=activity.id))
 
     if flask.request.method == 'POST':
-        events = db_session.query(models.Event).filter_by(
-                   activity_id=activity_id).all()
+        events = db_session.query(models.Event) \
+                           .filter_by(activity_id=activity_id) \
+                           .all()
         if events:
-            error_msg = 'Activity cannot be deleted, events ' \
-                        'are associated with this activity.'
+            error_msg = ('Activity cannot be deleted, events '
+                         'are associated with this activity.')
             return flask.render_template('delete-activity.html',
                                          activity=activity,
                                          error_msg=error_msg)
         else:
             db_session.delete(activity)
             db_session.commit()
-            return flask.redirect(flask.url_for('display_activities'))
+            return flask.redirect(
+                       flask.url_for('display_activities'))
 
     else:
         return flask.render_template('delete-activity.html',
@@ -909,11 +957,13 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
-    event = db_session.query(models.Event).filter_by(
-              id=event_id,
-              activity_id=activity_id).one()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
+    event = db_session.query(models.Event) \
+                      .filter_by(id=event_id,
+                                 activity_id=activity_id) \
+                      .one()
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event)
@@ -928,23 +978,28 @@ def make_event(activity_id):
     if 'username' not in flask.session:
         # Store current page to redirect back to after login
         flask.session['prelogin_page'] = flask.url_for(
-                                         'make_event',
-                                         activity_id=activity_id)
+                                             'make_event',
+                                             activity_id=activity_id)
         return flask.redirect('/login/')
 
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id,
-                                 user_id=get_user_id(user_email=flask.session['email']))
+                                 user_id=get_user_id(
+                                             user_email=flask.session['email']
+                                         )
+                                 )
         new_event = set_event_fields(new_event)
         db_session.add(new_event)
         db_session.commit()
-        return flask.redirect(flask.url_for('display_event',
-                                            activity_id=activity_id,
-                                            event_id=new_event.id))
+        return flask.redirect(
+                   flask.url_for('display_event',
+                                 activity_id=activity_id,
+                                 event_id=new_event.id))
     else:
-        activity = db_session.query(models.Activity).filter_by(
-                     id=activity_id).one()
+        activity = db_session.query(models.Activity) \
+                             .filter_by(id=activity_id) \
+                             .one()
         return flask.render_template('new-event.html',
                                      activity=activity)
 
@@ -958,30 +1013,34 @@ def update_event(activity_id, event_id):
     if 'username' not in flask.session:
         # Store current page to redirect back to after login
         flask.session['prelogin_page'] = flask.url_for(
-                                         'update_event',
-                                         activity_id=activity_id,
-                                         event_id=event_id)
+                                             'update_event',
+                                             activity_id=activity_id,
+                                             event_id=event_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
-    event = db_session.query(models.Event).filter_by(
-              id=event_id,
-              activity_id=activity_id).one()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
+    event = db_session.query(models.Event) \
+                      .filter_by(id=event_id,
+                                 activity_id=activity_id) \
+                      .one()
 
     # Event can only be edited by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
-        return flask.redirect(flask.url_for('display_event',
-                                            activity_id=activity.id,
-                                            event_id=event.id))
+        return flask.redirect(
+                   flask.url_for('display_event',
+                                 activity_id=activity.id,
+                                 event_id=event.id))
 
     if flask.request.method == 'POST':
         event = set_event_fields(event)
         db_session.add(event)
         db_session.commit()
-        return flask.redirect(flask.url_for('display_event',
-                                            activity_id=activity_id,
-                                            event_id=event.id))
+        return flask.redirect(
+                   flask.url_for('display_event',
+                                 activity_id=activity_id,
+                                 event_id=event.id))
     else:
         return flask.render_template('edit-event.html',
                                      activity=activity,
@@ -997,28 +1056,32 @@ def delete_event(activity_id, event_id):
     if 'username' not in flask.session:
         # Store current page to redirect back to after login
         flask.session['prelogin_page'] = flask.url_for(
-                                         'delete_event',
-                                         activity_id=activity_id,
-                                         event_id=event_id)
+                                             'delete_event',
+                                             activity_id=activity_id,
+                                             event_id=event_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity).filter_by(
-                 id=activity_id).one()
-    event = db_session.query(models.Event).filter_by(
-              id=event_id,
-              activity_id=activity_id).one()
+    activity = db_session.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
+    event = db_session.query(models.Event) \
+                      .filter_by(id=event_id,
+                                 activity_id=activity_id) \
+                      .one()
 
     # Event can only be deleted by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
-        return flask.redirect(flask.url_for('display_event',
-                                            activity_id=activity.id,
-                                            event_id=event.id))
+        return flask.redirect(
+                   flask.url_for('display_event',
+                                 activity_id=activity.id,
+                                 event_id=event.id))
 
     if flask.request.method == 'POST':
         db_session.delete(event)
         db_session.commit()
-        return flask.redirect(flask.url_for('display_activity',
-                                            activity_id=activity_id))
+        return flask.redirect(
+                   flask.url_for('display_activity',
+                                 activity_id=activity_id))
 
     else:
         return flask.render_template('delete-event.html',
@@ -1043,12 +1106,14 @@ def make_user(*, session):
         flask.session
         sqlalchemy
     """
-    new_user = models.UserAccount(name = session['username'],
-                                  email = session['email'],
-                                  picture = session['picture'])
+    new_user = models.UserAccount(name=session['username'],
+                                  email=session['email'],
+                                  picture=session['picture'])
     db_session.add(new_user)
     db_session.commit()
-    user = db_session.query(models.UserAccount).filter_by(email = session['email']).one()
+    user = db_session.query(models.UserAccount) \
+                     .filter_by(email=session['email']) \
+                     .one()
     return user.id
 
 
@@ -1066,7 +1131,9 @@ def get_user(*, user_id):
         models.UserAccount
         sqlalchemy
     """
-    user = db_session.query(models.UserAccount).filter_by(id = user_id).one()
+    user = db_session.query(models.UserAccount) \
+                     .filter_by(id=user_id) \
+                     .one()
     return user
 
 
@@ -1085,7 +1152,9 @@ def get_user_id(*, user_email):
         sqlalchemy
     """
     try:
-        user = db_session.query(models.UserAccount).filter_by(email = user_email).one()
+        user = db_session.query(models.UserAccount) \
+                         .filter_by(email=user_email) \
+                         .one()
         return user.id
     except:
         return None
@@ -1104,8 +1173,9 @@ if __name__ == '__main__':
 #    app.logger.addHandler(file_handler)
 
     screen_handler = logging.StreamHandler()
-    screen_formatter = logging.Formatter('{levelname:9} {name:10} {message}',
-                                         style='{')
+    screen_formatter = logging.Formatter(
+                           '{levelname:9} {name:10} {message}',
+                           style='{')
     screen_handler.setFormatter(screen_formatter)
     screen_handler.setLevel(logging.DEBUG)
     app.logger.addHandler(screen_handler)
