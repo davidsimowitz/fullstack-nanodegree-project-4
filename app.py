@@ -445,6 +445,29 @@ def user_login():
                                  load_scripts=(google_oauth_2_0))
 
 
+@app.route('/logout/')
+@entry_and_exit_logger
+def user_logout():
+    """Logout user"""
+    try:
+        oauth_provider = flask.session['oauth_provider']
+        app.logger.info('user_logout() - - VARS'
+                        '     [Oauth Provider: {}]'.format(oauth_provider))
+    except:
+        app.logger.info('user_logout() - - MSG'
+                        '     [Error: Oauth provider not detected.]')
+        response = flask.make_response(
+                     json.dumps('Current user not logged in.'),
+                     401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        if oauth_provider == 'google':
+            return flask.redirect(flask.url_for('google_disconnect'))
+        elif oauth_provider == 'facebook':
+            return flask.redirect(flask.url_for('facebook_disconnect'))
+
+
 @app.route('/google.connect/', methods=['POST'])
 @entry_and_exit_logger
 def google_connect():
@@ -534,6 +557,7 @@ def google_connect():
     answer = requests.get(userinfo_url, params=params)
     data = answer.json()
 
+    flask.session['oauth_provider'] = 'google'
     flask.session['username'] = data['name']
     flask.session['picture'] = data['picture']
     flask.session['email'] = data['email']
@@ -582,8 +606,176 @@ def google_disconnect():
       result))
 
     if result['status'] == '200':
+        del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['google_account_id']
+        del flask.session['username']
+        del flask.session['email']
+        del flask.session['picture']
+        del flask.session['prelogin_page']
+
+        response = flask.make_response(
+                     json.dumps('Successfully disconnected.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = flask.make_response(json.dumps(
+                     'Failed to revoke token for given user.',
+                     400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
+@app.route('/facebook.connect/', methods=['POST'])
+@entry_and_exit_logger
+def facebook_connect():
+    """OAuth via Facebook"""
+    # Validate state token
+    if flask.request.args.get('state') != flask.session['state']:
+        response = flask.make_response(
+                       json.dumps('Invalid state parameter'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Obtain short-lived access token and decode from bytes
+    access_token = str(flask.request.data, 'utf-8')
+    app.logger.info('facebook_connect() - - VARS'
+                    '    [Short-Lived Access Token: {}]'.format(access_token))
+
+    # Construct url to request long-lived token from Facebook
+    app_id = json.loads(open('fb_client_secret.json', 'r').read())['web']['app_id']
+    app_secret = json.loads(open('fb_client_secret.json','r').read())['web']['app_secret']
+    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id={}&client_secret={}&fb_exchange_token={}'.format(app_id, app_secret, access_token)
+    app.logger.info('facebook_connect() - - VARS'
+                    '    [url: {}]'.format(url))
+
+    try:
+        # Request long-lived token from Facebook.
+        http = httplib2.Http()
+        http_response, http_content = http.request(url, 'GET')
+        app.logger.info('facebook_connect() - - VARS'
+                        '    [http.request.response: {}]'.format(http_response))
+        app.logger.info('facebook_connect() - - VARS'
+                        '    [http.request.content: {}]'.format(http_content))
+
+        # Convert from bytes to str to Python object.
+        result = json.loads(str(http_content, 'utf-8'))
+        app.logger.info('facebook_connect() - - VARS'
+                        '    [result: {}]'.format(result))
+    except json.decoder.JSONDecodeError:
+        app.logger.error('facebook_connect() - - VARS'
+                         '    [JSONDecodeError: {}]'.format("Exception when converting http_content to Python object."))
+        response = flask.make_response(json.dumps('Format of ``str`` instance' +
+                                                  ' containing a JSON' +
+                                                  ' document is invalid.'),
+                                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    except httplib2.RelativeURIError:
+        app.logger.error('facebook_connect() - - VARS'
+                         '    [RelativeURIError: {}]'.format("Format of Facebook exchange token URL is invalid."))
+        response = flask.make_response(json.dumps('Format of Facebook exchange token' +
+                                                  ' URL is invalid.'),
+                                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        app.logger.info('facebook_connect() - - VARS'
+                        '    [Facebook Reply: {}]'.format(result))
+        if result.get('access_token'):
+            token = result['access_token']
+            app.logger.info('facebook_connect() - - VARS'
+                            '    [Token: {}]'.format(token))
+        else:
+            # Error trying to exchange short-lived token for a long-lived token.
+            response = flask.make_response(json.dumps('Error trying to exchange' +
+                                                      ' a short-lived access token' +
+                                                      ' for a long-lived access token.'),
+                                           500)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
+    app.logger.info('facebook_connect() - - VARS'
+                    '    [Long-Lived Token: {}]'.format(token))
+
+    # Get user info
+    url = 'https://graph.facebook.com/v2.11/me?access_token=%s&fields=name,id,email' % token
+    http = httplib2.Http()
+    result = str(http.request(url, 'GET')[1], 'utf-8')
+    app.logger.info('facebook_connect() - - VARS'
+                    '    [Facebook API Call: {}]'.format(result))
+
+    data = json.loads(result)
+    flask.session['oauth_provider'] = 'facebook'
+    flask.session['username'] = data["name"]
+    flask.session['email'] = data["email"]
+    flask.session['facebook_id'] = data["id"]
+
+    # Get user picture
+    url = 'https://graph.facebook.com/v2.11/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+    http = httplib2.Http()
+    result = str(http.request(url, 'GET')[1], 'utf-8')
+    app.logger.info('facebook_connect() - - VARS'
+                    '    [Facebook Picture: {}]'.format(result))
+    data = json.loads(result)
+    flask.session['picture'] = data["data"]["url"]
+
+    # The token must be stored in the login_session in order to properly logout
+    flask.session['access_token'] = token
+
+    # Add new user if not already in system
+    user_id = get_user_id(user_email=flask.session['email'])
+    if not user_id:
+        user_id = make_user(session=flask.session)
+    flask.session['user_id'] = user_id
+
+    output = ''
+    output += '<h1>Welcome, '
+    output += flask.session['username']
+    output += '!</h1>'
+
+    output += '<img src="'
+    output += flask.session['picture']
+    output += '" style="max-width: 325px; height: auto;">'
+
+    return output
+
+
+@app.route('/facebook.disconnect/')
+@entry_and_exit_logger
+def facebook_disconnect():
+    """Disconnect a login session that was setup with Facebook"""
+    facebook_id = flask.session.get('facebook_id')
+    if facebook_id is None:
+        app.logger.info('facebook_disconnect() - - MSG'
+                        '     [Facebook ID is None]')
+        response = flask.make_response(
+                     json.dumps('Current user not connected.'),
+                     401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    app.logger.info('facebook_disconnect() - - VARS'
+                    '    [Facebook ID: {}]'.format(facebook_id))
+    app.logger.info('facebook_disconnect() - - VARS'
+                    '    [User Name: {}]'.format(flask.session['username']))
+
+    url = 'https://graph.facebook.com/{}/permissions?access_token={}'.format(
+            facebook_id,
+            flask.session['access_token'])
+    http = httplib2.Http()
+    result = json.loads(str(http.request(url, 'DELETE')[1], 'utf-8'))
+
+    app.logger.info('facebook_disconnect() - - VARS    [Result: {}]'.format(
+      result))
+
+    logged_out = result.get('success')
+    if logged_out:
+        del flask.session['oauth_provider']
+        del flask.session['access_token']
+        del flask.session['facebook_id']
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
