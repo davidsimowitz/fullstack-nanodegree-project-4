@@ -513,8 +513,8 @@ def google_connect():
 
     # Check that the access token is valid.
     access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-           % access_token)
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?'
+           'access_token={}'.format(access_token))
     http = httplib2.Http()
     result = json.loads(str(http.request(url, 'GET')[1], 'utf-8'))
 
@@ -729,7 +729,7 @@ def facebook_connect():
 
     # Get user info
     url = ('https://graph.facebook.com/v2.11/me?'
-           'access_token=%s&fields=name,id,email' % token)
+           'access_token={}&fields=name,id,email'.format(token))
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
     app.logger.info(
@@ -744,7 +744,7 @@ def facebook_connect():
 
     # Get user picture
     url = ('https://graph.facebook.com/v2.11/me/picture?'
-           'access_token=%s&redirect=0&height=200&width=200' % token)
+           'access_token={}&redirect=0&height=200&width=200'.format(token))
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
     app.logger.info(
