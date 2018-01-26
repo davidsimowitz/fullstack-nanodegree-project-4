@@ -471,17 +471,27 @@ def user_logout():
             return flask.redirect(flask.url_for('facebook_disconnect'))
 
 
-@app.route('/google.connect/', methods=['POST'])
-@entry_and_exit_logger
-def google_connect():
-    """OAuth via Google"""
+def validate_state_token(*, session=flask.session):
+    """Authenticate a session's state token"""
     # Validate state token
     if flask.request.args.get('state') != flask.session['state']:
         response = flask.make_response(
                        json.dumps('Invalid state parameter'),
                        401)
         response.headers['Content-Type'] = 'application/json'
+        return (False, response)
+    else:
+        return (True, None)
+
+
+@app.route('/google.connect/', methods=['POST'])
+@entry_and_exit_logger
+def google_connect():
+    """OAuth via Google"""
+    validated, response = validate_state_token()
+    if not validated:
         return response
+
     # Obtain authorization code
     code = flask.request.data
 
@@ -643,12 +653,8 @@ def google_disconnect():
 @entry_and_exit_logger
 def facebook_connect():
     """OAuth via Facebook"""
-    # Validate state token
-    if flask.request.args.get('state') != flask.session['state']:
-        response = flask.make_response(
-                       json.dumps('Invalid state parameter'),
-                       401)
-        response.headers['Content-Type'] = 'application/json'
+    validated, response = validate_state_token()
+    if not validated:
         return response
 
     # Obtain short-lived access token and decode from bytes
