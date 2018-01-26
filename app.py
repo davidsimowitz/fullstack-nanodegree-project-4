@@ -1165,8 +1165,8 @@ def activities_endpoint():
     for activity in db_session.query(models.Activity).all():
         activity = activity.serialize
         activity['events'] = [event.serialize for event in
-                              db_session.query(models.Event) \
-                                        .filter_by(activity_id=activity['id']) \
+                              db_session.query(models.Event)
+                                        .filter_by(activity_id=activity['id'])
                                         .all()]
         activities.append(activity)
 
@@ -1182,8 +1182,8 @@ def activity_endpoint(activity_id):
                          .one()
     activity = activity.serialize
     activity['events'] = [event.serialize for event in
-                          db_session.query(models.Event) \
-                                    .filter_by(activity_id=activity_id) \
+                          db_session.query(models.Event)
+                                    .filter_by(activity_id=activity_id)
                                     .all()]
     return flask.jsonify(activity)
 
