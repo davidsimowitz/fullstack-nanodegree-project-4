@@ -55,6 +55,14 @@ class Activity(declarative_base):
                                 sqlalchemy.ForeignKey('user_account.id'))
     user_account = sqlalchemy.orm.relationship(UserAccount)
 
+    @property
+    def serialize(self):
+        """Return Activity record in a serializable format"""
+        return {
+                'name': self.name,
+                'id': self.id,
+               }
+
 
 class Event(declarative_base):
     """Event object
@@ -98,6 +106,19 @@ class Event(declarative_base):
     activity_id = sqlalchemy.Column(sqlalchemy.Integer,
                                     sqlalchemy.ForeignKey('activity.id'))
     activity = sqlalchemy.orm.relationship(Activity)
+
+    @property
+    def serialize(self):
+        """Return Event record in a serializable format"""
+        return {
+                'name': self.name,
+                'id': self.id,
+                'description': self.description,
+                'start date': self.start_date,
+                'start time': self.start_time_12_hour_notation,
+                'end date': self.end_date,
+                'end time': self.end_time_12_hour_notation,
+               }
 
     @property
     def start_time(self):
