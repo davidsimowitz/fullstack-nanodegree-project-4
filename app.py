@@ -1170,32 +1170,62 @@ def activities_endpoint():
                                         .all()]
         activities.append(activity)
 
-    return flask.jsonify(activities)
+    if activities:
+        return flask.jsonify(activities)
+
+    else:
+        app.logger.error(
+            ('activities_endpoint() - -'
+             '    [NO Activities FOUND]'))
+        return flask.jsonify({
+                              'status': 404,
+                              'error': 'No Activities found',
+                             })
 
 
 @app.route('/activities/<int:activity_id>/events/JSON/')
 @entry_and_exit_logger
 def activity_endpoint(activity_id):
     """Returns a JSON endpoint for an activity"""
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
-    activity = activity.serialize
-    activity['events'] = [event.serialize for event in
-                          db_session.query(models.Event)
-                                    .filter_by(activity_id=activity_id)
-                                    .all()]
-    return flask.jsonify(activity)
+    try:
+        activity = db_session.query(models.Activity) \
+                             .filter_by(id=activity_id) \
+                             .one()
+    except:
+        app.logger.error(
+            ('activity_endpoint() - -'
+             '    [NOT FOUND: activity_id={}]'.format(activity_id)))
+        return flask.jsonify({
+                              'status': 404,
+                              'error': 'Activity not found',
+                             })
+    else:
+        activity = activity.serialize
+        activity['events'] = [event.serialize for event in
+                              db_session.query(models.Event)
+                                        .filter_by(activity_id=activity_id)
+                                        .all()]
+        return flask.jsonify(activity)
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/JSON/')
 @entry_and_exit_logger
 def event_endpoint(activity_id, event_id):
     """Returns a JSON endpoint for an event"""
-    event = db_session.query(models.Event) \
-                      .filter_by(id=event_id) \
-                      .one()
-    return flask.jsonify(event.serialize)
+    try:
+        event = db_session.query(models.Event) \
+                          .filter_by(id=event_id) \
+                          .one()
+    except:
+        app.logger.error(
+            ('event_endpoint() - -'
+             '    [NOT FOUND: event_id={}]'.format(event_id)))
+        return flask.jsonify({
+                              'status': 404,
+                              'error': 'Event not found',
+                             })
+    else:
+        return flask.jsonify(event.serialize)
 
 
 if __name__ == '__main__':
