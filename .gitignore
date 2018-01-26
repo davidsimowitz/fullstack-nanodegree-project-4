@@ -4,4 +4,4 @@ __pycache__/
 *$py.class
 
 # Private
-client_secret.json
+*client_secret.json
