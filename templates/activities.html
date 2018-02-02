@@ -1,30 +1,27 @@
-    {% extends "base.html" %}
-    {% include "login-menu.html" %}
-    {% block content %}
+{% extends "base.html" %}
+{% include "login-menu.html" %}
+{% block content %}
 
-        <div>
-          <a href="{{url_for('make_activity')}}">
-              <h1>add a new activity</h1>
-          </a>
-        </div>
+  <div>
+    <a href="{{url_for('make_activity')}}">
+      <h1>add a new activity</h1>
+    </a>
+  </div>
 
-        {% for activity in activities %}
+  {% for activity in activities %}
+  <section>
+    <div>
+      <p>{{ activity.id }}</p>
+    </div>
+    <div>
+      <p>{{ activity.name }}</p>
+    </div>
+    <div>
+      <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+        <p>view events</p>
+      </a>
+    </div>
+  </section>
+  {% endfor %}
 
-        <section>
-          <div>
-            <p>{{ activity.id }}</p>
-          </div>
-          <div>
-            <p>{{ activity.name }}</p>
-          </div>
-
-          <div>
-            <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-              <p>view events</p>
-            </a>
-          </div>
-        </section>
-
-        {% endfor %}
-
-    {% endblock %}
+{% endblock %}
