@@ -3,13 +3,10 @@
 
   <head>
     <meta charset="utf-8">
-
     {% if load_scripts %}
-
       {% for script in load_scripts %}
-    <script src="{{ script }}"></script>
+      <script src="{{ script }}"></script>
       {% endfor %}
-
     {% endif %}
 
   </head>
