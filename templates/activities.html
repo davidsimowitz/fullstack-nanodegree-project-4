@@ -2,6 +2,11 @@
 {% include "login-menu.html" %}
 {% block content %}
 
+<header class="container">
+  <h1>Coordinate</h1>
+</header>
+
+<main>
   <div>
     <a href="{{url_for('make_activity')}}">
       <h1>add a new activity</h1>
@@ -23,5 +28,13 @@
     </div>
   </section>
   {% endfor %}
+
+</main>
+
+<footer>
+  <div>
+    <h6>© 2018 David Simowitz</h6>
+  <div>
+</footer>
 
 {% endblock %}
