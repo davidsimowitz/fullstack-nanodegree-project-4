@@ -7,3 +7,7 @@ html {
 *::after {
   box-sizing: inherit;
 }
+
+body {
+  font-family: arial, sans-serif;
+}
