@@ -9,6 +9,7 @@ html {
 }
 
 body {
+  background-color: rgb(249, 237, 241);
   font-family: arial, sans-serif;
   margin: 0;
 }
@@ -22,16 +23,19 @@ header {
 }
 
 .header-bar-top {
+  background-color: hsl(231, 100%, 46%);
   grid-column: 1 / -1;
   grid-row: 1 / 4;
 }
 
 .header-bar-mid {
+  background-color: hsl(231, 92%, 58%);
   grid-column: 1 / -1;
   grid-row: 4 / 11;
 }
 
 .header-bar-bot {
+  background-color: hsl(231, 100%, 52%);
   grid-column: 1 / -1;
   grid-row: 11 / 16;
 }
