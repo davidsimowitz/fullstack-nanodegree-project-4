@@ -11,3 +11,31 @@ html {
 body {
   font-family: arial, sans-serif;
 }
+
+/* Header */
+
+header {
+  display: grid;
+  grid-template-columns: minmax(1vw, 1fr) repeat(8, minmax(40px, 100px)) minmax(1vw, 1fr);
+  grid-template-rows: repeat(15, minmax(10px, 2.2vh));
+}
+
+.header-bar-top {
+  grid-column: 1 / -1;
+  grid-row: 1 / 4;
+}
+
+.header-bar-mid {
+  grid-column: 1 / -1;
+  grid-row: 4 / 11;
+}
+
+.header-bar-bot {
+  grid-column: 1 / -1;
+  grid-row: 11 / 16;
+}
+
+.title {
+  grid-column: 3 / 9;
+  grid-row: 3 / 12;
+}
