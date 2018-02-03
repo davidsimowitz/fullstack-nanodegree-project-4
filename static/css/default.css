@@ -40,6 +40,15 @@ header {
   grid-row: 11 / 16;
 }
 
+.login-button {
+  align-self: center;
+  color: hsl(231, 100%, 90%);
+  font-weight: bold;
+  grid-column: 8 / 10;
+  grid-row: 1 / 4;
+  justify-self: left;
+}
+
 .title {
   grid-column: 3 / 9;
   grid-row: 3 / 12;
