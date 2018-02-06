@@ -63,3 +63,11 @@ header {
   width: 100%;
   justify-self: start;
 }
+
+.menu-button {
+  align-self: end;
+  color: hsl(231, 100%, 90%);
+  font: bold 21px arial, sans-serif;
+  grid-column: 2 / 3;
+  grid-row: 9 / 15;
+}
