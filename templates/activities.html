@@ -11,27 +11,23 @@
 </header>
 
 <main>
-  <div>
-    <a href="{{url_for('make_activity')}}">
-      <h1>add a new activity</h1>
-    </a>
-  </div>
+  <a href="{{url_for('make_activity')}}">
+    <h1>new activity</h1>
+  </a>
+
+  <section class="activity-container">
 
   {% for activity in activities %}
-  <section>
-    <div>
-      <p>{{ activity.id }}</p>
-    </div>
-    <div>
-      <p>{{ activity.name }}</p>
-    </div>
-    <div>
-      <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-        <p>view events</p>
+    <section class="activity-wrapper">
+      <div class="activity-img">
+      </div>
+      <a href="{{url_for('display_activity', activity_id=activity.id)}}" class="activity-name">
+        <p>{{ activity.name }}</p>
       </a>
-    </div>
-  </section>
+    </section>
   {% endfor %}
+
+  </section>
 
 </main>
 
