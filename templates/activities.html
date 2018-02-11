@@ -15,7 +15,7 @@
     <h1>new activity</h1>
   </a>
 
-  <section class="activity-container">
+  <section id="activity-container">
 
   {% for activity in activities %}
     <section class="activity-wrapper">
@@ -36,5 +36,26 @@
     <h6>© 2018 David Simowitz</h6>
   <div>
 </footer>
+
+<script>
+  window.addEventListener("resize", adjustActivityContainerRowHeight);
+
+  var activities = document.getElementById('activity-container');
+  /*
+   * Adjust each row height in 'grid-auto-rows' to match each
+   * column width in 'grid-template-columns' to allow the shape
+   * of each activity grid item to be set to a circle.
+   */
+  function adjustActivityContainerRowHeight() {
+    var style = window.getComputedStyle(activities);
+    // only require the width from one column
+    var columnWidth =
+        style.getPropertyValue('grid-template-columns').split(" ", 1);
+    activities.style.gridAutoRows = columnWidth;
+  };
+
+  // Apply inital adjustment to row height
+  window.onresize = adjustActivityContainerRowHeight();
+</script>
 
 {% endblock %}

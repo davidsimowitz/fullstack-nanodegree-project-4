@@ -81,10 +81,9 @@ main {
   grid-template-columns: 1fr;
 }
 
-.activity-container {
+#activity-container {
   display: grid;
   grid-auto-flow: row dense;
-  grid-auto-rows: 200px;
   grid-gap: 5vh;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
   margin: 0 5vw 5vw;
@@ -100,6 +99,7 @@ main {
 
 .activity-img {
   background-color: hsl(5, 80%, 63%);
+  border-radius: 50%;
   grid-column: 1 / 2;
   grid-row: 1 / 4;
 }
