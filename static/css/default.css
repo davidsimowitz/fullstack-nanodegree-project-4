@@ -10,7 +10,7 @@ html {
 }
 
 body {
-  background-color: rgb(249, 237, 241);
+  background-color: hsl(340, 50%, 95%);
   font-family: arial, sans-serif;
   margin: 0;
 }
@@ -90,24 +90,27 @@ main {
 }
 
 .activity-wrapper {
+  background-color: hsl(242, 0%, 96%);
+  border: 8px solid hsl(333, 11%, 82%);
   border-radius: 50%;
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(3, 1fr);
-  grid-template-columns: 1fr;
   margin: 0;
   overflow: hidden;
 }
 
+.text-path {
+  height: auto;
+  transform: rotate(3deg);
+  width: 100%;
+}
+
 .activity-img {
-  background-color: hsl(5, 80%, 63%);
-  grid-column: 1 / 2;
-  grid-row: 1 / 4;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  height: auto;
+  width: 100%;
 }
 
 .activity-name {
-  align-self: center;
-  grid-column: 1 / 2;
-  grid-row: 3 / 4;
-  justify-self: center;
+  color: hsl(231, 100%, 46%);
+  font-size: 28px;
 }

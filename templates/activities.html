@@ -18,11 +18,21 @@
   <section id="activity-container">
 
   {% for activity in activities %}
-    <section class="activity-wrapper">
-      <div class="activity-img">
-      </div>
-      <a href="{{url_for('display_activity', activity_id=activity.id)}}" class="activity-name">
-        <p>{{ activity.name }}</p>
+    <section class="activity-wrapper activity-img" style="background-image: url('{{ url_for('static', filename='img/placeholder-logo.svg') }}')">
+      <a href="{{url_for('display_activity', activity_id=activity.id)}}" class="activity-img">
+        <svg class="text-path" viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <path
+                id="TextPath"
+                d="M 100,190
+                   A 90,90 0 1,0 10,100" />
+          </defs>
+          <text class="activity-name">
+            <textPath xlink:href="#TextPath">{{ activity.name }}</textPath>
+          </text>
+        </svg>
       </a>
     </section>
   {% endfor %}
