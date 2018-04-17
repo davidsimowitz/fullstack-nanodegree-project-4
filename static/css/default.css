@@ -10,7 +10,7 @@ html {
 }
 
 body {
-  background-color: hsl(340, 50%, 95%);
+  background-color: hsl(340, 50%, 97%);
   font-family: arial, sans-serif;
   margin: 0;
 }
@@ -46,13 +46,17 @@ header {
   grid-row: 11 / 16;
 }
 
-.login-button {
+.login-link {
   align-self: center;
-  color: hsl(231, 100%, 90%);
+  color: hsl(231, 100%, 88%);
   font-weight: bold;
   grid-column: 9 / 10;
   grid-row: 2 / 6;
   justify-self: end;
+}
+
+.login-link:hover {
+  color: hsl(231, 100%, 98%);
 }
 
 .title {
@@ -64,12 +68,105 @@ header {
   justify-self: start;
 }
 
-.menu-button {
+#user-account-button {
   align-self: end;
-  color: hsl(231, 100%, 90%);
+  color: hsl(231, 100%, 88%);
   font: bold 21px arial, sans-serif;
   grid-column: 2 / 3;
   grid-row: 9 / 15;
+}
+
+#user-account-button:hover {
+  color: hsl(231, 100%, 98%);
+}
+
+/* User Account Menu */
+
+.user-account-menu {
+  background-color: hsl(340, 50%, 99%);
+  height: 100%;
+  font-size: 24px;
+  left: 0;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  transition: 0.3s;
+  width: 0;
+  z-index: 1;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 35px;
+  font-size: 42px;
+  margin-left: 50px;
+}
+
+.account-details {
+  display: grid;
+  grid-auto-flow: row;
+  grid-auto-rows: 25px;
+  grid-template-columns: 1fr;
+  grid-gap: 5px;
+  height: 100%;
+  padding: 58px;
+  transition: 0.4s;
+}
+
+.account-image {
+  border-radius: 50%;
+  grid-column: 2;
+  grid-row: 1 / 8;
+  height: 200px;
+  justify-self: center;
+  transition: 0.4s;
+  width: 200px;
+}
+
+.account-actions {
+  font-size: 21px;
+  grid-column: 2;
+  text-align: left;
+  text-decoration: none;
+  transition: 0.4s;
+}
+
+.account-options {
+  color: #818181;
+  display: block;
+  font-size: 28px;
+  grid-column: 2;
+  padding: 15px 0 0 0;
+  text-decoration: none;
+  transition: 0.4s;
+}
+
+.account-options:hover {
+  color: #f1f1f1;
+}
+
+#sign-up {
+  grid-column: 2;
+  grid-row: 3 / 6;
+  text-align: center;
+  transition: 0.4s;
+}
+
+.login-button {
+  background-color: hsl(231, 100%, 46%);
+  border-radius: 10px;
+  color: hsl(231, 100%, 88%);
+  font-weight: bold;
+  grid-column: 2;
+  grid-row: 7 / 9;
+  padding: 15px;
+  text-align: center;
+  transition: 0.4s;
+}
+
+.login-button:hover {
+  color: hsl(231, 100%, 98%);
 }
 
 /* Main */
@@ -83,10 +180,9 @@ main {
 
 #activity-container {
   display: grid;
-  grid-auto-flow: row dense;
   grid-gap: 5vh;
-  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-  margin: 0 5vw 5vw;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  margin: 2vw 5vw 5vw;
 }
 
 .activity-wrapper {
