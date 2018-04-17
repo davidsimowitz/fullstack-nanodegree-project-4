@@ -1,10 +1,13 @@
-  {% extends "base.html" %}
-  {% include "login-menu.html" %}
-  {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
-    <header>
-      <h1>{{ activity.name }}</h1>
-    </header>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">{{ activity.name.title() }}</h1>
+  {% include "login-menu.html" %}
+</header>
 
     <main>
 
@@ -62,4 +65,4 @@
     <footer>
     </footer>
 
-  {% endblock %}
+{% endblock %}

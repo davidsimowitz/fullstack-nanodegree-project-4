@@ -210,3 +210,10 @@ main {
   color: hsl(231, 100%, 46%);
   font-size: 28px;
 }
+
+/* Events */
+
+.title {
+  color: hsl(53.2, 79.9%, 62.9%);
+  font-size: 48px;
+}
