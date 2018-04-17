@@ -1,40 +1,40 @@
-  {% extends "base.html" %}
-  {% include "login-menu.html" %}
-  {% block content %}
+{% extends "base.html" %}
+{% include "login-menu.html" %}
+{% block content %}
 
-    <header>
-      <h1>Delete {{ activity.name }}</h1>
-    </header>
+<header>
+  <h1>Delete {{ activity.name }}</h1>
+</header>
 
-    <main>
+<main>
 
-      {% if error_msg %}
-      <section>
-        <h5>ERROR: {{ error_msg }}</h5>
-      </section>
-      {% endif %}
+  {% if error_msg %}
+  <section>
+    <h5>ERROR: {{ error_msg }}</h5>
+  </section>
+  {% endif %}
 
-      <section>
-        <div>
-          <p>Name: {{ activity.name }}</p>
-        </div>
-      </section>
+  <section>
+    <div>
+      <p>Name: {{ activity.name }}</p>
+    </div>
+  </section>
 
-      <section>
-        <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="delete-activity">
-          <input type="submit" value="Delete Activity">
-        </form>
+  <section>
+    <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="delete-activity">
+      <input type="submit" value="Delete Activity">
+    </form>
 
-        <div>
-          <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-              <h1>Cancel</h1>
-          </a>
-        </div>
-      </section>
+    <div>
+      <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+        <h1>Cancel</h1>
+      </a>
+    </div>
+  </section>
 
-    </main>
+</main>
 
-    <footer>
-    </footer>
+<footer>
+</footer>
 
-  {% endblock %}
+{% endblock %}

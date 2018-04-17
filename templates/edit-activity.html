@@ -1,33 +1,33 @@
-  {% extends "base.html" %}
-  {% include "login-menu.html" %}
-  {% block content %}
+{% extends "base.html" %}
+{% include "login-menu.html" %}
+{% block content %}
 
-    <header>
-      <h1>Edit {{ activity.name }}</h1>
-    </header>
+<header>
+  <h1>Edit {{ activity.name }}</h1>
+</header>
 
-    <main>
+<main>
 
-        <form action="{{ url_for('update_activity', activity_id=activity.id) }}" method="post" id="edit-activity">
+  <form action="{{ url_for('update_activity', activity_id=activity.id) }}" method="post" id="edit-activity">
 
-          <section>
+    <section>
 
-            <fieldset>
-              <legend>
-                <label for="name">Name:</label>
-              </legend>
-              <input type="text" size="32" id="name" name="name" value="{{activity.name}}">
-            </fieldset>
+      <fieldset>
+        <legend>
+          <label for="name">Name:</label>
+        </legend>
+        <input type="text" size="32" id="name" name="name" value="{{activity.name}}">
+      </fieldset>
 
-            <input type="submit" value="Edit Activity">
+      <input type="submit" value="Edit Activity">
 
-          </section>
+    </section>
 
-        </form>
+  </form>
 
-    </main>
+</main>
 
-    <footer>
-    </footer>
+<footer>
+</footer>
 
-  {% endblock %}
+{% endblock %}

@@ -1,171 +1,171 @@
-  {% extends "base.html" %}
-  {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
-    <header>
-    </header>
+<header>
+</header>
 
-    <main>
+<main>
 
-        <!-- Google+ sign in button-->
-        <div id="signinButton">
-          <span class="g-signin"
-            data-scope="openid email"
-            data-clientid="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
-            data-redirecturi="postmessage"
-            data-accesstype="offline"
-            data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force">
-          </span>
-        </div>
+  <!-- Google+ sign in button-->
+  <div id="signinButton">
+    <span class="g-signin"
+      data-scope="openid email"
+      data-clientid="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
+      data-redirecturi="postmessage"
+      data-accesstype="offline"
+      data-cookiepolicy="single_host_origin"
+      data-callback="signInCallback"
+      data-approvalprompt="force">
+    </span>
+  </div>
 
-        <!-- result -->
-        <div id="result"></div>
+  <!-- result -->
+  <div id="result"></div>
 
-        <script>
-            function signInCallback(authResult) {
-              if (authResult['code']) {
-                // Hide the sign-in button now that the user is authorized
-                $('#signinButton').attr('style', 'display: none');
-                // Send the one-time-use code to the server, if the server
-                // responds, write a 'login successful' message to the web
-                // page and then redirect back to the main page
-                $.ajax({
-                    type: 'POST',
-                    url: '/google.connect/?state={{STATE}}',
-                    processData: false,
-                    data: authResult['code'],
-                    contentType: 'application/octet-stream; charset=utf-8',
-                    success: function(result) {
-                        // Handle or verify the server response if necessary.
-                        if (result) {
-                            $('#result').html('Login Successful!</br>'+ result +
-                                              '</br>Redirecting...')
-                            setTimeout(function() {
-                                window.location.href = "{{ redirect_to }}";
-                                }, 3000);
-                        } else if (authResult['error']) {
-                            console.log('There was an error: ' +
-                                         authResult['error']);
-                        } else {
-                            $('#result').html('Failed to make a server-side ' +
-                                              'call. Check your configuration' +
-                                              ' and console.');
-                        }
-                    }
-                });
-              }
-            }
-        </script>
-
-
-        <!-- Facebook Sign In Code -->
-        <script>
-          // This is called with the results from from FB.getLoginStatus().
-          function statusChangeCallback(response) {
-            console.log('statusChangeCallback');
-            console.log(response);
-            // The response object is returned with a status field that lets the
-            // app know the current login status of the person.
-            if (response.status === 'connected') {
-              // Logged into your app and Facebook.
-              testAPI();
-              sendShortLivedTokenToServer(response);
-            } else {
-              // The person is not logged into your app or we are unable to tell.
-              document.getElementById('status').innerHTML = 'Please log ' +
-                'into this app.';
-            }
-          }
-
-          // This function is called when someone finishes with the Login
-          // Button.  See the onlogin handler attached to it.
-          function checkLoginState() {
-            FB.getLoginStatus(function(response) {
-              statusChangeCallback(response);
-            });
-          }
-
-          window.fbAsyncInit = function() {
-            // Initialize and setup SDK
-            FB.init({
-              appId      : '206909226522918',
-              cookie     : true,   // enable cookies to allow the server to access
-                                   // the session
-              xfbml      : true,   // parse social plugins on this page
-              version    : 'v2.11' // use graph api version 2.8
-            });
-
-            FB.getLoginStatus(function(response) {
-              statusChangeCallback(response);
-            });
-
-          };
-
-          // Load the SDK asynchronously
-          (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "https://connect.facebook.net/en_US/sdk.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
-
-          // Run a simple test of the Graph API after login is successful.
-          // See statusChangeCallback() for when this call is made.
-          function testAPI() {
-            console.log('Welcome!  Fetching your information.... ');
-            FB.api('/me', function(response) {
-              console.log('Successful login for: ' + response.name);
-              document.getElementById('status').innerHTML =
-                'Thanks for logging in, ' + response.name + '!';
-            });
-          }
-
-          // See statusChangeCallback() for when this call is made.
-          function sendShortLivedTokenToServer(response) {
-            if (response.authResponse.accessToken) {
-              var accessToken = response.authResponse.accessToken;
-              $.ajax({
-                  type: 'POST',
-                  url: '/facebook.connect/?state={{STATE}}',
-                  processData: false,
-                  data: accessToken,
-                  contentType: 'application/octet-stream; charset=utf-8',
-                  success: function(result) {
-                      if (result) {
-                          $('#result').html('Login Successful!</br>'+ result +
-                                            '</br>Redirecting...')
-                          setTimeout(function() {
-                              window.location.href = "{{ redirect_to }}";
-                              }, 3000);
-                      } else {
-                          $('#result').html('Failed to make a server-side ' +
-                                            'call. Check your configuration' +
-                                            ' and console.');
-                      }
+  <script>
+      function signInCallback(authResult) {
+        if (authResult['code']) {
+          // Hide the sign-in button now that the user is authorized
+          $('#signinButton').attr('style', 'display: none');
+          // Send the one-time-use code to the server, if the server
+          // responds, write a 'login successful' message to the web
+          // page and then redirect back to the main page
+          $.ajax({
+              type: 'POST',
+              url: '/google.connect/?state={{STATE}}',
+              processData: false,
+              data: authResult['code'],
+              contentType: 'application/octet-stream; charset=utf-8',
+              success: function(result) {
+                  // Handle or verify the server response if necessary.
+                  if (result) {
+                      $('#result').html('Login Successful!</br>'+ result +
+                                        '</br>Redirecting...')
+                      setTimeout(function() {
+                          window.location.href = "{{ redirect_to }}";
+                          }, 3000);
+                  } else if (authResult['error']) {
+                      console.log('There was an error: ' +
+                                   authResult['error']);
+                  } else {
+                      $('#result').html('Failed to make a server-side ' +
+                                        'call. Check your configuration' +
+                                        ' and console.');
                   }
-              });
+              }
+          });
+        }
+      }
+  </script>
+
+
+  <!-- Facebook Sign In Code -->
+  <script>
+    // This is called with the results from from FB.getLoginStatus().
+    function statusChangeCallback(response) {
+      console.log('statusChangeCallback');
+      console.log(response);
+      // The response object is returned with a status field that lets the
+      // app know the current login status of the person.
+      if (response.status === 'connected') {
+        // Logged into your app and Facebook.
+        testAPI();
+        sendShortLivedTokenToServer(response);
+      } else {
+        // The person is not logged into your app or we are unable to tell.
+        document.getElementById('status').innerHTML = 'Please log ' +
+          'into this app.';
+      }
+    }
+
+    // This function is called when someone finishes with the Login
+    // Button.  See the onlogin handler attached to it.
+    function checkLoginState() {
+      FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+      });
+    }
+
+    window.fbAsyncInit = function() {
+      // Initialize and setup SDK
+      FB.init({
+        appId      : '206909226522918',
+        cookie     : true,   // enable cookies to allow the server to access
+                             // the session
+        xfbml      : true,   // parse social plugins on this page
+        version    : 'v2.11' // use graph api version 2.8
+      });
+
+      FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+      });
+
+    };
+
+    // Load the SDK asynchronously
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+
+    // Run a simple test of the Graph API after login is successful.
+    // See statusChangeCallback() for when this call is made.
+    function testAPI() {
+      console.log('Welcome!  Fetching your information.... ');
+      FB.api('/me', function(response) {
+        console.log('Successful login for: ' + response.name);
+        document.getElementById('status').innerHTML =
+          'Thanks for logging in, ' + response.name + '!';
+      });
+    }
+
+    // See statusChangeCallback() for when this call is made.
+    function sendShortLivedTokenToServer(response) {
+      if (response.authResponse.accessToken) {
+        var accessToken = response.authResponse.accessToken;
+        $.ajax({
+            type: 'POST',
+            url: '/facebook.connect/?state={{STATE}}',
+            processData: false,
+            data: accessToken,
+            contentType: 'application/octet-stream; charset=utf-8',
+            success: function(result) {
+                if (result) {
+                    $('#result').html('Login Successful!</br>'+ result +
+                                      '</br>Redirecting...')
+                    setTimeout(function() {
+                        window.location.href = "{{ redirect_to }}";
+                        }, 3000);
+                } else {
+                    $('#result').html('Failed to make a server-side ' +
+                                      'call. Check your configuration' +
+                                      ' and console.');
+                }
             }
-          }
+        });
+      }
+    }
 
-        </script>
+  </script>
 
-        <!-- Facebook Sign In Button: This button uses the JavaScript SDK to
-             present a graphical Login button that triggers the FB.login()
-             function when clicked. -->
-        <div>
-          <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-            <a href='javascript:checkLoginState()'>Facebook Login</a>
-          </fb:login-button>
-        </div>
+  <!-- Facebook Sign In Button: This button uses the JavaScript SDK to
+       present a graphical Login button that triggers the FB.login()
+       function when clicked. -->
+  <div>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+      <a href='javascript:checkLoginState()'>Facebook Login</a>
+    </fb:login-button>
+  </div>
 
-        <div id="status">
-        </div>
+  <div id="status">
+  </div>
 
-    </main>
+</main>
 
-    <footer>
-    </footer>
+<footer>
+</footer>
 
-  {% endblock %}
+{% endblock %}

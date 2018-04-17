@@ -1,64 +1,64 @@
-  {% extends "base.html" %}
-  {% include "login-menu.html" %}
-  {% block content %}
+{% extends "base.html" %}
+{% include "login-menu.html" %}
+{% block content %}
 
-    <header>
-      <h1>Create {{ activity.name }} Event</h1>
-    </header>
+<header>
+  <h1>Create {{ activity.name }} Event</h1>
+</header>
 
-    <main>
+<main>
 
-        <form action="{{ url_for('make_event', activity_id=activity.id) }}" method="post" id="create-event">
+  <form action="{{ url_for('make_event', activity_id=activity.id) }}" method="post" id="create-event">
 
-          <section>
+    <section>
 
-            <fieldset>
-              <legend>
-                <label for="name">Name:</label>
-              </legend>
-              <input type="text" size="32" id="name" name="name">
-            </fieldset>
+      <fieldset>
+        <legend>
+          <label for="name">Name:</label>
+        </legend>
+        <input type="text" size="32" id="name" name="name">
+      </fieldset>
 
-            <fieldset>
-              <legend>Start</legend>
-              <div>
-                <label for="start_date">Date:</label>
-                <input type="date" size="16" id="start_date" name="start_date">
-              </div>
-              <div>
-                <label for="start_time">Time:</label>
-                <input type="time" size="16" id="start_time" name="start_time">
-              </div>
-            </fieldset>
+      <fieldset>
+        <legend>Start</legend>
+        <div>
+          <label for="start_date">Date:</label>
+          <input type="date" size="16" id="start_date" name="start_date">
+        </div>
+        <div>
+          <label for="start_time">Time:</label>
+          <input type="time" size="16" id="start_time" name="start_time">
+        </div>
+      </fieldset>
 
-            <fieldset>
-              <legend>End</legend>
-              <div>
-                <label for="end_date">Date:</label>
-                <input type="date" size="16" id="end_date" name="end_date">
-              </div>
-              <div>
-                <label for="end_time">Time:</label>
-                <input type="time" size="16" id="end_time" name="end_time">
-              </div>
-            </fieldset>
+      <fieldset>
+        <legend>End</legend>
+        <div>
+          <label for="end_date">Date:</label>
+          <input type="date" size="16" id="end_date" name="end_date">
+        </div>
+        <div>
+          <label for="end_time">Time:</label>
+          <input type="time" size="16" id="end_time" name="end_time">
+        </div>
+      </fieldset>
 
-            <fieldset>
-              <legend>
-                <label for="description">Description:</label>
-              </legend>
-              <textarea rows="5" cols="80"  maxlength="250" id="description" name="description"></textarea>
-            </fieldset>
+      <fieldset>
+        <legend>
+          <label for="description">Description:</label>
+        </legend>
+        <textarea rows="5" cols="80"  maxlength="250" id="description" name="description"></textarea>
+      </fieldset>
 
-            <input type="submit" value="Create Event">
+      <input type="submit" value="Create Event">
 
-          </section>
+    </section>
 
-        </form>
+  </form>
 
-    </main>
+</main>
 
-    <footer>
-    </footer>
+<footer>
+</footer>
 
-  {% endblock %}
+{% endblock %}

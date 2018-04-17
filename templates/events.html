@@ -9,60 +9,60 @@
   {% include "login-menu.html" %}
 </header>
 
-    <main>
+<main>
 
-        <div>
-          <a href="{{url_for('update_activity', activity_id=activity.id)}}">
-              <h1>Update this activity</h1>
-          </a>
-        </div>
+    <div>
+      <a href="{{url_for('update_activity', activity_id=activity.id)}}">
+        <h1>Update this activity</h1>
+      </a>
+    </div>
 
-        <div>
-          <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
-              <h1>Delete this activity</h1>
-          </a>
-        </div>
+    <div>
+      <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
+        <h1>Delete this activity</h1>
+      </a>
+    </div>
 
-        <div>
-          <a href="{{url_for('display_activities')}}">
-              <h1>Search another activity</h1>
-          </a>
-        </div>
+    <div>
+      <a href="{{url_for('display_activities')}}">
+        <h1>Search another activity</h1>
+      </a>
+    </div>
 
-        <div>
-          <a href="{{url_for('make_event', activity_id=activity.id)}}">
-              <h1>Create {{ activity.name }} Event</h1>
-          </a>
-        </div>
+    <div>
+      <a href="{{url_for('make_event', activity_id=activity.id)}}">
+        <h1>Create {{ activity.name }} Event</h1>
+      </a>
+    </div>
 
-        {% for event in events %}
+    {% for event in events %}
 
-        <section>
-          <div>
-            <p>event.id: {{ event.id }} -> {{ event.name }}</p>
-          </div>
-          <div>
-            <p>Start: {{ event.start_date }} at {{ event.start_time_12_hour_notation }}</p>
-          </div>
-          <div>
-            <p>End: {{ event.end_date }} at {{ event.end_time_12_hour_notation }}</p>
-          </div>
-          <div>
-            <p>{{ event.description }}</p>
-          </div>
+    <section>
+      <div>
+        <p>event.id: {{ event.id }} -> {{ event.name }}</p>
+      </div>
+      <div>
+        <p>Start: {{ event.start_date }} at {{ event.start_time_12_hour_notation }}</p>
+      </div>
+      <div>
+        <p>End: {{ event.end_date }} at {{ event.end_time_12_hour_notation }}</p>
+      </div>
+      <div>
+        <p>{{ event.description }}</p>
+      </div>
 
-          <div>
-            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
-              <p>view event details</p>
-            </a>
-          </div>
-        </section>
+      <div>
+        <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
+          <p>view event details</p>
+        </a>
+      </div>
+    </section>
 
-        {% endfor %}
+    {% endfor %}
 
-    </main>
+</main>
 
-    <footer>
-    </footer>
+<footer>
+</footer>
 
 {% endblock %}
