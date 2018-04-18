@@ -7,9 +7,51 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">{{ activity.name.title() }}</h1>
   {% include "login-menu.html" %}
+  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
 </header>
 
 <main>
+  <!-- user account: start -->
+  <section id="side-menu" class="user-account-menu">
+    <a href="javascript:void(0)" class="close-button" onclick="closeUserMenu()">&times;</a>
+
+    <div class="account-details">
+      <!-- user not logged in -->
+      {% if 'username' not in session %}
+      <p id="sign-up">See what events are occurring right now</p>
+      <a href="{{url_for('user_login')}}" class="login-button">Start looking</a>
+
+      <!-- user logged in -->
+      {% elif 'picture' in session %}
+      <img class="account-image" src="{{session['picture']}}">
+      <div  class="account-actions">
+        <a href="{{url_for('make_activity')}}" class="account-actions">
+          <h2>Create Activity</h2>
+        </a>
+      </div>
+      <div class="account-options">
+        <a href="#" class="account-options">Details</a>
+        <a href="#" class="account-options">Events</a>
+        <a href="#" class="account-options">Settings</a>
+      </div>
+      {% else %}
+      <div  class="account-actions">
+        <a href="{{url_for('make_activity')}}" class="account-actions">
+          <h2>Create Activity</h2>
+        </a>
+      </div>
+      <div class="account-options">
+        <a href="#" class="account-options">Details</a>
+        <a href="#" class="account-options">Events</a>
+        <a href="#" class="account-options">Settings</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </section>
+  <!-- user account: end -->
 
     <div>
       <a href="{{url_for('update_activity', activity_id=activity.id)}}">
@@ -64,5 +106,15 @@
 
 <footer>
 </footer>
+
+<script>
+  function openUserMenu() {
+    document.getElementById("side-menu").style.width = "350px";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("side-menu").style.width = "0";
+  }
+</script>
 
 {% endblock %}
