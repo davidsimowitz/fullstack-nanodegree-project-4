@@ -839,6 +839,9 @@ def display_activity(activity_id):
                          .one()
     events = db_session.query(models.Event) \
                        .filter_by(activity_id=activity_id) \
+                       .order_by(models.Event.start_date.asc(),
+                                 models.Event._start_time.asc()) \
+                       .filter(models.Event.start_date >= datetime.date.today()) \
                        .all()
     return flask.render_template('events.html',
                                  activity=activity,
