@@ -5,6 +5,7 @@ import hashlib
 import httplib2
 import json
 import logging
+import logging.config
 import logging.handlers
 import models
 import oauth2client.client
@@ -18,6 +19,23 @@ import string
 
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
+
+logging.config.dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '{asctime} - {levelname:8} in {module:9}: {message}',
+        'style': '{',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['wsgi']
+    }
+})
 
 app = flask.Flask(__name__)
 
@@ -67,9 +85,8 @@ def entry_and_exit_logger(func):
         else:
             arguments = ''
 
-        message = '[{timestamp}] - - {action:8} {arguments}'
+        message = '{action:6} {arguments}'
         func_params = {'arguments': '{}({})'.format(func.__name__, arguments),
-                       'timestamp': datetime.datetime.now().ctime(),
                        'action': 'ENTER'}
         app.logger.debug(message.format(**func_params))
 
@@ -77,7 +94,6 @@ def entry_and_exit_logger(func):
 
         func_params['arguments'] = '{}({}={})'.format(func.__name__,
                                                       'result', result)
-        func_params['timestamp'] = datetime.datetime.now().ctime()
         func_params['action'] = 'EXIT'
         app.logger.debug(message.format(**func_params))
         return result
@@ -1242,14 +1258,6 @@ if __name__ == '__main__':
 #    file_handler.setFormatter(file_formatter)
 #    file_handler.setLevel(logging.DEBUG)
 #    app.logger.addHandler(file_handler)
-
-    screen_handler = logging.StreamHandler()
-    screen_formatter = logging.Formatter(
-                           '{levelname:9} {name:10} {message}',
-                           style='{')
-    screen_handler.setFormatter(screen_formatter)
-    screen_handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(screen_handler)
 
     app.debug = True
     app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
