@@ -77,30 +77,37 @@
       </a>
     </div>
 
+    <!-- events list: start -->
+    <section id="event-container">
     {% for event in events %}
-
-    <section>
-      <div>
-        <p>event.id: {{ event.id }} -> {{ event.name }}</p>
-      </div>
-      <div>
-        <p>Start: {{ event.start_date }} at {{ event.start_time_12_hour_notation }}</p>
-      </div>
-      <div>
-        <p>End: {{ event.end_date }} at {{ event.end_time_12_hour_notation }}</p>
-      </div>
-      <div>
-        <p>{{ event.description }}</p>
-      </div>
-
-      <div>
-        <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
-          <p>view event details</p>
+      {% if loop.first and loop.changed(event.start_date) %}
+      <section class="date-wrapper">
+        <p class="event-date">{{ event.starting_date_long_form }}</p>
+      {% elif loop.changed(event.start_date) %}
+      </section>
+      <section class="date-wrapper">
+        <p class="event-date">{{ event.starting_date_long_form }}</p>
+      {% endif %}
+        <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
+           class="display-event">
+          <section class="event-wrapper">
+            <div class="event-time">
+              <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
+            </div>
+            <div class="event-name">
+              <p>{{ event.name }}</p>
+            </div>
+            <div class="event-description">
+              <p>{{ event.description }}</p>
+            </div>
+          </section>
         </a>
-      </div>
-    </section>
-
+      {% if loop.last %}
+      </section>
+      {% endif %}
     {% endfor %}
+    </section>
+    <!-- events list: end -->
 
 </main>
 
