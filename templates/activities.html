@@ -17,7 +17,7 @@
   <section id="side-menu" class="user-account-menu">
     <a href="javascript:void(0)" class="close-button" onclick="closeUserMenu()">&times;</a>
 
-    <div class="account-details">
+    <div id="account-wrapper">
       <!-- user not logged in -->
       {% if 'username' not in session %}
       <p id="sign-up">See what events are occurring right now</p>
@@ -26,27 +26,49 @@
       <!-- user logged in -->
       {% elif 'picture' in session %}
       <img class="account-image" src="{{session['picture']}}">
-      <div  class="account-actions">
-        <a href="{{url_for('make_activity')}}" class="account-actions">
-          <h2>Create Activity</h2>
-        </a>
-      </div>
-      <div class="account-options">
-        <a href="#" class="account-options">Details</a>
-        <a href="#" class="account-options">Events</a>
-        <a href="#" class="account-options">Settings</a>
-      </div>
+      <nav class="account-actions-container">
+        <ul>
+          <a href="#"><p class="account-actions">Hosting</p></a>
+          <a href="#"><p class="account-actions">Attending</p></a>
+          <a href="#"><p class="account-actions">Considering</p></a>
+          <a href="#"><p class="account-actions">Settings</p></a>
+        </ul>
+      </nav>
+      <nav class="activity-actions-container">
+        <ul>
+          <a href="{{url_for('display_activities')}}"><p class="activity-actions">View activities</p></a>
+          <a href="{{url_for('make_activity')}}"><p class="activity-actions">New activity</p></a>
+        </ul>
+      </nav>
+      <nav class="event-actions-container">
+        <ul>
+          <a href="#"><p class="event-actions">Plan event</p></a>
+          <a href="#"><p class="event-actions">Modify event</p></a>
+          <a href="#"><p class="event-actions">Cancel event</p></a>
+        </ul>
+      </nav>
       {% else %}
-      <div  class="account-actions">
-        <a href="{{url_for('make_activity')}}" class="account-actions">
-          <h2>Create Activity</h2>
-        </a>
-      </div>
-      <div class="account-options">
-        <a href="#" class="account-options">Details</a>
-        <a href="#" class="account-options">Events</a>
-        <a href="#" class="account-options">Settings</a>
-      </div>
+      <nav class="account-actions-container">
+        <ul>
+          <a href="#"><p class="account-actions">Hosting</p></a>
+          <a href="#"><p class="account-actions">Attending</p></a>
+          <a href="#"><p class="account-actions">Considering</p></a>
+          <a href="#"><p class="account-actions">Settings</p></a>
+        </ul>
+      </nav>
+      <nav class="activity-actions-container">
+        <ul>
+          <a href="{{url_for('display_activities')}}"><p class="activity-actions">View activities</p></a>
+          <a href="{{url_for('make_activity')}}"><p class="activity-actions">New activity</p></a>
+        </ul>
+      </nav>
+      <nav class="event-actions-container">
+        <ul>
+          <a href="#"><p class="event-actions">Plan event</p></a>
+          <a href="#"><p class="event-actions">Modify event</p></a>
+          <a href="#"><p class="event-actions">Cancel event</p></a>
+        </ul>
+      </nav>
       {% endif %}
     </div>
 

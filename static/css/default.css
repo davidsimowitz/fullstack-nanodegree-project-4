@@ -84,9 +84,13 @@ header {
 
 .user-account-menu {
   background-color: hsl(340, 50%, 99%);
+  display: grid;
+  grid-template-areas: "left-col main-content right-col";
+  grid-template-columns: 1fr 4fr 1fr;
+  grid-template-rows: 1fr;
   height: 100%;
-  font-size: 24px;
   left: 0;
+  max-width: 400px;
   overflow-x: hidden;
   position: fixed;
   top: 0;
@@ -98,57 +102,78 @@ header {
 .close-button {
   position: absolute;
   top: 0;
-  right: 35px;
-  font-size: 42px;
+  right: 15px;
+  font-size: 48px;
   margin-left: 50px;
 }
 
-.account-details {
+#account-wrapper {
   display: grid;
-  grid-auto-flow: row;
-  grid-auto-rows: 25px;
+  grid-area: main-content;
+  grid-auto-rows: min-content;
   grid-template-columns: 1fr;
-  grid-gap: 5px;
   height: 100%;
-  padding: 58px;
-  transition: 0.4s;
+  margin: 0 0 2vh 0;
+  transition: 0.3s;
+  width: minmax(100px, 450px);
 }
 
 .account-image {
   border-radius: 50%;
-  grid-column: 2;
-  grid-row: 1 / 8;
   height: 200px;
   justify-self: center;
-  transition: 0.4s;
+  margin: 5vh 0 4vh 0;
   width: 200px;
+}
+
+.account-actions-container {
+  color: hsl(0, 0%, 51%);
 }
 
 .account-actions {
   font-size: 21px;
-  grid-column: 2;
-  text-align: left;
-  text-decoration: none;
-  transition: 0.4s;
+  height: 35px;
+  margin: 0 0 10px 25px;
 }
 
-.account-options {
-  color: #818181;
-  display: block;
-  font-size: 28px;
-  grid-column: 2;
-  padding: 15px 0 0 0;
-  text-decoration: none;
-  transition: 0.4s;
+.account-actions:hover {
+  color: hsl(0, 0%, 0%);
 }
 
-.account-options:hover {
-  color: #f1f1f1;
+.activity-actions-container {
+  color: hsl(0, 0%, 13%);
+}
+
+.activity-actions {
+  font-size: 21px;
+  height: 35px;
+  margin: 0 0 10px 25px;
+}
+
+.activity-actions:hover {
+  color: hsl(0, 0%, 51%);
+}
+
+.event-actions-container {
+  color: hsl(231, 100%, 46%);
+}
+
+.event-actions {
+  font-size: 21px;
+  height: 35px;
+  margin: 0 0 10px 25px;
+}
+
+.event-actions:hover {
+  color: hsl(231, 100%, 88%);
 }
 
 #sign-up {
-  grid-column: 2;
-  grid-row: 3 / 6;
+  color: hsl(0, 0%, 13%);
+  font-size: 24px;
+  height: 65px;
+  margin: calc(30vh - 65px) 0 0 0;
+  max-width: 225px;
   text-align: center;
   transition: 0.4s;
 }
@@ -157,9 +182,11 @@ header {
   background-color: hsl(231, 100%, 46%);
   border-radius: 10px;
   color: hsl(231, 100%, 88%);
+  font-size: 24px;
   font-weight: bold;
-  grid-column: 2;
-  grid-row: 7 / 9;
+  height: 60px;
+  margin: 10vh 0 0 0;
+  max-width: 225px;
   padding: 15px;
   text-align: center;
   transition: 0.4s;
@@ -219,7 +246,6 @@ main {
 }
 
 #event-container {
-  /*background-color: hsl(340, 50%, 90%);*/
   display: grid;
   grid-gap: 0;
   grid-template-columns: minmax(1vw, 1fr) minmax(320px, 800px) minmax(1vw, 1fr);
