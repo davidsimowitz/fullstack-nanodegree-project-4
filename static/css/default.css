@@ -82,7 +82,7 @@ header {
 
 /* User Account Menu */
 
-.user-account-menu {
+#user-account-menu {
   background-color: hsl(340, 50%, 99%);
   display: grid;
   grid-template-areas: "left-col main-content right-col";
