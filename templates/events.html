@@ -13,30 +13,7 @@
 </header>
 
 <main>
-  {% include "user-account-menu.html" %}
-    <div>
-      <a href="{{url_for('update_activity', activity_id=activity.id)}}">
-        <h1>Update this activity</h1>
-      </a>
-    </div>
-
-    <div>
-      <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
-        <h1>Delete this activity</h1>
-      </a>
-    </div>
-
-    <div>
-      <a href="{{url_for('display_activities')}}">
-        <h1>Search another activity</h1>
-      </a>
-    </div>
-
-    <div>
-      <a href="{{url_for('make_event', activity_id=activity.id)}}">
-        <h1>Create {{ activity.name }} Event</h1>
-      </a>
-    </div>
+    {% include "user-account-menu.html" %}
 
     <!-- events list: start -->
     <section id="event-container">

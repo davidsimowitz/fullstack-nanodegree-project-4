@@ -25,19 +25,27 @@
         <a href="{{url_for('make_activity')}}">
           <p class="activity-actions">New activity</p>
         </a>
+        {% if activity and activity.user_id==user_id %}
         <a href="{{url_for('update_activity', activity_id=activity.id)}}">
           <p class="activity-actions">Edit activity</p>
         </a>
         <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
           <p class="activity-actions">Remove activity</p>
         </a>
+        {% endif %}
       </ul>
     </nav>
     <nav class="event-actions-container">
       <ul>
-        <a href="#"><p class="event-actions">Plan event</p></a>
+        {% if activity %}
+        <a href="{{url_for('make_event', activity_id=activity.id)}}">
+          <p class="event-actions">Plan event</p>
+        </a>
+        {% endif %}
+        {% if event and event.user_id==user_id %}
         <a href="#"><p class="event-actions">Modify event</p></a>
         <a href="#"><p class="event-actions">Cancel event</p></a>
+        {% endif %}
       </ul>
     </nav>
     {% else %}
@@ -57,19 +65,27 @@
         <a href="{{url_for('make_activity')}}">
           <p class="activity-actions">New activity</p>
         </a>
+        {% if activity and activity.user_id==user_id %}
         <a href="{{url_for('update_activity', activity_id=activity.id)}}">
           <p class="activity-actions">Edit activity</p>
         </a>
         <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
           <p class="activity-actions">Remove activity</p>
         </a>
+        {% endif %}
       </ul>
     </nav>
     <nav class="event-actions-container">
       <ul>
-        <a href="#"><p class="event-actions">Plan event</p></a>
+        {% if activity %}
+        <a href="{{url_for('make_event', activity_id=activity.id)}}">
+          <p class="event-actions">Plan event</p>
+        </a>
+        {% endif %}
+        {% if event and event.user_id==user_id %}
         <a href="#"><p class="event-actions">Modify event</p></a>
         <a href="#"><p class="event-actions">Cancel event</p></a>
+        {% endif %}
       </ul>
     </nav>
     {% endif %}

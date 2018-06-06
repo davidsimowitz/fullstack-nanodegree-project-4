@@ -861,7 +861,8 @@ def display_activity(activity_id):
                        .all()
     return flask.render_template('events.html',
                                  activity=activity,
-                                 events=events)
+                                 events=events,
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)))
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
