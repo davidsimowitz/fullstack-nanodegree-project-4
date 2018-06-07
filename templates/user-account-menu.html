@@ -37,14 +37,23 @@
     </nav>
     <nav class="event-actions-container">
       <ul>
+        {% if activity and event%}
+        <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+          <p class="event-actions">View events</p>
+        </a>
+        {% endif %}
         {% if activity %}
         <a href="{{url_for('make_event', activity_id=activity.id)}}">
           <p class="event-actions">Plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
-        <a href="#"><p class="event-actions">Modify event</p></a>
-        <a href="#"><p class="event-actions">Cancel event</p></a>
+        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}">
+          <p class="event-actions">Modify event</p>
+        </a>
+        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}">
+          <p class="event-actions">Cancel event</p>
+        </a>
         {% endif %}
       </ul>
     </nav>
@@ -77,14 +86,23 @@
     </nav>
     <nav class="event-actions-container">
       <ul>
+        {% if activity and event%}
+        <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+          <p class="event-actions">View events</p>
+        </a>
+        {% endif %}
         {% if activity %}
         <a href="{{url_for('make_event', activity_id=activity.id)}}">
           <p class="event-actions">Plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
-        <a href="#"><p class="event-actions">Modify event</p></a>
-        <a href="#"><p class="event-actions">Cancel event</p></a>
+        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}">
+          <p class="event-actions">Modify event</p>
+        </a>
+        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}">
+          <p class="event-actions">Cancel event</p>
+        </a>
         {% endif %}
       </ul>
     </nav>

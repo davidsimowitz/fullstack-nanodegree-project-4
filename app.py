@@ -1000,7 +1000,8 @@ def display_event(activity_id, event_id):
                   .one()
     return flask.render_template('event.html',
                                  activity=activity,
-                                 event=event)
+                                 event=event,
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)))
 
 
 @app.route('/activities/<int:activity_id>/events/new/',
