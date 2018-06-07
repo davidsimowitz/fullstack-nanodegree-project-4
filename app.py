@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import flask
 import functools
@@ -41,9 +42,18 @@ app = flask.Flask(__name__)
 
 engine = sqlalchemy.create_engine(models.DB)
 models.declarative_base.metadata.bind = engine
-
 create_sqlalchemy_session = sqlalchemy.orm.sessionmaker(bind=engine)
-db_session = create_sqlalchemy_session()
+
+@contextlib.contextmanager
+def db_session():
+    db = create_sqlalchemy_session()
+    try:
+        yield db
+    except:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
 def entry_and_exit_logger(func):
@@ -437,7 +447,8 @@ def set_event_fields(event):
 @entry_and_exit_logger
 def display_activities():
     """Display all Activity records from DB."""
-    activities = db_session.query(models.Activity)
+    with db_session() as db:
+        activities = db.query(models.Activity)
     return flask.render_template('activities.html',
                                  activities=activities)
 
@@ -850,15 +861,16 @@ def display_activity(activity_id):
 
     Display Activity and list all Event records corresponding to it.
     """
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
-    events = db_session.query(models.Event) \
-                       .filter_by(activity_id=activity_id) \
-                       .order_by(models.Event.start_date.asc(),
-                                 models.Event._start_time.asc()) \
-                       .filter(models.Event.start_date >= datetime.date.today()) \
-                       .all()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
+        events = db.query(models.Event) \
+                   .filter_by(activity_id=activity_id) \
+                   .order_by(models.Event.start_date.asc(),
+                             models.Event._start_time.asc()) \
+                   .filter(models.Event.start_date >= datetime.date.today()) \
+                   .all()
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events,
@@ -880,13 +892,14 @@ def make_activity():
                            name=flask.request.form['name'],
                            user_id=get_user_id(
                                        user_email=flask.session['email']))
-        db_session.add(new_activity)
-        db_session.commit()
+        with db_session() as db:
+            db.add(new_activity)
+            db.commit()
 
-        return flask.redirect(
-                   flask.url_for(
-                       'display_activity',
-                       activity_id=new_activity.id))
+            return flask.redirect(
+                       flask.url_for(
+                           'display_activity',
+                           activity_id=new_activity.id))
     else:
         return flask.render_template('new-activity.html')
 
@@ -902,10 +915,10 @@ def update_activity(activity_id):
                                              'update_activity',
                                              activity_id=activity_id)
         return flask.redirect('/login/')
-
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
 
     # Activity can only be edited by its owner
     if activity.user_id != get_user_id(user_email=flask.session['email']):
@@ -916,12 +929,13 @@ def update_activity(activity_id):
     if flask.request.method == 'POST':
         if flask.request.form['name']:
             activity.name = flask.request.form['name']
-        db_session.add(activity)
-        db_session.commit()
+        with db_session() as db:
+            db.add(activity)
+            db.commit()
 
-        return flask.redirect(
-                   flask.url_for('display_activity',
-                                 activity_id=activity.id))
+            return flask.redirect(
+                       flask.url_for('display_activity',
+                                     activity_id=activity.id))
     else:
         return flask.render_template('edit-activity.html',
                                      activity=activity)
@@ -938,10 +952,10 @@ def delete_activity(activity_id):
                                              'delete_activity',
                                              activity_id=activity_id)
         return flask.redirect('/login/')
-
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
 
     # Activity can only be deleted by its owner
     if activity.user_id != get_user_id(user_email=flask.session['email']):
@@ -950,9 +964,10 @@ def delete_activity(activity_id):
                                  activity_id=activity.id))
 
     if flask.request.method == 'POST':
-        events = db_session.query(models.Event) \
-                           .filter_by(activity_id=activity_id) \
-                           .all()
+        with db_session() as db:
+            events = db.query(models.Event) \
+                       .filter_by(activity_id=activity_id) \
+                       .all()
         if events:
             error_msg = ('Activity cannot be deleted, events '
                          'are associated with this activity.')
@@ -960,8 +975,9 @@ def delete_activity(activity_id):
                                          activity=activity,
                                          error_msg=error_msg)
         else:
-            db_session.delete(activity)
-            db_session.commit()
+            with db_session() as db:
+                db.delete(activity)
+                db.commit()
             return flask.redirect(
                        flask.url_for('display_activities'))
 
@@ -974,13 +990,14 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
-    event = db_session.query(models.Event) \
-                      .filter_by(id=event_id,
-                                 activity_id=activity_id) \
-                      .one()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
+        event = db.query(models.Event) \
+                  .filter_by(id=event_id,
+                             activity_id=activity_id) \
+                  .one()
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event)
@@ -1007,16 +1024,18 @@ def make_event(activity_id):
                                          )
                                  )
         new_event = set_event_fields(new_event)
-        db_session.add(new_event)
-        db_session.commit()
-        return flask.redirect(
-                   flask.url_for('display_event',
-                                 activity_id=activity_id,
-                                 event_id=new_event.id))
+        with db_session() as db:
+            db.add(new_event)
+            db.commit()
+            return flask.redirect(
+                       flask.url_for('display_event',
+                                     activity_id=activity_id,
+                                     event_id=new_event.id))
     else:
-        activity = db_session.query(models.Activity) \
-                             .filter_by(id=activity_id) \
-                             .one()
+        with db_session() as db:
+            activity = db.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
         return flask.render_template('new-event.html',
                                      activity=activity)
 
@@ -1035,13 +1054,14 @@ def update_event(activity_id, event_id):
                                              event_id=event_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
-    event = db_session.query(models.Event) \
-                      .filter_by(id=event_id,
-                                 activity_id=activity_id) \
-                      .one()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
+        event = db.query(models.Event) \
+                  .filter_by(id=event_id,
+                             activity_id=activity_id) \
+                  .one()
 
     # Event can only be edited by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
@@ -1052,12 +1072,13 @@ def update_event(activity_id, event_id):
 
     if flask.request.method == 'POST':
         event = set_event_fields(event)
-        db_session.add(event)
-        db_session.commit()
-        return flask.redirect(
-                   flask.url_for('display_event',
-                                 activity_id=activity_id,
-                                 event_id=event.id))
+        with db_session() as db:
+            db.add(event)
+            db.commit()
+            return flask.redirect(
+                       flask.url_for('display_event',
+                                     activity_id=activity_id,
+                                     event_id=event.id))
     else:
         return flask.render_template('edit-event.html',
                                      activity=activity,
@@ -1078,13 +1099,14 @@ def delete_event(activity_id, event_id):
                                              event_id=event_id)
         return flask.redirect('/login/')
 
-    activity = db_session.query(models.Activity) \
-                         .filter_by(id=activity_id) \
-                         .one()
-    event = db_session.query(models.Event) \
-                      .filter_by(id=event_id,
-                                 activity_id=activity_id) \
-                      .one()
+    with db_session() as db:
+        activity = db.query(models.Activity) \
+                     .filter_by(id=activity_id) \
+                     .one()
+        event = db.query(models.Event) \
+                  .filter_by(id=event_id,
+                             activity_id=activity_id) \
+                  .one()
 
     # Event can only be deleted by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
@@ -1094,8 +1116,9 @@ def delete_event(activity_id, event_id):
                                  event_id=event.id))
 
     if flask.request.method == 'POST':
-        db_session.delete(event)
-        db_session.commit()
+        with db_session() as db:
+            db.delete(event)
+            db.commit()
         return flask.redirect(
                    flask.url_for('display_activity',
                                  activity_id=activity_id))
@@ -1126,11 +1149,12 @@ def make_user(*, session):
     new_user = models.UserAccount(name=session['username'],
                                   email=session['email'],
                                   picture=session['picture'])
-    db_session.add(new_user)
-    db_session.commit()
-    user = db_session.query(models.UserAccount) \
-                     .filter_by(email=session['email']) \
-                     .one()
+    with db_session() as db:
+        db.add(new_user)
+        db.commit()
+        user = db.query(models.UserAccount) \
+                 .filter_by(email=session['email']) \
+                 .one()
     return user.id
 
 
@@ -1148,9 +1172,10 @@ def get_user(*, user_id):
         models.UserAccount
         sqlalchemy
     """
-    user = db_session.query(models.UserAccount) \
-                     .filter_by(id=user_id) \
-                     .one()
+    with db_session() as db:
+        user = db.query(models.UserAccount) \
+                 .filter_by(id=user_id) \
+                 .one()
     return user
 
 
@@ -1169,9 +1194,10 @@ def get_user_id(*, user_email):
         sqlalchemy
     """
     try:
-        user = db_session.query(models.UserAccount) \
-                         .filter_by(email=user_email) \
-                         .one()
+        with db_session() as db:
+            user = db.query(models.UserAccount) \
+                     .filter_by(email=user_email) \
+                     .one()
         return user.id
     except:
         return None
@@ -1182,13 +1208,14 @@ def get_user_id(*, user_email):
 def activities_endpoint():
     """Returns a JSON endpoint for all activities"""
     activities = []
-    for activity in db_session.query(models.Activity).all():
-        activity = activity.serialize
-        activity['events'] = [event.serialize for event in
-                              db_session.query(models.Event)
-                                        .filter_by(activity_id=activity['id'])
-                                        .all()]
-        activities.append(activity)
+    with db_session() as db:
+        for activity in db.query(models.Activity).all():
+            activity = activity.serialize
+            activity['events'] = [event.serialize for event in
+                                  db.query(models.Event)
+                                    .filter_by(activity_id=activity['id'])
+                                    .all()]
+            activities.append(activity)
 
     if activities:
         return flask.jsonify(activities)
@@ -1208,9 +1235,10 @@ def activities_endpoint():
 def activity_endpoint(activity_id):
     """Returns a JSON endpoint for an activity"""
     try:
-        activity = db_session.query(models.Activity) \
-                             .filter_by(id=activity_id) \
-                             .one()
+        with db_session() as db:
+            activity = db.query(models.Activity) \
+                         .filter_by(id=activity_id) \
+                         .one()
     except:
         app.logger.error(
             ('activity_endpoint() - -'
@@ -1221,10 +1249,11 @@ def activity_endpoint(activity_id):
                              })
     else:
         activity = activity.serialize
-        activity['events'] = [event.serialize for event in
-                              db_session.query(models.Event)
-                                        .filter_by(activity_id=activity_id)
-                                        .all()]
+        with db_session() as db:
+            activity['events'] = [event.serialize for event in
+                                  db.query(models.Event)
+                                    .filter_by(activity_id=activity_id)
+                                    .all()]
         return flask.jsonify(activity)
 
 
@@ -1233,9 +1262,10 @@ def activity_endpoint(activity_id):
 def event_endpoint(activity_id, event_id):
     """Returns a JSON endpoint for an event"""
     try:
-        event = db_session.query(models.Event) \
-                          .filter_by(id=event_id) \
-                          .one()
+        with db_session() as db:
+            event = db.query(models.Event) \
+                      .filter_by(id=event_id) \
+                      .one()
     except:
         app.logger.error(
             ('event_endpoint() - -'
