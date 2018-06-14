@@ -1,43 +1,75 @@
 {% extends "base.html" %}
-{% include "login-menu.html" %}
 {% block content %}
 
-<header>
-  <h1>Delete {{ activity.name }} Event</h1>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">delete event</h1>
+  {% include "login-menu.html" %}
+  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
 </header>
 
 <main>
+    {% include "user-account-menu.html" %}
 
-  <section>
-    <div>
-      <p>Name: {{ event.name }}</p>
-    </div>
-    <div>
-      <p>Start: {{ event.start_date }} at {{ event.start_time_12_hour_notation }}</p>
-    </div>
-    <div>
-      <p>End: {{ event.end_date }} at {{ event.end_time_12_hour_notation }}</p>
-    </div>
-    <div>
-      <p>{{ event.description }}</p>
-    </div>
-  </section>
+    <form action="{{ url_for('delete_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="event-container">
 
-  <section>
-    <form action="{{ url_for('delete_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="delete-event">
-      <input type="submit" value="Delete Event">
+      <section class="date-wrapper">
+        {% if event.start_date and event.end_date and event.start_date != event.end_date %}
+        <p class="event-date">{{ event.starting_date_long_form }} - {{ event.end_date }}</p>
+        {% elif event.start_date %}
+        <p class="event-date">{{ event.starting_date_long_form }}</p>
+        {% elif event.end_date %}
+        <p class="event-date">ends {{ event.end_date }}</p>
+        {% endif %}
+
+          <section class="event-wrapper display-event">
+            <div class="event-time">
+              {% if event.start_time_12_hour_notation and event.end_time_12_hour_notation %}
+              <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
+              {% elif event.start_time_12_hour_notation %}
+              <p>{{ event.start_time_12_hour_notation }}</p>
+              {% elif event.end_time_12_hour_notation %}
+              <p>ends at {{ event.end_time_12_hour_notation }}</p>
+              {% endif %}
+            </div>
+            <div class="event-name">
+              <p>{{ event.name }}</p>
+            </div>
+            <div class="event-description">
+              {% if event.description %}
+              <p>{{ event.description }}</p>
+              {% endif %}
+            </div>
+          </section>
+
+          <fieldset class="field-wrapper bottom-bar">
+            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}" id="undo-delete">undo</a>
+            <legend>Delete Event</legend>
+            <label for="delete-event">delete event</label>
+            <input type="submit" value="delete" id="delete-event">
+          </fieldset>
+
+      </section>
+
     </form>
-
-    <div>
-      <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}">
-        <h1>Cancel</h1>
-      </a>
-    </div>
-  </section>
 
 </main>
 
 <footer>
 </footer>
+
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
 
 {% endblock %}

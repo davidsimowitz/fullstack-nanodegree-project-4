@@ -407,7 +407,8 @@ main {
 }
 
 #submit-event,
-#submit-activity {
+#submit-activity,
+#delete-event {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
@@ -424,7 +425,8 @@ main {
 }
 
 #cancel-event,
-#cancel-activity {
+#cancel-activity,
+#undo-delete {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
@@ -443,7 +445,9 @@ main {
 #submit-event:hover,
 #cancel-event:hover,
 #submit-activity:hover,
-#cancel-activity:hover {
+#cancel-activity:hover,
+#delete-event:hover,
+#undo-delete:hover {
   background-color: hsl(231, 100%, 48%);
   color: hsl(231, 100%, 90%);
 }
