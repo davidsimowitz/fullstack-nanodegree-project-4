@@ -406,7 +406,8 @@ main {
   grid-column: 13 / 20;
 }
 
-#submit-event {
+#submit-event,
+#submit-activity {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
@@ -422,7 +423,8 @@ main {
   transition: 0.3s;
 }
 
-#cancel-event {
+#cancel-event,
+#cancel-activity {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
@@ -439,7 +441,9 @@ main {
 }
 
 #submit-event:hover,
-#cancel-event:hover {
+#cancel-event:hover,
+#submit-activity:hover,
+#cancel-activity:hover {
   background-color: hsl(231, 100%, 48%);
   color: hsl(231, 100%, 90%);
 }
