@@ -380,6 +380,15 @@ main {
   padding: 6px 0 0 0;
 }
 
+.error-msg {
+  color: hsl(242, 12%, 34%);
+  border-bottom: 2px solid hsl(242, 12%, 44%);
+  font-size: 18px;
+  grid-column: 2 / 20;
+  margin: 0;
+  padding: 6px 0 0 0;
+}
+
 .input-field,
 .range {
   font-size: 16px;
@@ -408,6 +417,7 @@ main {
 
 #submit-event,
 #submit-activity,
+#delete-activity,
 #delete-event {
   background-color: hsl(242, 12%, 44%);
   border: 0;
@@ -447,6 +457,7 @@ main {
 #submit-activity:hover,
 #cancel-activity:hover,
 #delete-event:hover,
+#delete-activity:hover,
 #undo-delete:hover {
   background-color: hsl(231, 100%, 48%);
   color: hsl(231, 100%, 90%);

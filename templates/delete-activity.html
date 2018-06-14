@@ -1,40 +1,50 @@
 {% extends "base.html" %}
-{% include "login-menu.html" %}
 {% block content %}
 
-<header>
-  <h1>Delete {{ activity.name }}</h1>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">{{activity.name}}</h1>
+  {% include "login-menu.html" %}
+  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
 </header>
 
 <main>
+    {% include "user-account-menu.html" %}
 
-  {% if error_msg %}
-  <section>
-    <h5>ERROR: {{ error_msg }}</h5>
-  </section>
-  {% endif %}
-
-  <section>
-    <div>
-      <p>Name: {{ activity.name }}</p>
-    </div>
-  </section>
-
-  <section>
-    <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="delete-activity">
-      <input type="submit" value="Delete Activity">
+    <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="form-container">
+      <section class="form-wrapper">
+        <p class="form-title">{% if error_msg %}ERROR{% else %}delete activity{% endif %}</p>
+        {% if error_msg %}
+        <section class="field-wrapper">
+          <p class="error-msg">{{ error_msg }}</p>
+        </section>
+        {% endif %}
+        <fieldset class="field-wrapper bottom-bar">
+          <a href="{{url_for('display_activity', activity_id=activity.id)}}" id="undo-delete">undo</a>
+          <legend>Delete Activity</legend>
+          <label for="delete-activity">delete activity</label>
+          <input type="submit" value="delete" id="delete-activity">
+        </fieldset>
+      </section>
     </form>
-
-    <div>
-      <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-        <h1>Cancel</h1>
-      </a>
-    </div>
-  </section>
 
 </main>
 
 <footer>
 </footer>
+
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
 
 {% endblock %}
