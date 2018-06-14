@@ -1,64 +1,91 @@
 {% extends "base.html" %}
-{% include "login-menu.html" %}
 {% block content %}
 
-<header>
-  <h1>Edit {{ activity.name }} Event</h1>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">modify event</h1>
+  {% include "login-menu.html" %}
+  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
 </header>
 
 <main>
+    {% include "user-account-menu.html" %}
 
-  <form action="{{ url_for('update_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="edit-event">
+    <form action="{{ url_for('update_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="form-container">
+      <section class="form-wrapper">
+        <p class="form-title">{{event.name}}</p>
+          <!-- event fields start -->
+          <section class="field-wrapper">
+            <p class="input-title">date</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Event Date</legend>
+            <label for="start_date">starting date</label>
+            <input type="date" size="16" id="start_date" name="start_date" class="input-field starting"
+                   value="{{event.start_date}}">
+            <p class="range">–</p>
+            <label for="end_date">ending date</label>
+            <input type="date" size="16" id="end_date" name="end_date" class="input-field ending"
+                   value="{{event.end_date}}">
+          </fieldset>
+          <section class="field-wrapper">
+            <p class="input-title">time</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Event Time</legend>
+            <label for="start_time">starting time</label>
+            <input type="time" size="16" id="start_time" name="start_time" class="input-field starting"
+                   value="{{event.start_time}}">
+            <p class="range">–</p>
+            <label for="end_time">ending time</label>
+            <input type="time" size="16" id="end_time" name="end_time" class="input-field ending"
+                   value="{{event.end_time}}">
+          </fieldset>
+          <section class="field-wrapper">
+            <p class="input-title">name</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Event Name</legend>
+            <label for="name">event name</label>
+            <input type="text" size="32" id="name" name="name" class="input-field"
+                   value="{{event.name}}">
+          </fieldset>
 
-    <section>
-
-      <fieldset>
-        <legend>
-          <label for="name">Name:</label>
-        </legend>
-        <input type="text" size="32" id="name" name="name" value="{{event.name}}">
-      </fieldset>
-
-      <fieldset>
-        <legend>Start</legend>
-        <div>
-          <label for="start_date">Date:</label>
-          <input type="date" size="16" id="start_date" name="start_date" value="{{event.start_date}}">
-        </div>
-        <div>
-          <label for="start_time">Time:</label>
-          <input type="time" size="16" id="start_time" name="start_time" value="{{event.start_time}}">
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>End</legend>
-        <div>
-          <label for="end_date">Date:</label>
-          <input type="date" size="16" id="end_date" name="end_date" value="{{event.end_date}}">
-        </div>
-        <div>
-          <label for="end_time">Time:</label>
-          <input type="time" size="16" id="end_time" name="end_time" value="{{event.end_time}}">
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>
-          <label for="description">Description:</label>
-        </legend>
-        <textarea rows="5" cols="80"  maxlength="250" id="description" name="description">{{event.description}}</textarea>
-      </fieldset>
-
-      <input type="submit" value="Edit Event">
-
-    </section>
-
-  </form>
+          <section class="field-wrapper">
+            <p class="input-title">description</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Event Description</legend>
+            <label for="description">event description</label>
+            <textarea rows="3" cols="50"  maxlength="250" id="description" name="description" class="input-field">{{event.description}}</textarea>
+          </fieldset>
+          <!-- event fields end -->
+          <fieldset class="field-wrapper bottom-bar">
+            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}" id="cancel-event">back</a>
+            <legend>Submit Event</legend>
+            <label for="submit-event">submit event</label>
+            <input type="submit" value="update" id="submit-event">
+          </fieldset>
+      </section>
+    </form>
 
 </main>
 
 <footer>
 </footer>
+
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
 
 {% endblock %}
