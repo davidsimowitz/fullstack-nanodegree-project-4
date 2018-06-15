@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
-<header>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <img class="title" src="{{ url_for('static', filename='img/logo.svg') }}">
 </header>
 
 <main>
