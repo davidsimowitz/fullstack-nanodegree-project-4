@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+<script>
+  document.getElementById("page").style.backgroundColor = "hsl(231, 100%, 100%)";
+</script>
 
 <header id="header">
   <div class="header-bar-top"></div>
@@ -10,21 +13,44 @@
 
 <main>
 
-  <!-- Google+ sign in button-->
-  <div id="signinButton">
-    <span class="g-signin"
-      data-scope="openid email"
-      data-clientid="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
-      data-redirecturi="postmessage"
-      data-accesstype="offline"
-      data-cookiepolicy="single_host_origin"
-      data-callback="signInCallback"
-      data-approvalprompt="force">
-    </span>
-  </div>
+<section id="login-container">
+  <section class="login-wrapper">
 
-  <!-- result -->
-  <div id="result"></div>
+    <p id="login-status">continue with...</p>
+    <p id="login-status-bar"></p>
+
+    <section class="oauth-wrapper">
+      <!-- Google+ sign in button-->
+      <div id="signinButton">
+        <span class="g-signin"
+          data-scope="openid email"
+          data-clientid="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
+          data-redirecturi="postmessage"
+          data-accesstype="offline"
+          data-cookiepolicy="single_host_origin"
+          data-callback="signInCallback"
+          data-approvalprompt="force">
+        </span>
+      </div>
+      <!-- Facebook Sign In Button: This button uses the JavaScript SDK to
+           present a graphical Login button that triggers the FB.login()
+           function when clicked. -->
+      <div>
+        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+          <a href='javascript:checkLoginState()'>Facebook Login</a>
+        </fb:login-button>
+      </div>
+    </section>
+
+    <section class="oauth-result-wrapper">
+      <!-- Google result -->
+      <div id="result"></div>
+      <!-- Facebook status -->
+      <div id="status"></div>
+    </section>
+
+  </section>
+</section>
 
   <script>
       function signInCallback(authResult) {
@@ -154,18 +180,6 @@
     }
 
   </script>
-
-  <!-- Facebook Sign In Button: This button uses the JavaScript SDK to
-       present a graphical Login button that triggers the FB.login()
-       function when clicked. -->
-  <div>
-    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-      <a href='javascript:checkLoginState()'>Facebook Login</a>
-    </fb:login-button>
-  </div>
-
-  <div id="status">
-  </div>
 
 </main>
 
