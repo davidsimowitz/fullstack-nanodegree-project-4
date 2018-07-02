@@ -1001,7 +1001,8 @@ def display_event(activity_id, event_id):
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)))
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
+                                 back= flask.url_for('display_activity', activity_id=activity.id))
 
 
 @app.route('/activities/<int:activity_id>/events/new/',
