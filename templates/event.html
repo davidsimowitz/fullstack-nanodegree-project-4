@@ -15,14 +15,6 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    <section>
-      <div>
-        <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-          <h1>view other {{ activity.name }} events</h1>
-        </a>
-      </div>
-    </section>
-
     <section id="event-container">
 
       <section class="date-wrapper">
