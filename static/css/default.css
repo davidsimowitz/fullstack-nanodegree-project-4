@@ -602,9 +602,9 @@ input[id=submit-event] {
   -webkit-appearance: none;
 }
 
-/* Footer Bar */
+/* Footer Navigation Bar */
 
-footer {
+.footer-nav {
   bottom: 0;
   display: grid;
   grid-template-columns: minmax(1vw, 1fr) repeat(8, minmax(40px, 100px)) minmax(1vw, 1fr);
