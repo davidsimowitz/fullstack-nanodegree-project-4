@@ -874,7 +874,8 @@ def display_activity(activity_id):
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)))
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
+                                 back= flask.url_for('display_activities'))
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
@@ -1002,7 +1003,8 @@ def display_event(activity_id, event_id):
                                  activity=activity,
                                  event=event,
                                  user_id=get_user_id(user_email=flask.session.get('email', 0)),
-                                 back= flask.url_for('display_activity', activity_id=activity.id))
+                                 back= flask.url_for('display_activity',
+                                                     activity_id=activity.id))
 
 
 @app.route('/activities/<int:activity_id>/events/new/',
