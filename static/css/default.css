@@ -596,6 +596,50 @@ input[id=submit-event] {
   -webkit-appearance: none;
 }
 
+/* Footer Bar */
+
+footer {
+  bottom: 0;
+  display: grid;
+  grid-template-columns: minmax(1vw, 1fr) repeat(8, minmax(40px, 100px)) minmax(1vw, 1fr);
+  grid-template-rows: repeat(12, minmax(3.5px, 0.8vh));
+  left: 0;
+  margin: 0 15px 31px 0;
+  position: fixed;
+  width: 100%;
+}
+
+.footer-bar {
+  display: grid;
+  grid-column: 2 / 10;
+  grid-row: 2 / 12;
+  grid-template-columns: 1fr repeat(2, minmax(35px, 8vh)) 2vw;
+  grid-template-rows: 1fr;
+  grid-gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+#button-rightmost {
+  grid-column: 3 / 4;
+  max-height: max(45px, 8vh);
+  margin: 0;
+}
+
+#button-rightmost-minus-1 {
+  grid-column: 2 / 3;
+  max-height: max(45px, 8vh);
+  margin: 0;
+}
+
+.img-home {
+  max-height: 55px;
+}
+
+.img-back {
+  max-height: 55px;
+}
+
 @media screen and (max-width: 450px) {
 
 .event-time {
