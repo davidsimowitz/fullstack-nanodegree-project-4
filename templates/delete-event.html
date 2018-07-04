@@ -7,7 +7,10 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">delete event</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -15,7 +18,10 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    <form action="{{ url_for('delete_event', activity_id=activity.id, event_id=event.id) }}" method="post" id="event-container">
+    <form
+        action="{{ url_for('delete_event', activity_id=activity.id, event_id=event.id) }}"
+        method="post"
+        id="event-container">
 
       <section class="date-wrapper">
         {% if event.start_date and event.end_date and event.start_date != event.end_date %}
@@ -47,10 +53,14 @@
           </section>
 
           <fieldset class="field-wrapper bottom-bar">
-            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}" id="undo-delete">undo</a>
+            <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
+               id="undo-delete">undo</a>
             <legend>Delete Event</legend>
             <label for="delete-event">delete event</label>
-            <input type="submit" value="delete" id="delete-event">
+            <input
+                type="submit"
+                value="delete"
+                id="delete-event">
           </fieldset>
 
       </section>

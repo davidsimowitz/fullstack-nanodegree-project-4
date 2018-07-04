@@ -8,7 +8,10 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
-  <img class="title" src="{{ url_for('static', filename='img/logo.svg') }}" title="Coordinate" alt="Coordinate events with ease">
+  <img class="title"
+       src="{{ url_for('static', filename='img/logo.svg') }}"
+       title="Coordinate"
+       alt="Coordinate events with ease">
 </header>
 
 <main>
@@ -36,7 +39,8 @@
            present a graphical Login button that triggers the FB.login()
            function when clicked. -->
       <div>
-        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+        <fb:login-button scope="public_profile,email"
+                         onlogin="checkLoginState();">
           <a href='javascript:checkLoginState()'>Facebook Login</a>
         </fb:login-button>
       </div>

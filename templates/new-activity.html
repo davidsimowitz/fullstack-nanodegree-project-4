@@ -7,7 +7,10 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">create activity</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -15,7 +18,9 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    <form action="{{ url_for('make_activity') }}" method="post" id="form-container">
+    <form action="{{ url_for('make_activity') }}"
+          method="post"
+          id="form-container">
       <section class="form-wrapper">
         <p class="form-title">new activity</p>
           <section class="field-wrapper">
@@ -24,14 +29,21 @@
           <fieldset class="field-wrapper">
             <legend>Activity Name</legend>
             <label for="name">activity name</label>
-            <input type="text" size="32" id="name" name="name" class="input-field"
+            <input type="text"
+                   size="32"
+                   id="name"
+                   name="name"
+                   class="input-field"
                    placeholder="enter the name of the activity here">
           </fieldset>
           <fieldset class="field-wrapper bottom-bar">
-            <a href="{{url_for('display_activities')}}" id="cancel-activity">cancel</a>
+            <a href="{{url_for('display_activities')}}"
+               id="cancel-activity">cancel</a>
             <legend>Submit Activity</legend>
             <label for="submit-activity">submit activity</label>
-            <input type="submit" value="submit" id="submit-activity">
+            <input type="submit"
+                   value="submit"
+                   id="submit-activity">
           </fieldset>
       </section>
     </form>

@@ -7,7 +7,10 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">{{ activity.name }}</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -15,7 +18,9 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    <form action="{{ url_for('make_event', activity_id=activity.id) }}" method="post" id="form-container">
+    <form action="{{ url_for('make_event', activity_id=activity.id) }}"
+          method="post"
+          id="form-container">
       <section class="form-wrapper">
         <p class="form-title">host event</p>
           <!-- event fields start -->
@@ -25,10 +30,20 @@
           <fieldset class="field-wrapper">
             <legend>Event Date</legend>
             <label for="start_date">starting date</label>
-            <input type="date" size="16" id="start_date" name="start_date" class="input-field starting">
+            <input
+                type="date"
+                size="16"
+                id="start_date"
+                name="start_date"
+                class="input-field starting">
             <p class="range">–</p>
             <label for="end_date">ending date</label>
-            <input type="date" size="16" id="end_date" name="end_date" class="input-field ending">
+            <input
+                type="date"
+                size="16"
+                id="end_date"
+                name="end_date"
+                class="input-field ending">
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">time</p>
@@ -36,10 +51,20 @@
           <fieldset class="field-wrapper">
             <legend>Event Time</legend>
             <label for="start_time">starting time</label>
-            <input type="time" size="16" id="start_time" name="start_time" class="input-field starting">
+            <input
+                type="time"
+                size="16"
+                id="start_time"
+                name="start_time"
+                class="input-field starting">
             <p class="range">–</p>
             <label for="end_time">ending time</label>
-            <input type="time" size="16" id="end_time" name="end_time" class="input-field ending">
+            <input
+                type="time"
+                size="16"
+                id="end_time"
+                name="end_time"
+                class="input-field ending">
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">name</p>
@@ -47,8 +72,13 @@
           <fieldset class="field-wrapper">
             <legend>Event Name</legend>
             <label for="name">event name</label>
-            <input type="text" size="32" id="name" name="name" class="input-field"
-            placeholder="enter the name of your event here">
+            <input
+                type="text"
+                size="32"
+                id="name"
+                name="name"
+                class="input-field"
+                placeholder="enter the name of your event here">
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">description</p>
@@ -56,15 +86,25 @@
           <fieldset class="field-wrapper">
             <legend>Event Description</legend>
             <label for="description">event description</label>
-            <textarea rows="3" cols="50"  maxlength="250" id="description" name="description" class="input-field"
-            placeholder="describe the event you are hosting"></textarea>
+            <textarea
+                rows="3"
+                cols="50"
+                maxlength="250"
+                id="description"
+                name="description"
+                class="input-field"
+                placeholder="describe the event you are hosting"></textarea>
           </fieldset>
           <!-- event fields end -->
           <fieldset class="field-wrapper bottom-bar">
-            <a href="{{url_for('display_activity', activity_id=activity.id)}}" id="cancel-event">cancel</a>
+            <a href="{{url_for('display_activity', activity_id=activity.id)}}"
+               id="cancel-event">cancel</a>
             <legend>Submit Event</legend>
             <label for="submit-event">submit event</label>
-            <input type="submit" value="submit" id="submit-event">
+            <input
+                type="submit"
+                value="submit"
+                id="submit-event">
           </fieldset>
       </section>
     </form>

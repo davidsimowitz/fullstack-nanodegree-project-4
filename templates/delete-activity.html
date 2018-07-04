@@ -7,7 +7,10 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">{{activity.name}}</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -15,7 +18,9 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    <form action="{{ url_for('delete_activity', activity_id=activity.id) }}" method="post" id="form-container">
+    <form action="{{ url_for('delete_activity', activity_id=activity.id) }}"
+          method="post"
+          id="form-container">
       <section class="form-wrapper">
         <p class="form-title">{% if error_msg %}ERROR{% else %}delete activity{% endif %}</p>
         {% if error_msg %}
@@ -24,10 +29,13 @@
         </section>
         {% endif %}
         <fieldset class="field-wrapper bottom-bar">
-          <a href="{{url_for('display_activity', activity_id=activity.id)}}" id="undo-delete">undo</a>
+          <a href="{{url_for('display_activity', activity_id=activity.id)}}"
+             id="undo-delete">undo</a>
           <legend>Delete Activity</legend>
           <label for="delete-activity">delete activity</label>
-          <input type="submit" value="delete" id="delete-activity">
+          <input type="submit"
+                 value="delete"
+                 id="delete-activity">
         </fieldset>
       </section>
     </form>
