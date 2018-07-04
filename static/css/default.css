@@ -49,14 +49,36 @@ header {
 .login-link {
   align-self: center;
   color: hsl(231, 100%, 88%);
+  display: grid;
+  grid-template-columns: 1fr min-content 25px;
+  grid-template-rows: minmax(25px, 1vh) 1fr minmax(25px, 1vh);
   font-weight: bold;
-  grid-column: 9 / 10;
-  grid-row: 2 / 6;
+  grid-column: 8 / 10;
+  grid-row: 2 / 8;
   justify-self: end;
 }
 
 .login-link:hover {
   color: hsl(231, 100%, 98%);
+}
+
+#logout-link {
+  align-self: center;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  margin: 0 1vw 0 0;
+}
+
+#account-image-small {
+  align-self: center;
+  border-radius: 50%;
+  border: 1px solid hsl(231, 12%, 86%);
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  height: auto;
+  max-width: 50px;
+  min-width: 25px;
+  width: 5vw;
 }
 
 .title {
@@ -179,6 +201,7 @@ header {
 
 .account-image {
   border-radius: 50%;
+  border: 2px solid hsl(231, 12%, 86%);
   height: 200px;
   justify-self: center;
   margin: 5vh 0 4vh 0;

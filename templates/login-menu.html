@@ -3,14 +3,16 @@
   <a href="{{url_for('user_login')}}"
      title="login">login</a>
   {% elif 'picture' in session %}
-  <a href="{{url_for('user_logout')}}"
-     title="logout">logout</a>
-  <img src="{{session['picture']}}"
+  <img id="account-image-small"
+       src="{{session['picture']}}"
        title="{{session['username']}}"
-       alt="{{session['username']}}'s profile photo"
-       style="max-width: 25px; height: auto;">
+       alt="{{session['username']}}'s profile photo">
+  <a href="{{url_for('user_logout')}}"
+     id="logout-link"
+     title="logout">logout</a>
   {% else %}
   <a href="{{url_for('user_logout')}}"
+     id="logout-link"
      title="logout">logout</a>
   {% endif %}
 </div>
