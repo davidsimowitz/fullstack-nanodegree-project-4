@@ -1,35 +1,35 @@
 <section id="user-account-menu">
-  <a href="javascript:void(0)" class="close-button" onclick="closeUserMenu()">&times;</a>
+  <a href="javascript:void(0)" class="close-button" onclick="closeUserMenu()" title="close menu">&times;</a>
   <div id="account-wrapper">
     <!-- user not logged in -->
     {% if 'username' not in session %}
     <p id="sign-up">See what events are occurring right now</p>
-    <a href="{{url_for('user_login')}}" class="login-button">Start looking</a>
+    <a href="{{url_for('user_login')}}" class="login-button" title="login">Start looking</a>
 
     <!-- user logged in -->
     {% elif 'picture' in session %}
-    <img class="account-image" src="{{session['picture']}}">
+    <img class="account-image" src="{{session['picture']}}" title="{{session['username']}}'s profile photo">
     <nav class="account-actions-container">
       <ul>
-        <a href="#"><p class="account-actions">Hosting</p></a>
-        <a href="#"><p class="account-actions">Attending</p></a>
-        <a href="#"><p class="account-actions">Considering</p></a>
-        <a href="#"><p class="account-actions">Settings</p></a>
+        <a href="#" title="hosting"><p class="account-actions">Hosting</p></a>
+        <a href="#" title="attending"><p class="account-actions">Attending</p></a>
+        <a href="#" title="considering"><p class="account-actions">Considering</p></a>
+        <a href="#" title="settings"><p class="account-actions">Settings</p></a>
       </ul>
     </nav>
     <nav class="activity-actions-container">
       <ul>
-        <a href="{{url_for('display_activities')}}">
+        <a href="{{url_for('display_activities')}}" title="view activities">
           <p class="activity-actions">View activities</p>
         </a>
-        <a href="{{url_for('make_activity')}}">
+        <a href="{{url_for('make_activity')}}" title="new activity">
           <p class="activity-actions">New activity</p>
         </a>
         {% if activity and activity.user_id==user_id %}
-        <a href="{{url_for('update_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('update_activity', activity_id=activity.id)}}" title="edit {{activity.name.lower()}}">
           <p class="activity-actions">Edit activity</p>
         </a>
-        <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('delete_activity', activity_id=activity.id)}}" title="remove {{activity.name.lower()}}">
           <p class="activity-actions">Remove activity</p>
         </a>
         {% endif %}
@@ -38,20 +38,20 @@
     <nav class="event-actions-container">
       <ul>
         {% if activity and event%}
-        <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('display_activity', activity_id=activity.id)}}" title="view events">
           <p class="event-actions">View events</p>
         </a>
         {% endif %}
         {% if activity %}
-        <a href="{{url_for('make_event', activity_id=activity.id)}}">
+        <a href="{{url_for('make_event', activity_id=activity.id)}}" title="plan event">
           <p class="event-actions">Plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
-        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}">
+        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}" title="modify {{event.name.lower()}}">
           <p class="event-actions">Modify event</p>
         </a>
-        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}">
+        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}" title="cancel {{event.name.lower()}}">
           <p class="event-actions">Cancel event</p>
         </a>
         {% endif %}
@@ -60,25 +60,25 @@
     {% else %}
     <nav class="account-actions-container">
       <ul>
-        <a href="#"><p class="account-actions">Hosting</p></a>
-        <a href="#"><p class="account-actions">Attending</p></a>
-        <a href="#"><p class="account-actions">Considering</p></a>
-        <a href="#"><p class="account-actions">Settings</p></a>
+        <a href="#" title="hosting"><p class="account-actions">Hosting</p></a>
+        <a href="#" title="attending"><p class="account-actions">Attending</p></a>
+        <a href="#" title="considering"><p class="account-actions">Considering</p></a>
+        <a href="#" title="settings"><p class="account-actions">Settings</p></a>
       </ul>
     </nav>
     <nav class="activity-actions-container">
       <ul>
-        <a href="{{url_for('display_activities')}}">
+        <a href="{{url_for('display_activities')}}" title="view activities">
           <p class="activity-actions">View activities</p>
         </a>
-        <a href="{{url_for('make_activity')}}">
+        <a href="{{url_for('make_activity')}}" title="new activity">
           <p class="activity-actions">New activity</p>
         </a>
         {% if activity and activity.user_id==user_id %}
-        <a href="{{url_for('update_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('update_activity', activity_id=activity.id)}}" title="edit {{activity.name.lower()}}">
           <p class="activity-actions">Edit activity</p>
         </a>
-        <a href="{{url_for('delete_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('delete_activity', activity_id=activity.id)}}" title="remove {{activity.name.lower()}}">
           <p class="activity-actions">Remove activity</p>
         </a>
         {% endif %}
@@ -87,20 +87,20 @@
     <nav class="event-actions-container">
       <ul>
         {% if activity and event%}
-        <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+        <a href="{{url_for('display_activity', activity_id=activity.id)}}" title="view events">
           <p class="event-actions">View events</p>
         </a>
         {% endif %}
         {% if activity %}
-        <a href="{{url_for('make_event', activity_id=activity.id)}}">
+        <a href="{{url_for('make_event', activity_id=activity.id)}}" title="plan event">
           <p class="event-actions">Plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
-        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}">
+        <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}" title="modify {{event.name.lower()}}">
           <p class="event-actions">Modify event</p>
         </a>
-        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}">
+        <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}" title="cancel {{event.name.lower()}}">
           <p class="event-actions">Cancel event</p>
         </a>
         {% endif %}

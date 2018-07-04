@@ -1,8 +1,14 @@
 <section class="footer-bar">
   <a href="{{ back }}" id="button-rightmost-minus-1">
-    <img class="img-back" src="{{ url_for('static', filename='img/back.svg') }}">
+    <img class="img-back"
+         src="{{ url_for('static', filename='img/back.svg') }}"
+         title="back"
+         alt="back link">
   </a>
   <a href="{{url_for('display_activities')}}" id="button-rightmost">
-    <img class="img-home" src="{{ url_for('static', filename='img/home.svg') }}">
+    <img class="img-home"
+         src="{{ url_for('static', filename='img/home.svg') }}"
+         title="home"
+         alt="home link">
   </a>
 </section>

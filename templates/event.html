@@ -7,7 +7,7 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">{{ event.name }}</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -27,7 +27,7 @@
         {% endif %}
         {% if event.user_id==user_id %}
         <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}"
-           class="display-event">
+           class="display-event" title="modify event">
         {% endif %}
           <section class="event-wrapper display-event">
             <div class="event-time">

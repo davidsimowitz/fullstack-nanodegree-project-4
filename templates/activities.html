@@ -5,9 +5,9 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
-  <img class="title" src="{{ url_for('static', filename='img/logo.svg') }}">
+  <img class="title" src="{{ url_for('static', filename='img/logo.svg') }}" title="Coordinate" alt="Coordinate events with ease">
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -20,7 +20,7 @@
 
     {% for activity in activities %}
     <section class="activity-wrapper activity-img" style="background-image: url('{{ url_for('static', filename='img/placeholder-logo.svg') }}')">
-      <a href="{{url_for('display_activity', activity_id=activity.id)}}">
+      <a href="{{url_for('display_activity', activity_id=activity.id)}}" title="{{activity.name.lower()}} events">
         <svg class="text-path" viewBox="0 0 200 200"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink">

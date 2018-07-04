@@ -7,7 +7,7 @@
   <div class="header-bar-bot"></div>
   <h1 class="title">{{ activity.name.title() }}</h1>
   {% include "login-menu.html" %}
-  <a href="javascript:void(0)" id="user-account-button" onclick="openUserMenu()">
+  <a href="javascript:void(0)" id="user-account-button" title="open menu" onclick="openUserMenu()">
     <b>☰</b>
   </a>
 </header>
@@ -27,7 +27,7 @@
         <p class="event-date">{{ event.starting_date_long_form }}</p>
       {% endif %}
         <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
-           class="display-event">
+           class="display-event" title="{{event.name}} details">
           <section class="event-wrapper">
             <div class="event-time">
               <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
