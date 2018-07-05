@@ -4,9 +4,25 @@
 	<!ENTITY ns_svg "http://www.w3.org/2000/svg">
 	<!ENTITY ns_xlink "http://www.w3.org/1999/xlink">
 ]>
-<svg  version="1.1" id="Layer_1" xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" width="70.578" height="95.954"
-	 viewBox="0 0 70.578 95.954" overflow="visible" enable-background="new 0 0 70.578 95.954" xml:space="preserve">
-<path fill="#002BFF" d="M2.361,53.711c-3.147-3.146-3.147-8.248,0-11.395L56.952,2.434c3.147-3.147,8.729-3.342,11.396,0
-	c2.668,3.342,2.178,39.61,2.178,39.61c0.101,5.195,0.033,6.701,0,11.056c0,0,0.596,37.354-2.178,40.496
-	c-2.772,3.141-8.246,3.146-11.396,0L2.361,53.711z"/>
+<svg  version="1.1"
+	  id="Layer_1"
+	  xmlns="&ns_svg;"
+	  xmlns:xlink="&ns_xlink;"
+	  width="70.578"
+	  height="95.954"
+	  viewBox="0 0 70.578 95.954"
+	  overflow="visible"
+	  enable-background="new 0 0 70.578 95.954"
+	  xml:space="preserve">
+<path fill="#002BFF"
+	  d="M 2.361,53.711
+	     c -3.147,-3.146 -3.147,-8.248 0,-11.395
+	     L 56.952,2.434
+	     c 3.147,-3.147 8.729,-3.342 11.396,0
+	     c 2.668,3.342 2.178,39.61 2.178,39.61
+	     c 0.101,5.195 0.033,6.701 0,11.056
+	     c 0,0 0.596,37.354 -2.178,40.496
+	     c -2.772,3.141 -8.246,3.146 -11.396,0
+	     L 2.361,53.711
+	     z"/>
 </svg>
