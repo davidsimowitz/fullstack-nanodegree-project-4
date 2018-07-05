@@ -8,10 +8,8 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
-  <img class="title"
-       src="{{ url_for('static', filename='img/logo.svg') }}"
-       title="Coordinate"
-       alt="Coordinate events with ease">
+  <h1 class="title"
+      id="login-title"></h1>
 </header>
 
 <main>
@@ -19,10 +17,14 @@
 <section id="login-container">
   <section class="login-wrapper">
 
-    <p id="login-status">continue with...</p>
+    <p id="login-status-header">continue with...</p>
     <p id="login-status-bar"></p>
 
     <section class="oauth-wrapper">
+      <!-- Google result -->
+      <div id="result"></div>
+      <!-- Facebook status -->
+      <div id="status"></div>
       <!-- Google+ sign in button-->
       <div id="signinButton">
         <span class="g-signin"
@@ -40,27 +42,23 @@
            function when clicked. -->
       <div>
         <fb:login-button scope="public_profile,email"
-                         onlogin="checkLoginState();">
+                         onlogin="checkLoginState();"
+                         id="signinButton2">
           <a href='javascript:checkLoginState()'>Facebook Login</a>
         </fb:login-button>
       </div>
-    </section>
-
-    <section class="oauth-result-wrapper">
-      <!-- Google result -->
-      <div id="result"></div>
-      <!-- Facebook status -->
-      <div id="status"></div>
     </section>
 
   </section>
 </section>
 
   <script>
+
       function signInCallback(authResult) {
         if (authResult['code']) {
-          // Hide the sign-in button now that the user is authorized
+          // Hide the sign-in buttons now that the user is authorized
           $('#signinButton').attr('style', 'display: none');
+          $('#signinButton2').attr('style', 'display: none');
           // Send the one-time-use code to the server, if the server
           // responds, write a 'login successful' message to the web
           // page and then redirect back to the main page
@@ -73,8 +71,14 @@
               success: function(result) {
                   // Handle or verify the server response if necessary.
                   if (result) {
-                      $('#result').html('Login Successful!</br>'+ result +
-                                        '</br>Redirecting...')
+                      $('#login-status-header').html('redirecting...');
+                      result = result.split(">");
+                      var picture = result[0] + '>';
+                      var name = result[1].split(" ");
+                      // Use the account user's first name.
+                      $('#login-title').html('Thanks for logging in, ' +
+                                             name[0] + '!');
+                      $('#result').html(picture);
                       setTimeout(function() {
                           window.location.href = "{{ redirect_to }}";
                           }, 3000);
@@ -103,11 +107,15 @@
       // app know the current login status of the person.
       if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        testAPI();
+        // Hide the sign-in buttons now that the user is authorized
+        $('#signinButton').attr('style', 'display: none');
+        $('#signinButton2').attr('style', 'display: none');
+        // testAPI();
+        greetUser();
         sendShortLivedTokenToServer(response);
       } else {
         // The person is not logged into your app or we are unable to tell.
-        document.getElementById('status').innerHTML = 'Please log ' +
+        document.getElementById('login-title').innerHTML = 'Please log ' +
           'into this app.';
       }
     }
@@ -151,8 +159,18 @@
       console.log('Welcome!  Fetching your information.... ');
       FB.api('/me', function(response) {
         console.log('Successful login for: ' + response.name);
-        document.getElementById('status').innerHTML =
+        document.getElementById('login-title').innerHTML =
           'Thanks for logging in, ' + response.name + '!';
+      });
+    }
+
+    // Update header after successful connection.
+    function greetUser() {
+      FB.api('/me', function(response) {
+        var name = response.name.split(" ");
+        // Use the account user's first name.
+        document.getElementById('login-title').innerHTML =
+          'Thanks for logging in, ' + name[0] + '!';
       });
     }
 
@@ -168,8 +186,8 @@
             contentType: 'application/octet-stream; charset=utf-8',
             success: function(result) {
                 if (result) {
-                    $('#result').html('Login Successful!</br>'+ result +
-                                      '</br>Redirecting...')
+                    $('#login-status-header').html('redirecting...');
+                    $('#result').html(result);
                     setTimeout(function() {
                         window.location.href = "{{ redirect_to }}";
                         }, 3000);

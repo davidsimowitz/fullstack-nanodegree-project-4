@@ -511,11 +511,9 @@ def validate_state_token(*, session=flask.session):
         return (True, None)
 
 
-def login_splash_page(*, username, picture):
+def login_splash_page(*, picture):
     """display login splash page"""
-    return ('<h1>Welcome, {}!</h1><img src="{}" style="max-width: 325px;'
-            'height: auto;">'.format(flask.session['username'],
-                                     flask.session['picture']))
+    return ('<img src="{}" id="login-image">'.format(flask.session['picture']))
 
 
 @app.route('/google.connect/', methods=['POST'])
@@ -620,8 +618,7 @@ def google_connect():
         user_id = make_user(session=flask.session)
     flask.session['user_id'] = user_id
 
-    return login_splash_page(username=flask.session['username'],
-                             picture=flask.session['picture'])
+    return login_splash_page(picture=flask.session['picture']) + flask.session['username']
 
 
 @app.route('/google.disconnect/')
@@ -794,8 +791,7 @@ def facebook_connect():
         user_id = make_user(session=flask.session)
     flask.session['user_id'] = user_id
 
-    return login_splash_page(username=flask.session['username'],
-                             picture=flask.session['picture'])
+    return login_splash_page(picture=flask.session['picture'])
 
 
 @app.route('/facebook.disconnect/')
