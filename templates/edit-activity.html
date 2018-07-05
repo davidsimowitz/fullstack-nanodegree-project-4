@@ -1,33 +1,66 @@
-  {% extends "base.html" %}
+{% extends "base.html" %}
+{% block content %}
+
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">edit activity</h1>
   {% include "login-menu.html" %}
-  {% block content %}
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
+</header>
 
-    <header>
-      <h1>Edit {{ activity.name }}</h1>
-    </header>
+<main>
+    {% include "user-account-menu.html" %}
 
-    <main>
-
-        <form action="{{ url_for('update_activity', activity_id=activity.id) }}" method="post" id="edit-activity">
-
-          <section>
-
-            <fieldset>
-              <legend>
-                <label for="name">Name:</label>
-              </legend>
-              <input type="text" size="32" id="name" name="name" value="{{activity.name}}">
-            </fieldset>
-
-            <input type="submit" value="Edit Activity">
-
+    <form action="{{ url_for('update_activity', activity_id=activity.id) }}"
+          method="post"
+          id="form-container">
+      <section class="form-wrapper">
+        <p class="form-title">{{activity.name}}</p>
+          <section class="field-wrapper">
+            <p class="input-title">name</p>
           </section>
+          <fieldset class="field-wrapper">
+            <legend>Activity Name</legend>
+            <label for="name">activity name</label>
+            <input type="text"
+                   size="32"
+                   id="name"
+                   name="name"
+                   class="input-field"
+                   value="{{activity.name}}">
+          </fieldset>
+          <fieldset class="field-wrapper bottom-bar">
+            <a href="{{url_for('display_activity', activity_id=activity.id)}}"
+               id="cancel-activity">back</a>
+            <legend>Update Activity</legend>
+            <label for="submit-activity">update activity</label>
+            <input type="submit"
+                   value="update"
+                   id="submit-activity">
+          </fieldset>
+      </section>
+    </form>
 
-        </form>
+</main>
 
-    </main>
+<footer>
+</footer>
 
-    <footer>
-    </footer>
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
 
-  {% endblock %}
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
+
+{% endblock %}

@@ -1,30 +1,95 @@
-    {% extends "base.html" %}
-    {% include "login-menu.html" %}
-    {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
-        <div>
-          <a href="{{url_for('make_activity')}}">
-              <h1>add a new activity</h1>
-          </a>
-        </div>
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <img class="title"
+       src="{{ url_for('static', filename='img/logo.svg') }}"
+       title="Coordinate"
+       alt="Coordinate events with ease">
+  {% include "login-menu.html" %}
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
+</header>
 
-        {% for activity in activities %}
+<main>
+  {% include "user-account-menu.html" %}
 
-        <section>
-          <div>
-            <p>{{ activity.id }}</p>
-          </div>
-          <div>
-            <p>{{ activity.name }}</p>
-          </div>
+  <!-- activity list: start -->
+  <section id="activity-container">
 
-          <div>
-            <a href="{{url_for('display_activity', activity_id=activity.id)}}">
-              <p>view events</p>
-            </a>
-          </div>
-        </section>
+    {% for activity in activities %}
+    <section
+        class="activity-wrapper activity-img"
+        style="background-image: url('{{ url_for('static', filename='img/placeholder-logo.svg') }}')">
+      <a
+          href="{{url_for('display_activity', activity_id=activity.id)}}"
+          title="{{activity.name.lower()}} events">
+        <svg
+            class="text-path"
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <path
+                id="TextPath"
+                d="M 100,190
+                   A 90,90 0 1,0 10,100" />
+          </defs>
+          <text class="activity-name">
+            <textPath xlink:href="#TextPath">{{ activity.name }}</textPath>
+          </text>
+        </svg>
+      </a>
+    </section>
+    {% endfor %}
 
-        {% endfor %}
+  </section>
+  <!-- activity list: end -->
 
-    {% endblock %}
+</main>
+
+<footer>
+  <div>
+    <h6>© 2018 David Simowitz</h6>
+  <div>
+</footer>
+
+<script>
+  window.addEventListener("resize", adjustActivityContainerRowHeight);
+
+  var activities = document.getElementById('activity-container');
+  /*
+   * Adjust each row height in 'grid-auto-rows' to match each
+   * column width in 'grid-template-columns' to allow the shape
+   * of each activity grid item to be set to a circle.
+   */
+  function adjustActivityContainerRowHeight() {
+    var style = window.getComputedStyle(activities);
+    // only require the width from one column
+    var columnWidth =
+        style.getPropertyValue('grid-template-columns').split(" ", 1);
+    activities.style.gridAutoRows = columnWidth;
+  };
+
+  // Apply inital adjustment to row height
+  window.onresize = adjustActivityContainerRowHeight();
+</script>
+
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+import datetime
 import sqlalchemy
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm
@@ -116,9 +117,29 @@ class Event(declarative_base):
                 'description': self.description,
                 'start date': self.start_date,
                 'start time': self.start_time_12_hour_notation,
+                'starting date long form': self.starting_date_long_form,
                 'end date': self.end_date,
                 'end time': self.end_time_12_hour_notation,
                }
+
+    @property
+    def starting_date_long_form(self):
+        """Return starting date in <Day_of_the_week, Month DD, YYYY> format"""
+        MONTH = ['January', 'February', 'March', 'April', 'May',
+                 'June', 'July', 'August', 'September', 'October',
+                 'November', 'December']
+        DAY_OF_THE_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                           'Friday', 'Saturday', 'Sunday']
+        return '{}, {} {}, {}'.format(
+                 DAY_OF_THE_WEEK[self.start_date.weekday()],
+                 MONTH[self.start_date.month - 1],
+                 self.start_date.day,
+                 self.start_date.year)
+
+    @starting_date_long_form.setter
+    def starting_date_long_form(self, starting_date):
+        """Starting date in long form notation is read-only"""
+        raise AttributeError('<starting_date_long_form> is read-only')
 
     @property
     def start_time(self):

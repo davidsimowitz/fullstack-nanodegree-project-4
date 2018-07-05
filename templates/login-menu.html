@@ -1,10 +1,18 @@
-    <div>
-      {% if 'username' not in session %}
-      <a href="{{url_for('user_login')}}">login</a>
-      {% elif 'picture' in session %}
-      <a href="{{url_for('user_logout')}}">logout</a>
-      <img src="{{session['picture']}}" style="max-width: 25px; height: auto;">
-      {% else %}
-      <a href="{{url_for('user_logout')}}">logout</a>
-      {% endif %}
-    </div>
+<div class="login-link">
+  {% if 'username' not in session %}
+  <a href="{{url_for('user_login')}}"
+     title="login">login</a>
+  {% elif 'picture' in session %}
+  <img id="account-image-small"
+       src="{{session['picture']}}"
+       title="{{session['username']}}"
+       alt="{{session['username']}}'s profile photo">
+  <a href="{{url_for('user_logout')}}"
+     id="logout-link"
+     title="logout">logout</a>
+  {% else %}
+  <a href="{{url_for('user_logout')}}"
+     id="logout-link"
+     title="logout">logout</a>
+  {% endif %}
+</div>

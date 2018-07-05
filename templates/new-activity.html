@@ -1,33 +1,66 @@
-  {% extends "base.html" %}
+{% extends "base.html" %}
+{% block content %}
+
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">create activity</h1>
   {% include "login-menu.html" %}
-  {% block content %}
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
+</header>
 
-    <header>
-      <h1>Create Activity</h1>
-    </header>
+<main>
+    {% include "user-account-menu.html" %}
 
-    <main>
-
-        <form action="{{ url_for('make_activity') }}" method="post" id="create-activity">
-
-          <section>
-
-            <fieldset>
-              <legend>
-                <label for="name">Name:</label>
-              </legend>
-              <input type="text" size="32" id="name" name="name">
-            </fieldset>
-
-            <input type="submit" value="Create Activity">
-
+    <form action="{{ url_for('make_activity') }}"
+          method="post"
+          id="form-container">
+      <section class="form-wrapper">
+        <p class="form-title">new activity</p>
+          <section class="field-wrapper">
+            <p class="input-title">name</p>
           </section>
+          <fieldset class="field-wrapper">
+            <legend>Activity Name</legend>
+            <label for="name">activity name</label>
+            <input type="text"
+                   size="32"
+                   id="name"
+                   name="name"
+                   class="input-field"
+                   placeholder="enter the name of the activity here">
+          </fieldset>
+          <fieldset class="field-wrapper bottom-bar">
+            <a href="{{url_for('display_activities')}}"
+               id="cancel-activity">cancel</a>
+            <legend>Submit Activity</legend>
+            <label for="submit-activity">submit activity</label>
+            <input type="submit"
+                   value="submit"
+                   id="submit-activity">
+          </fieldset>
+      </section>
+    </form>
 
-        </form>
+</main>
 
-    </main>
+<footer>
+</footer>
 
-    <footer>
-    </footer>
+<script>
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+  }
 
-  {% endblock %}
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+  }
+</script>
+
+{% endblock %}

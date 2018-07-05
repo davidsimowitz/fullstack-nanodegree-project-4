@@ -3,18 +3,19 @@
 
   <head>
     <meta charset="utf-8">
+    <title>Coordinate</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/default.css') }}">
 
     {% if load_scripts %}
-
       {% for script in load_scripts %}
-    <script src="{{ script }}"></script>
+      <script src="{{ script }}"></script>
       {% endfor %}
-
     {% endif %}
 
   </head>
 
-  <body>
+  <body id="page">
 
     {% block content %}
     {% endblock %}
