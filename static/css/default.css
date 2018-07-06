@@ -57,10 +57,12 @@ header {
   grid-column: 8 / 10;
   grid-row: 2 / 8;
   justify-self: end;
+  text-shadow: #060E2A 3px 3px 6px;
 }
 
 .login-link:hover {
   color: hsl(231, 100%, 98%);
+  text-shadow: #060E2A 2px 2px 3px;
 }
 
 #logout-link {
@@ -99,10 +101,12 @@ header {
   font: bold 21px arial, sans-serif;
   grid-column: 2 / 3;
   grid-row: 9 / 15;
+  text-shadow: #060E2A 3px 3px 4px;
 }
 
 #user-account-button:hover {
   color: hsl(231, 100%, 98%);
+  text-shadow: #060E2A 2px 2px 2px;
 }
 
 /* Login */
@@ -279,11 +283,13 @@ header {
   max-width: 225px;
   padding: 15px;
   text-align: center;
+  text-shadow: #060E2A 3px 3px 4px;
   transition: 0.4s;
 }
 
 .login-button:hover {
   color: hsl(231, 100%, 98%);
+  text-shadow: #060E2A 2px 2px 2px;
 }
 
 /* Main */
