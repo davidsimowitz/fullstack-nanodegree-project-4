@@ -645,7 +645,7 @@ input[id=submit-event] {
   display: grid;
   grid-column: 2 / 10;
   grid-row: 2 / 12;
-  grid-template-columns: 1fr repeat(2, minmax(35px, 8vh)) 2vw;
+  grid-template-columns: 1fr repeat(2, minmax(35px, 7vh)) 2vw;
   grid-template-rows: 1fr;
   grid-gap: 20px;
   margin: 0;
@@ -654,22 +654,24 @@ input[id=submit-event] {
 
 #button-rightmost {
   grid-column: 3 / 4;
-  max-height: max(45px, 8vh);
   margin: 0;
 }
 
 #button-rightmost-minus-1 {
   grid-column: 2 / 3;
-  max-height: max(45px, 8vh);
   margin: 0;
 }
 
 .img-home {
-  max-height: 55px;
+  height: 14vh;
+  max-height: 90px;
+  min-height: 60px;
 }
 
 .img-back {
-  max-height: 55px;
+  height: 14vh;
+  max-height: 90px;
+  min-height: 60px;
 }
 
 /* Media Queries */

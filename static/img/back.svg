@@ -8,21 +8,49 @@
 	  id="Layer_1"
 	  xmlns="&ns_svg;"
 	  xmlns:xlink="&ns_xlink;"
-	  width="70.578"
-	  height="95.954"
-	  viewBox="0 0 70.578 95.954"
+	  width="100"
+	  height="100"
+	  viewBox="0 0 100 100"
 	  overflow="visible"
-	  enable-background="new 0 0 70.578 95.954"
+	  enable-background="new 0 0 100 100"
 	  xml:space="preserve">
-<path fill="#002BFF"
-	  d="M 2.361,53.711
-	     c -3.147,-3.146 -3.147,-8.248 0,-11.395
-	     L 56.952,2.434
-	     c 3.147,-3.147 8.729,-3.342 11.396,0
-	     c 2.668,3.342 2.178,39.61 2.178,39.61
-	     c 0.101,5.195 0.033,6.701 0,11.056
-	     c 0,0 0.596,37.354 -2.178,40.496
-	     c -2.772,3.141 -8.246,3.146 -11.396,0
-	     L 2.361,53.711
-	     z"/>
+  <defs>
+    <filter
+        id="back-svg"
+        x="0"
+        y="0"
+        width="200%"
+        height="200%">
+      <feOffset
+          result="offOut"
+          in="SourceAlpha"
+          dx="12"
+          dy="14" />
+      <feColorMatrix
+          result="matrixOut"
+          in="offOut"
+          type="matrix"
+          values="0.1 0 0 0 0 0 0.1 0 0 0 0 0 0.1 0 0 0 0 0 1 0" />
+      <feGaussianBlur
+          result="blurOut"
+          in="matrixOut"
+          stdDeviation="9" />
+      <feBlend
+          in="SourceGraphic"
+          in2="blurOut"
+          mode="normal" />
+    </filter>
+  </defs>
+  <path fill="#002BFF"
+        d="M 18.702,47.795
+          c -1.988,-1.986 -1.988,-5.209 0,-7.197
+          l 34.481,-25.19
+          c 1.987,-1.987 5.514,-2.111 7.197,0
+          c 1.686,2.111 1.375,25.019 1.375,25.019
+          c 0.064,3.281 0.021,4.232 0,6.983
+          c 0,0 0.377,23.593 -1.375,25.577
+          c -1.751,1.983 -5.209,1.988 -7.197,0
+          L 18.702,47.795
+          z"
+        filter="url(#back-svg)" />
 </svg>
