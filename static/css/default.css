@@ -84,6 +84,8 @@ header {
 
 .title {
   align-self: end;
+  color: hsl(53.2, 79.9%, 62.9%);
+  font-size: 48px;
   grid-column: 3 / 8;
   grid-row: 3 / 14;
   height: 100%;
@@ -327,11 +329,6 @@ main {
 }
 
 /* Events */
-
-.title {
-  color: hsl(53.2, 79.9%, 62.9%);
-  font-size: 48px;
-}
 
 #event-container {
   display: grid;
