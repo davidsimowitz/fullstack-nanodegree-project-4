@@ -333,6 +333,16 @@ main {
   overflow: hidden;
 }
 
+.activity-wrapper:hover {
+  border: 8px solid hsl(333, 11%, 72%);
+  box-shadow: 4px 4px 6px 4px hsl(231, 8%, 64%);
+}
+
+.activity-wrapper:active {
+  border: 8px solid hsl(333, 11%, 68%);
+  box-shadow: 3px 3px 2px 3px hsl(231, 8%, 58%);
+}
+
 .text-path {
   height: auto;
   width: 100%;
