@@ -192,11 +192,27 @@ header {
 }
 
 .close-button {
+  align-content: center;
   position: absolute;
-  top: 0;
+  top: 15px;
   right: 15px;
   font-size: 48px;
+  line-height: 45px;
   margin-left: 50px;
+  text-align: center;
+  width: 45px;
+  height: 45px;
+}
+
+.close-button:hover {
+  background-color: hsl(231, 12%, 92%);
+  border-radius: 50%;
+}
+
+.close-button:active {
+  background-color: hsl(231, 12%, 92%);
+  border: 1px solid hsl(231, 12%, 82%);
+  border-radius: 50%;
 }
 
 #account-wrapper {

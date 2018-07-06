@@ -1,8 +1,9 @@
 <section id="user-account-menu">
   <a href="javascript:void(0)"
-     class="close-button"
      onclick="closeUserMenu()"
-     title="close menu">&times;</a>
+     title="close menu">
+    <p class="close-button">×</p>
+  </a>
   <div id="account-wrapper">
     <!-- user not logged in -->
     {% if 'username' not in session %}
