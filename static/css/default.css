@@ -207,6 +207,7 @@ header {
 .account-image {
   border-radius: 50%;
   border: 2px solid hsl(231, 12%, 86%);
+  box-shadow: 6px 6px 8px 2px hsl(231, 8%, 68%);
   height: 200px;
   justify-self: center;
   margin: 5vh 0 4vh 0;
