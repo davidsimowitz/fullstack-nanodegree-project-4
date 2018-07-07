@@ -40,6 +40,7 @@ class Activity(declarative_base):
     Attributes:
         id: Integer primary key for the activity record.
         name: The name of the activity.
+        icon: The icon for the activity stored as a URL.
         user_id: The id for the user account record associated with this activity.
 
     Dependencies:
@@ -52,6 +53,7 @@ class Activity(declarative_base):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    icon = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey('user_account.id'))
     user_account = sqlalchemy.orm.relationship(UserAccount)
@@ -61,6 +63,7 @@ class Activity(declarative_base):
         """Return Activity record in a serializable format"""
         return {
                 'name': self.name,
+                'icon': self.icon,
                 'id': self.id,
                }
 

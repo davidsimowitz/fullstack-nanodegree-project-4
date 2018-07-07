@@ -27,7 +27,7 @@
     {% for activity in activities %}
     <section
         class="activity-wrapper activity-img"
-        style="background-image: url('{{ url_for('static', filename='img/placeholder-logo.svg') }}')">
+        style="background-image: url('{{ activity.icon }}')">
       <a
           href="{{url_for('display_activity', activity_id=activity.id)}}"
           title="{{activity.name.lower()}} events">
