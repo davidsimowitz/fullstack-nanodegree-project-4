@@ -566,6 +566,7 @@ main {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
+  box-shadow: 2px 2px 8px 4px hsl(231, 8%, 68%);
   color: hsl(231, 100%, 100%);
   font-size: 18px;
   grid-column: 3 / 4;
@@ -584,6 +585,7 @@ main {
   background-color: hsl(242, 12%, 44%);
   border: 0;
   border-radius: 7px;
+  box-shadow: 2px 2px 8px 4px hsl(231, 8%, 68%);
   color: hsl(231, 100%, 100%);
   font-size: 18px;
   grid-column: 2 / 3;
@@ -603,8 +605,21 @@ main {
 #delete-event:hover,
 #delete-activity:hover,
 #undo-delete:hover {
-  background-color: hsl(231, 100%, 48%);
-  color: hsl(231, 100%, 90%);
+  background-color: hsl(242, 12%, 24%);
+  box-shadow: 2px 2px 4px 2px hsl(231, 8%, 64%);
+  color: hsl(231, 100%, 94%);
+}
+
+#submit-event:active,
+#cancel-event:active,
+#submit-activity:active,
+#cancel-activity:active,
+#delete-event:active,
+#delete-activity:active,
+#undo-delete:active {
+  background-color: hsl(242, 12%, 16%);
+  box-shadow: 1px 1px 2px 2px hsl(231, 8%, 58%);
+  color: hsl(231, 100%, 86%);
 }
 
 .bottom-bar {
