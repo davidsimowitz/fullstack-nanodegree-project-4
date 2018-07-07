@@ -715,16 +715,28 @@ input[id=submit-event] {
   margin: 0;
 }
 
-.img-home {
+#img-home {
   height: 14vh;
   max-height: 90px;
   min-height: 60px;
 }
 
-.img-back {
+#img-back {
   height: 14vh;
   max-height: 90px;
   min-height: 60px;
+}
+
+.footer-bar-svg-fill{
+  fill: hsl(231, 100%, 46%);
+}
+
+.footer-bar-svg-fill:hover{
+  fill: hsl(231, 100%, 62%);
+}
+
+.footer-bar-svg-fill:active{
+  fill: hsl(231, 100%, 36%);
 }
 
 /* Media Queries */
