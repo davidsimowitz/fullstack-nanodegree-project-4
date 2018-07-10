@@ -36,6 +36,23 @@
                    class="input-field"
                    value="{{activity.name}}">
           </fieldset>
+          <section class="field-wrapper">
+            <p class="input-title">icon</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Activity Icon</legend>
+            <label for="icon">activity icon</label>
+            <img class="select-icon"
+                 src="{{ activity.icon }}"
+                 title="select icon"
+                 alt="select {{activity.name}}'s icon">
+            <input type="hidden"
+                   size="16"
+                   id="icon"
+                   name="icon"
+                   class="input-field"
+                   value="{{ activity.icon }}">
+          </fieldset>
           <fieldset class="field-wrapper bottom-bar">
             <a href="{{url_for('display_activity', activity_id=activity.id)}}"
                id="cancel-activity">back</a>

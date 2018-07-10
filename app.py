@@ -887,6 +887,7 @@ def make_activity():
     if flask.request.method == 'POST':
         new_activity = models.Activity(
                            name=flask.request.form['name'],
+                           icon=flask.request.form['icon'],
                            user_id=get_user_id(
                                        user_email=flask.session['email']))
         with db_session() as db:
@@ -926,6 +927,8 @@ def update_activity(activity_id):
     if flask.request.method == 'POST':
         if flask.request.form['name']:
             activity.name = flask.request.form['name']
+        if flask.request.form['icon']:
+            activity.icon = flask.request.form['icon']
         with db_session() as db:
             db.add(activity)
             db.commit()
