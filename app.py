@@ -899,7 +899,7 @@ def make_activity():
                            'display_activity',
                            activity_id=new_activity.id))
     else:
-        icons = models.ICONS
+        icons = models.icon_list()
         return flask.render_template('new-activity.html',
                                      icons=icons)
 
@@ -939,7 +939,7 @@ def update_activity(activity_id):
                        flask.url_for('display_activity',
                                      activity_id=activity.id))
     else:
-        icons = models.ICONS
+        icons = models.icon_list()
         return flask.render_template('edit-activity.html',
                                      activity=activity,
                                      icons=icons)

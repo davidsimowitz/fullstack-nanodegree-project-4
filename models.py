@@ -1,4 +1,5 @@
 import datetime
+import os
 import sqlalchemy
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm
@@ -8,18 +9,26 @@ import sys
 DB = 'postgresql:///events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
-ICONS = ['/static/img/beach-logo.svg',
-         '/static/img/beach-logo-2.svg',
-         '/static/img/biking-logo.svg',
-         '/static/img/camping-logo.svg',
-         '/static/img/drinks-logo.svg',
-         '/static/img/food-logo.svg',
-         '/static/img/food-logo-2.svg',
-         '/static/img/movies-logo.svg',
-         '/static/img/movies-logo-2.svg',
-         '/static/img/sailing-logo.svg',
-         '/static/img/swimming-logo.svg',
-         '/static/img/swimming-logo-2.svg']
+def icon_list(path='static/img/'):
+    """returns a list of icon urls
+
+    Args:
+        path: relative directory to be searched
+
+    Returns:
+        icons: A list containing the relative urls of icon
+               svg files located in the supplied path.
+
+    Dependencies:
+        os.walk
+    """
+    icons= []
+    for root, _, images in os.walk(path):
+        for image in images:
+            if image.endswith('-icon.svg'):
+                icons.append('/' + root + image)
+    return icons
+
 
 class UserAccount(declarative_base):
     """User account object
