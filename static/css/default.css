@@ -834,11 +834,32 @@ input[id=submit-event] {
 
 /* Footer Navigation Bar */
 
+.footer {
+  background-color: hsl(231, 100%, 82%);
+  bottom: 0;
+  box-shadow: 0px -4px 8px 4px hsl(231, 8%, 76%);
+  box-shadow: 0px -4px 8px 4px hsla(231, 8%, 8%, 25%);
+  display: grid;
+  grid-template-columns: minmax(1vw, 1fr) repeat(8, minmax(40px, 100px)) minmax(1vw, 1fr);
+  grid-template-rows: min-content;
+  left: 0;
+  margin: 0;
+  position: fixed;
+  width: 100%;
+}
+
+#copyright {
+  align-self: start;
+  color: hsl(226, 85%, 10%);
+  font: bold 10px arial, sans-serif;
+  grid-column: 2 / 9;
+}
+
 .footer-nav {
   bottom: 0;
   display: grid;
   grid-template-columns: minmax(1vw, 1fr) repeat(8, minmax(40px, 100px)) minmax(1vw, 1fr);
-  grid-template-rows: repeat(12, minmax(3.5px, 0.8vh));
+  grid-template-rows: repeat(15, minmax(3.5px, 0.8vh));
   left: 0;
   margin: 0 15px 31px 0;
   position: fixed;

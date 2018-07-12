@@ -1,12 +1,14 @@
-<section class="footer-bar">
-  <a href="{{ back }}"
-     id="button-rightmost-minus-1"
-     title="back">
-    {% include "back.svg" %}
-  </a>
-  <a href="{{url_for('display_activities')}}"
-     id="button-rightmost"
-     title="home">
-    {% include "home.svg" %}
-  </a>
+<section class="footer-nav">
+  <section class="footer-bar">
+    <a href="{{ back }}"
+       id="button-rightmost-minus-1"
+       title="back">
+      {% include "back.svg" %}
+    </a>
+    <a   href="{{url_for('display_activities')}}"
+       id="button-rightmost"
+       title="home">
+      {% include "home.svg" %}
+    </a>
+  </section>
 </section>
