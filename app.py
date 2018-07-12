@@ -887,6 +887,7 @@ def make_activity():
     if flask.request.method == 'POST':
         new_activity = models.Activity(
                            name=flask.request.form['name'],
+                           icon=flask.request.form['icon'],
                            user_id=get_user_id(
                                        user_email=flask.session['email']))
         with db_session() as db:
@@ -898,7 +899,9 @@ def make_activity():
                            'display_activity',
                            activity_id=new_activity.id))
     else:
-        return flask.render_template('new-activity.html')
+        icons = models.icon_list()
+        return flask.render_template('new-activity.html',
+                                     icons=icons)
 
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
@@ -926,6 +929,8 @@ def update_activity(activity_id):
     if flask.request.method == 'POST':
         if flask.request.form['name']:
             activity.name = flask.request.form['name']
+        if flask.request.form['icon']:
+            activity.icon = flask.request.form['icon']
         with db_session() as db:
             db.add(activity)
             db.commit()
@@ -934,8 +939,10 @@ def update_activity(activity_id):
                        flask.url_for('display_activity',
                                      activity_id=activity.id))
     else:
+        icons = models.icon_list()
         return flask.render_template('edit-activity.html',
-                                     activity=activity)
+                                     activity=activity,
+                                     icons=icons)
 
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])

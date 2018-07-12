@@ -1,0 +1,46 @@
+<section id="modal-background" class="modal">
+
+<!-- icon list: start -->
+<section id="icon-container">
+    <section class="icon-wrapper">
+      <section class="icon-header">
+        <p id="modal-title">select activity icon</p>
+        <p id="modal-close" title="close">×</p>
+      </section>
+      <section id="activity-container" class="scrollable">
+
+        {% for icon in icons %}
+        <section
+          class="activity-wrapper activity-img"
+          style="background-image: url('{{icon}}')">
+          <a href="javascript:void(0)"
+             onclick="setActivityIcon('{{icon}}')"
+             title="select icon">
+            <svg class="text-path"
+                 viewBox="0 0 220 220"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+              <defs>
+                <path
+                    id="TextPath"
+                    d="M 39.3,39.3
+                       A 100,100 0 1,0 180.3,39.3" />
+              </defs>
+              <text class="activity-name">
+                <textPath
+                    xlink:href="#TextPath"
+                    startOffset="50%"
+                    text-anchor="middle"
+                    class="activity-name-fill"></textPath>
+              </text>
+            </svg>
+          </a>
+        </section>
+        {% endfor %}
+
+      </section>
+    </section>
+</section>
+<!-- icon list: end -->
+
+</section>

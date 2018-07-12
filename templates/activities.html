@@ -27,7 +27,7 @@
     {% for activity in activities %}
     <section
         class="activity-wrapper activity-img"
-        style="background-image: url('{{ url_for('static', filename='img/placeholder-logo.svg') }}')">
+        style="background-image: url('{{ activity.icon }}')">
       <a
           href="{{url_for('display_activity', activity_id=activity.id)}}"
           title="{{activity.name.lower()}} events">
@@ -45,7 +45,8 @@
           <text class="activity-name">
             <textPath xlink:href="#TextPath"
                       startOffset="50%"
-                      text-anchor="middle">{{ activity.name }}</textPath>
+                      text-anchor="middle"
+                      class="activity-name-fill">{{ activity.name }}</textPath>
           </text>
         </svg>
       </a>

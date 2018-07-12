@@ -34,7 +34,29 @@
                    id="name"
                    name="name"
                    class="input-field"
+                   title="update name"
                    value="{{activity.name}}">
+          </fieldset>
+          <section class="field-wrapper">
+            <p class="input-title">icon</p>
+          </section>
+          <fieldset class="field-wrapper">
+            <legend>Activity Icon</legend>
+            <label for="icon">activity icon</label>
+            <!-- open select-activity-icon modal -->
+            <a id="select-icon-button">
+              <img class="icon"
+                   id="iconImage"
+                   src="{{ activity.icon }}"
+                   title="update icon"
+                   alt="select {{activity.name}}'s icon">
+            </a>
+            <input type="hidden"
+                   size="16"
+                   id="icon"
+                   name="icon"
+                   class="input-field"
+                   value="{{ activity.icon }}">
           </fieldset>
           <fieldset class="field-wrapper bottom-bar">
             <a href="{{url_for('display_activity', activity_id=activity.id)}}"
@@ -53,6 +75,8 @@
 <footer>
 </footer>
 
+{% include "select-activity-icon.html" %}
+
 <script>
   function openUserMenu() {
     document.getElementById("user-account-menu").style.width = "350px";
@@ -61,6 +85,65 @@
   function closeUserMenu() {
     document.getElementById("user-account-menu").style.width = "0";
   }
+</script>
+
+<script>
+  // start of select-activity-icon modal code
+  var background = document.getElementById("modal-background");
+  var modal = document.getElementById("icon-container");
+  var open = document.getElementById("select-icon-button");
+  var close = document.getElementById("modal-close");
+
+  open.onclick = function() {
+    background.style.display = "grid";
+    modal.style.display = "grid";
+    adjustActivityContainerRowHeight();
+  }
+
+  close.onclick = function() {
+    modal.style.display = "none";
+    background.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+      background.style.display = "none";
+    }
+  }
+
+  function setActivityIcon(newIcon) {
+    var icon = document.getElementById("icon");
+    icon.value = newIcon;
+
+    var iconImage = document.getElementById("iconImage");
+    iconImage.src = newIcon;
+
+    modal.style.display = "none";
+    background.style.display = "none";
+  }
+  // end of select-activity-icon modal code
+</script>
+
+<script>
+  window.addEventListener("resize", adjustActivityContainerRowHeight);
+
+  var activities = document.getElementById('activity-container');
+  /*
+   * Adjust each row height in 'grid-auto-rows' to match each
+   * column width in 'grid-template-columns' to allow the shape
+   * of each activity grid item to be set to a circle.
+   */
+  function adjustActivityContainerRowHeight() {
+    var style = window.getComputedStyle(activities);
+    // only require the width from one column
+    var columnWidth =
+        style.getPropertyValue('grid-template-columns').split(" ", 1);
+    activities.style.gridAutoRows = columnWidth;
+  };
+
+  // Apply inital adjustment to row height
+  window.onresize = adjustActivityContainerRowHeight();
 </script>
 
 {% endblock %}
