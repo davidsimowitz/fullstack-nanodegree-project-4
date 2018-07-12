@@ -899,7 +899,9 @@ def make_activity():
                            'display_activity',
                            activity_id=new_activity.id))
     else:
-        return flask.render_template('new-activity.html')
+        icons = models.ICONS
+        return flask.render_template('new-activity.html',
+                                     icons=icons)
 
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
@@ -937,8 +939,10 @@ def update_activity(activity_id):
                        flask.url_for('display_activity',
                                      activity_id=activity.id))
     else:
+        icons = models.ICONS
         return flask.render_template('edit-activity.html',
-                                     activity=activity)
+                                     activity=activity,
+                                     icons=icons)
 
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])

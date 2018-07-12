@@ -8,6 +8,19 @@ import sys
 DB = 'postgresql:///events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
+ICONS = ['/static/img/beach-logo.svg',
+         '/static/img/beach-logo-2.svg',
+         '/static/img/biking-logo.svg',
+         '/static/img/camping-logo.svg',
+         '/static/img/drinks-logo.svg',
+         '/static/img/food-logo.svg',
+         '/static/img/food-logo-2.svg',
+         '/static/img/movies-logo.svg',
+         '/static/img/movies-logo-2.svg',
+         '/static/img/sailing-logo.svg',
+         '/static/img/swimming-logo.svg',
+         '/static/img/swimming-logo-2.svg']
+
 class UserAccount(declarative_base):
     """User account object
 
