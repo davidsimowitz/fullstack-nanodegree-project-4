@@ -91,8 +91,36 @@ header {
   grid-column: 3 / 8;
   grid-row: 2 / 14;
   height: 100%;
+  text-shadow: 2px 2px 1px hsl(231, 8%, 28%);
+  text-shadow: 2px 2px 1px hsla(231, 8%, 8%, 65%);
   width: 100%;
   justify-self: start;
+  z-index: 2;
+}
+
+#activity-icon-wrapper {
+  background-color: hsl(242, 0%, 96%);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  border: 8px solid hsl(242, 12%, 64%);
+  box-shadow: 1px 1px 2px 2px hsl(231, 8%, 28%);
+  box-shadow: 1px 1px 2px 2px hsla(231, 8%, 8%, 65%);
+  border-radius: 50%;
+  grid-column: 6 / 9;
+  grid-row: 6 / 14;
+  height: auto;
+  margin: 0;
+  max-width: 185px;
+  overflow: hidden;
+  width: 100%;
+  z-index: 1;
+}
+
+.activity-icon-spacer {
+  grid-column: 2;
+  height: 14vw;
+  margin: 2vh 0 0;
+  max-height: 85px;
 }
 
 #user-account-button {

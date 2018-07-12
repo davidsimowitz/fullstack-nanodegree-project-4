@@ -6,6 +6,12 @@
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
   <h1 class="title">{{ activity.name.title() }}</h1>
+  <!-- activity icon: start -->
+  <img id="activity-icon-wrapper"
+       src="{{ activity.icon }}"
+       title="{{activity.name}}'s icon"
+       alt="{{activity.name}}'s icon">
+  <!-- activity icon: end -->
   {% include "login-menu.html" %}
   <a href="javascript:void(0)"
      id="user-account-button"
@@ -17,6 +23,9 @@
 
 <main>
     {% include "user-account-menu.html" %}
+
+    <section class="activity-icon-spacer">
+    </section>
 
     <!-- events list: start -->
     <section id="event-container">
