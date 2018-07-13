@@ -44,7 +44,7 @@
             <legend>Activity Icon</legend>
             <label for="icon">activity icon</label>
             <!-- open select-activity-icon modal -->
-            <a id="select-icon-button">
+            <a id="modal-open">
               <img class="icon"
                    id="iconImage"
                    src="/static/img/placeholder-logo.svg"
@@ -78,52 +78,70 @@
 
 {% include "select-activity-icon.html" %}
 
+<section id="user-menu-background" class="modal">
+</section>
+
 <script>
+  // user account menu
+  var userMenuBackground = document.getElementById("user-menu-background");
+
   function openUserMenu() {
     document.getElementById("user-account-menu").style.width = "350px";
+    userMenuBackground.style.display = "grid";
   }
 
   function closeUserMenu() {
     document.getElementById("user-account-menu").style.width = "0";
+    userMenuBackground.style.display = "none";
   }
-</script>
 
-<script>
-  // start of select-activity-icon modal code
-  var background = document.getElementById("modal-background");
-  var modal = document.getElementById("icon-container");
-  var open = document.getElementById("select-icon-button");
-  var close = document.getElementById("modal-close");
+  // select icon modal
+  var iconModalBackground = document.getElementById("icon-modal-background");
+  var iconModal = document.getElementById("icon-modal-container");
 
-  open.onclick = function() {
-    background.style.display = "grid";
-    modal.style.display = "grid";
+  var openModal = document.getElementById("modal-open");
+  var closeModal = document.getElementById("modal-close");
+
+  function openIconModal() {
+    iconModalBackground.style.display = "grid";
+    iconModal.style.display = "grid";
     adjustActivityContainerRowHeight();
   }
 
-  close.onclick = function() {
-    modal.style.display = "none";
-    background.style.display = "none";
+  function closeIconModal() {
+    iconModal.style.display = "none";
+    iconModalBackground.style.display = "none";
   }
 
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-      background.style.display = "none";
-    }
+  openModal.onclick = function() {
+    openIconModal();
+  }
+
+  closeModal.onclick = function() {
+    closeIconModal();
   }
 
   function setActivityIcon(newIcon) {
-    var icon = document.getElementById("icon");
-    icon.value = newIcon;
+    var iconInput = document.getElementById("icon");
+    iconInput.value = newIcon;
 
     var iconImage = document.getElementById("iconImage");
     iconImage.src = newIcon;
 
-    modal.style.display = "none";
-    background.style.display = "none";
+    closeIconModal();
   }
-  // end of select-activity-icon modal code
+
+  /*
+   * Closes both the user account menu or the select icon modal
+   * if the faded background of the page is clicked.
+   */
+  window.onclick = function(event) {
+    if (event.target == userMenuBackground) {
+      closeUserMenu();
+    } else if (event.target == iconModalBackground) {
+      closeIconModal();
+    }
+  }
 </script>
 
 <script>

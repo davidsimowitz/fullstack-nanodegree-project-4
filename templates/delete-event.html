@@ -73,13 +73,26 @@
   {% include "footer.html" %}
 </footer>
 
+<section id="user-menu-background" class="modal">
+</section>
+
 <script>
+  var userMenuBackground = document.getElementById("user-menu-background");
+
   function openUserMenu() {
     document.getElementById("user-account-menu").style.width = "350px";
+    userMenuBackground.style.display = "grid";
   }
 
   function closeUserMenu() {
     document.getElementById("user-account-menu").style.width = "0";
+    userMenuBackground.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == userMenuBackground) {
+      closeUserMenu();
+    }
   }
 </script>
 
