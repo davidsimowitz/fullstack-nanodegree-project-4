@@ -417,8 +417,12 @@ def set_event_fields(event):
     """
     if flask.request.form['name']:
         event.name = flask.request.form['name']
+
     if flask.request.form['description']:
         event.description = flask.request.form['description']
+    else:
+        event.description = 'please add a description'
+
     if flask.request.form['start_date']:
         start_date = flask.request.form['start_date']
         start_date = date_checker(start_date)
@@ -867,6 +871,7 @@ def display_activity(activity_id):
                              models.Event._start_time.asc()) \
                    .filter(models.Event.start_date >= datetime.date.today()) \
                    .all()
+
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events,
