@@ -32,24 +32,40 @@
     {% for event in events %}
       {% if loop.first and loop.changed(event.start_date) %}
       <section class="date-wrapper">
+        {% if event.start_date %}
         <p class="event-date">{{ event.starting_date_long_form }}</p>
+        {% elif event.end_date %}
+        <p class="event-date">{{ event.ending_date_long_form }}</p>
+        {% endif %}
       {% elif loop.changed(event.start_date) %}
       </section>
       <section class="date-wrapper">
+        {% if event.start_date %}
         <p class="event-date">{{ event.starting_date_long_form }}</p>
+        {% elif event.end_date %}
+        <p class="event-date">{{ event.ending_date_long_form }}</p>
+        {% endif %}
       {% endif %}
         <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
            class="display-event"
            title="{{event.name}} details">
           <section class="event-wrapper">
             <div class="event-time">
+              {% if event.start_time_12_hour_notation and event.end_time_12_hour_notation %}
               <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
+              {% elif event.start_time_12_hour_notation %}
+              <p>{{ event.start_time_12_hour_notation }}</p>
+              {% elif event.end_time_12_hour_notation %}
+              <p>ends at {{ event.end_time_12_hour_notation }}</p>
+              {% endif %}
             </div>
             <div class="event-name">
               <p>{{ event.name }}</p>
             </div>
             <div class="event-description">
+              {% if event.description %}
               <p>{{ event.description }}</p>
+              {% endif %}
             </div>
           </section>
         </a>

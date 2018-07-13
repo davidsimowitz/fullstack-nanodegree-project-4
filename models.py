@@ -167,6 +167,25 @@ class Event(declarative_base):
         raise AttributeError('<starting_date_long_form> is read-only')
 
     @property
+    def ending_date_long_form(self):
+        """Return ending date in <Day_of_the_week, Month DD, YYYY> format"""
+        MONTH = ['January', 'February', 'March', 'April', 'May',
+                 'June', 'July', 'August', 'September', 'October',
+                 'November', 'December']
+        DAY_OF_THE_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                           'Friday', 'Saturday', 'Sunday']
+        return '{}, {} {}, {}'.format(
+                 DAY_OF_THE_WEEK[self.end_date.weekday()],
+                 MONTH[self.end_date.month - 1],
+                 self.end_date.day,
+                 self.end_date.year)
+
+    @ending_date_long_form.setter
+    def ending_date_long_form(self, ending_date):
+        """Ending date in long form notation is read-only"""
+        raise AttributeError('<ending_date_long_form> is read-only')
+
+    @property
     def start_time(self):
         """Return start time in <HH:MM> format"""
         start_time = str(self._start_time)
