@@ -915,10 +915,10 @@ def display_activity(activity_id):
                           models.Event.user_id,
                           models.Event.activity_id,
                           sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'Day'")) \
+                                                  sqlalchemy.text("'FMDay'")) \
                                          .label('day_of_week'), \
                           sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'Month'")) \
+                                                  sqlalchemy.text("'FMMonth'")) \
                                          .label('month'), \
                           sqlalchemy.func.extract(sqlalchemy.text("'day'"),
                                                   dates.c.event_date) \
