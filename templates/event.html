@@ -22,11 +22,9 @@
 
       <section class="date-wrapper">
         {% if event.start_date and event.end_date and event.start_date != event.end_date %}
-        <p class="event-date">{{ event.starting_date_long_form }} - {{ event.ending_date_long_form }}</p>
+        <p class="event-date">{{ event.start_day_of_week }}, {{ event.start_month }} {{ event.start_day_of_month }}, {{ event.start_year }} – {{ event.end_day_of_week }}, {{ event.end_month }} {{ event.end_day_of_month }}, {{ event.end_year }}</p>
         {% elif event.start_date %}
-        <p class="event-date">{{ event.starting_date_long_form }}</p>
-        {% elif event.end_date %}
-        <p class="event-date">{{ event.ending_date_long_form }}</p>
+        <p class="event-date">{{ event.start_day_of_week }}, {{ event.start_month }} {{ event.start_day_of_month }}, {{ event.start_year }}</p>
         {% endif %}
         {% if event.user_id==user_id %}
         <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}"
@@ -35,12 +33,12 @@
         {% endif %}
           <section class="event-wrapper span-date-wrapper">
             <div class="event-time">
-              {% if event.start_time_12_hour_notation and event.end_time_12_hour_notation %}
-              <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
-              {% elif event.start_time_12_hour_notation %}
-              <p>{{ event.start_time_12_hour_notation }}</p>
-              {% elif event.end_time_12_hour_notation %}
-              <p>ends at {{ event.end_time_12_hour_notation }}</p>
+              {% if event.start_time and event.end_time %}
+              <p>{{ event.start_time }}–{{ event.end_time }}</p>
+              {% elif event.start_time %}
+              <p>{{ event.start_time }}</p>
+              {% elif event.end_time %}
+              <p>ends at {{ event.end_time }}</p>
               {% endif %}
             </div>
             <div class="event-name">

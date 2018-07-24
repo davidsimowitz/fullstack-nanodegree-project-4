@@ -1074,7 +1074,49 @@ def display_event(activity_id, event_id):
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
                      .one()
-        event = db.query(models.Event) \
+        event = db.query(models.Event,
+                         models.Event.id,
+                         models.Event.name,
+                         models.Event.description,
+                         models.Event.start_date,
+                         models.Event.end_date,
+                         models.Event.user_id,
+                         models.Event.activity_id,
+                         sqlalchemy.func.to_char(models.Event.start_date,
+                                                 sqlalchemy.text("'FMDay'")) \
+                                        .label('start_day_of_week'), \
+                         sqlalchemy.func.to_char(models.Event.start_date,
+                                                 sqlalchemy.text("'FMMonth'")) \
+                                        .label('start_month'), \
+                         sqlalchemy.func.extract(sqlalchemy.text("'day'"),
+                                                 models.Event.start_date) \
+                                        .cast(sqlalchemy.Integer) \
+                                        .label('start_day_of_month'), \
+                         sqlalchemy.func.extract(sqlalchemy.text("'year'"),
+                                                 models.Event.start_date) \
+                                        .cast(sqlalchemy.Integer) \
+                                        .label('start_year'), \
+                         sqlalchemy.func.to_char(models.Event.end_date,
+                                                 sqlalchemy.text("'FMDay'")) \
+                                        .label('end_day_of_week'), \
+                         sqlalchemy.func.to_char(models.Event.end_date,
+                                                 sqlalchemy.text("'FMMonth'")) \
+                                        .label('end_month'), \
+                         sqlalchemy.func.extract(sqlalchemy.text("'day'"),
+                                                 models.Event.end_date) \
+                                        .cast(sqlalchemy.Integer) \
+                                        .label('end_day_of_month'), \
+                         sqlalchemy.func.extract(sqlalchemy.text("'year'"),
+                                                 models.Event.end_date) \
+                                        .cast(sqlalchemy.Integer) \
+                                        .label('end_year'), \
+                         sqlalchemy.func.to_char(models.Event._start_time,
+                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
+                                        .label('start_time'), \
+                         sqlalchemy.func.to_char(models.Event._end_time,
+                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
+                                        .label('end_time') \
+                         ) \
                   .filter_by(id=event_id,
                              activity_id=activity_id) \
                   .one()
