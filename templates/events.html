@@ -33,13 +33,13 @@
       {% if loop.first and loop.changed(event.event_date) %}
       <section class="date-wrapper">
         {% if event.event_date %}
-        <p class="event-date">{{ event.day_of_week.strip().capitalize() }}, {{ event.month.strip().capitalize() }} {{ event.day_of_month }}, {{ event.year }}</p>
+        <p class="event-date">{{ event.day_of_week.strip() }}, {{ event.month.strip() }} {{ event.day_of_month }}, {{ event.year }}</p>
         {% endif %}
       {% elif loop.changed(event.event_date) %}
       </section>
       <section class="date-wrapper">
         {% if event.event_date %}
-        <p class="event-date">{{ event.day_of_week.strip().capitalize() }}, {{ event.month.strip().capitalize() }} {{ event.day_of_month }}, {{ event.year }}</p>
+        <p class="event-date">{{ event.day_of_week.strip() }}, {{ event.month.strip() }} {{ event.day_of_month }}, {{ event.year }}</p>
         {% endif %}
       {% endif %}
         <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
