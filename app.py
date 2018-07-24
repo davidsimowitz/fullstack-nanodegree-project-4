@@ -929,10 +929,10 @@ def display_activity(activity_id):
                                          .cast(sqlalchemy.Integer) \
                                          .label('year'), \
                           sqlalchemy.func.to_char(models.Event._start_time,
-                                                  sqlalchemy.text("'HH12:MI pm'")) \
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
                                          .label('start_time'), \
                           sqlalchemy.func.to_char(models.Event._end_time,
-                                                  sqlalchemy.text("'HH12:MI pm'")) \
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
                                          .label('end_time'), \
                           dates) \
                    .join(dates, models.Event.id == dates.c.id) \
