@@ -915,19 +915,8 @@ def display_activity(activity_id):
                           models.Event.user_id,
                           models.Event.activity_id,
                           sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'FMDay'")) \
-                                         .label('day_of_week'), \
-                          sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'FMMonth'")) \
-                                         .label('month'), \
-                          sqlalchemy.func.extract(sqlalchemy.text("'day'"),
-                                                  dates.c.event_date) \
-                                         .cast(sqlalchemy.Integer) \
-                                         .label('day_of_month'), \
-                          sqlalchemy.func.extract(sqlalchemy.text("'year'"),
-                                                  dates.c.event_date) \
-                                         .cast(sqlalchemy.Integer) \
-                                         .label('year'), \
+                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                         .label('date'), \
                           sqlalchemy.func.to_char(models.Event._start_time,
                                                   sqlalchemy.text("'FMHH12:MI pm'")) \
                                          .label('start_time'), \
@@ -1083,33 +1072,11 @@ def display_event(activity_id, event_id):
                          models.Event.user_id,
                          models.Event.activity_id,
                          sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMDay'")) \
-                                        .label('start_day_of_week'), \
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMMonth'")) \
-                                        .label('start_month'), \
-                         sqlalchemy.func.extract(sqlalchemy.text("'day'"),
-                                                 models.Event.start_date) \
-                                        .cast(sqlalchemy.Integer) \
-                                        .label('start_day_of_month'), \
-                         sqlalchemy.func.extract(sqlalchemy.text("'year'"),
-                                                 models.Event.start_date) \
-                                        .cast(sqlalchemy.Integer) \
-                                        .label('start_year'), \
+                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                        .label('starting_date'), \
                          sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMDay'")) \
-                                        .label('end_day_of_week'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMMonth'")) \
-                                        .label('end_month'), \
-                         sqlalchemy.func.extract(sqlalchemy.text("'day'"),
-                                                 models.Event.end_date) \
-                                        .cast(sqlalchemy.Integer) \
-                                        .label('end_day_of_month'), \
-                         sqlalchemy.func.extract(sqlalchemy.text("'year'"),
-                                                 models.Event.end_date) \
-                                        .cast(sqlalchemy.Integer) \
-                                        .label('end_year'), \
+                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                        .label('ending_date'), \
                          sqlalchemy.func.to_char(models.Event._start_time,
                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
                                         .label('start_time'), \
