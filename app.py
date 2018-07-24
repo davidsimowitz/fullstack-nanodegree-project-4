@@ -423,21 +423,30 @@ def set_event_fields(event):
     else:
         event.description = 'please add a description'
 
+    # determine start/end dates based on available input.
+    start_date, end_date = None, None
+
     if flask.request.form['start_date']:
         start_date = flask.request.form['start_date']
         start_date = date_checker(start_date)
-        if start_date:
-            event.start_date = start_date
+
+    if flask.request.form['end_date']:
+        end_date = flask.request.form['end_date']
+        end_date = date_checker(end_date)
+
+    if start_date and end_date:
+        event.start_date, event.end_date = start_date, end_date
+    elif start_date:
+        event.start_date, event.end_date = start_date, start_date
+    elif end_date:
+        event.start_date, event.end_date = end_date, end_date
+
+    # determine start/end times based on available input.
     if flask.request.form['start_time']:
         start_time = flask.request.form['start_time']
         start_time = time_checker(start_time)
         if start_time:
             event.start_time = start_time
-    if flask.request.form['end_date']:
-        end_date = flask.request.form['end_date']
-        end_date = date_checker(end_date)
-        if end_date:
-            event.end_date = end_date
     if flask.request.form['end_time']:
         end_time = flask.request.form['end_time']
         end_time = time_checker(end_time)
@@ -860,16 +869,78 @@ def display_activity(activity_id):
     """Display Activity record from DB with matching activity_id.
 
     Display Activity and list all Event records corresponding to it.
-    """
+
+    Activity query as SQL:
+
+        query = "SELECT * FROM " \
+                    "(SELECT *, " \
+                          "to_char(event_date, 'day') AS day_of_week, " \
+                          "to_char(event_date, 'month') AS month, " \
+                          "extract(day from event_date)::int AS day_of_month, " \
+                          "extract(year from event_date)::int AS year, " \
+                          "to_char(_start_time, 'HH12:MI AM') AS start_time, " \
+                          "to_char(_end_time, 'HH12:MI AM') AS end_time " \
+                          " FROM (SELECT *, generate_series(event.start_date," \
+                                                           "event.end_date, " \
+                                                           "'1 day'::interval)::date "\
+                                "AS event_date " \
+                                "FROM event " \
+                                "WHERE activity_id = {} " \
+                                "GROUP BY id) "\
+                          "AS sq1) "\
+                    "AS sq2 "\
+                "WHERE event_date >= current_date " \
+                "ORDER BY event_date " \
+                "ASC;".format(activity.id)
+        events = db.execute(sqlalchemy.text(query))
+"""
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
                      .one()
-        events = db.query(models.Event) \
-                   .filter_by(activity_id=activity_id) \
-                   .order_by(models.Event.start_date.asc(),
-                             models.Event._start_time.asc()) \
-                   .filter(models.Event.start_date >= datetime.date.today()) \
+        dates = db.query(models.Event,
+                         sqlalchemy.func.generate_series(models.Event.start_date,
+                                                         models.Event.end_date,
+                                                         sqlalchemy.text("'1 day'::interval")) \
+                  .label('event_date')) \
+                  .subquery()
+        events = db.query(models.Event,
+                          models.Event.id,
+                          models.Event.name,
+                          models.Event.description,
+                          models.Event.start_date,
+                          models.Event.end_date,
+                          models.Event._start_time,
+                          models.Event._end_time,
+                          models.Event.user_id,
+                          models.Event.activity_id,
+                          sqlalchemy.func.to_char(dates.c.event_date,
+                                                  sqlalchemy.text("'day'")) \
+                                         .label('day_of_week'), \
+                          sqlalchemy.func.to_char(dates.c.event_date,
+                                                  sqlalchemy.text("'month'")) \
+                                         .label('month'), \
+                          sqlalchemy.func.extract(sqlalchemy.text("'day'"),
+                                                  dates.c.event_date) \
+                                         .cast(sqlalchemy.Integer) \
+                                         .label('day_of_month'), \
+                          sqlalchemy.func.extract(sqlalchemy.text("'year'"),
+                                                  dates.c.event_date) \
+                                         .cast(sqlalchemy.Integer) \
+                                         .label('year'), \
+                          sqlalchemy.func.to_char(models.Event._start_time,
+                                                  sqlalchemy.text("'HH12:MI pm'")) \
+                                         .label('start_time'), \
+                          sqlalchemy.func.to_char(models.Event._end_time,
+                                                  sqlalchemy.text("'HH12:MI pm'")) \
+                                         .label('end_time'), \
+                          dates) \
+                   .join(dates, models.Event.id == dates.c.id) \
+                   .filter_by(activity_id=activity.id) \
+                   .order_by(dates.c.event_date.asc(),
+                             models.Event._start_time.asc(),
+                             models.Event._end_time.asc()) \
+                   .filter(dates.c.event_date >= datetime.date.today()) \
                    .all()
 
     return flask.render_template('events.html',
