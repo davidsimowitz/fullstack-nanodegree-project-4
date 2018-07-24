@@ -24,22 +24,24 @@
         id="event-container">
 
       <section class="date-wrapper">
-        {% if event.start_date and event.end_date and event.start_date != event.end_date %}
-        <p class="event-date">{{ event.starting_date_long_form }} - {{ event.end_date }}</p>
-        {% elif event.start_date %}
-        <p class="event-date">{{ event.starting_date_long_form }}</p>
-        {% elif event.end_date %}
-        <p class="event-date">ends {{ event.end_date }}</p>
+      {% if event.start_date and event.end_date and event.start_date != event.end_date %}
+        {% if event.starting_date and event.ending_date %}
+        <p class="event-date">{{ event.starting_date }} – {{ event.ending_date }}</p>
         {% endif %}
+      {% elif event.start_date %}
+        {% if event.starting_date %}
+        <p class="event-date">{{ event.starting_date }}</p>
+        {% endif %}
+      {% endif %}
 
           <section class="event-wrapper display-event">
             <div class="event-time">
-              {% if event.start_time_12_hour_notation and event.end_time_12_hour_notation %}
-              <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
-              {% elif event.start_time_12_hour_notation %}
-              <p>{{ event.start_time_12_hour_notation }}</p>
-              {% elif event.end_time_12_hour_notation %}
-              <p>ends at {{ event.end_time_12_hour_notation }}</p>
+              {% if event.start_time and event.end_time %}
+              <p>{{ event.start_time }}–{{ event.end_time }}</p>
+              {% elif event.start_time %}
+              <p>{{ event.start_time }}</p>
+              {% elif event.end_time %}
+              <p>ends at {{ event.end_time }}</p>
               {% endif %}
             </div>
             <div class="event-name">

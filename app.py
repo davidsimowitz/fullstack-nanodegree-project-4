@@ -1216,6 +1216,30 @@ def delete_event(activity_id, event_id):
                                  activity_id=activity_id))
 
     else:
+        event = db.query(models.Event,
+                         models.Event.id,
+                         models.Event.name,
+                         models.Event.description,
+                         models.Event.start_date,
+                         models.Event.end_date,
+                         models.Event.user_id,
+                         models.Event.activity_id,
+                         sqlalchemy.func.to_char(models.Event.start_date,
+                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                        .label('starting_date'), \
+                         sqlalchemy.func.to_char(models.Event.end_date,
+                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                        .label('ending_date'), \
+                         sqlalchemy.func.to_char(models.Event._start_time,
+                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
+                                        .label('start_time'), \
+                         sqlalchemy.func.to_char(models.Event._end_time,
+                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
+                                        .label('end_time') \
+                         ) \
+                  .filter_by(id=event_id,
+                             activity_id=activity_id) \
+                  .one()
         return flask.render_template('delete-event.html',
                                      activity=activity,
                                      event=event)
