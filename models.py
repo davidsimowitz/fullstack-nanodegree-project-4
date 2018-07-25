@@ -140,17 +140,16 @@ class Event(declarative_base):
                 'name': self.name,
                 'id': self.id,
                 'description': self.description,
-                'start date': self.start_date,
+                'start date': str(self.start_date),
                 'start time': self.start_time,
-                'end date': self.end_date,
+                'end date': str(self.end_date),
                 'end time': self.end_time,
                }
 
     @property
     def start_time(self):
         """Return start time in <HH:MM> format"""
-        start_time = str(self._start_time)
-        return start_time[:5]
+        return str(self._start_time)[:5]
 
     @start_time.setter
     def start_time(self, start_time):
@@ -160,8 +159,7 @@ class Event(declarative_base):
     @property
     def end_time(self):
         """Return end time in <HH:MM> format"""
-        end_time = str(self._end_time)
-        return end_time[:5]
+        return str(self._end_time)[:5]
 
     @end_time.setter
     def end_time(self, end_time):
