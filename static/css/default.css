@@ -98,7 +98,8 @@ header {
   z-index: 2;
 }
 
-#activity-icon-wrapper {
+#activity-icon-wrapper,
+#account-image-wrapper {
   background-color: hsl(242, 0%, 96%);
   background-repeat: no-repeat;
   background-size: 100%;
@@ -116,7 +117,8 @@ header {
   z-index: 1;
 }
 
-.activity-icon-spacer {
+.activity-icon-spacer,
+.account-image-spacer {
   grid-column: 2;
   height: 14vw;
   margin: 2vh 0 0;
