@@ -141,49 +141,10 @@ class Event(declarative_base):
                 'id': self.id,
                 'description': self.description,
                 'start date': self.start_date,
-                'start time': self.start_time_12_hour_notation,
-                'starting date long form': self.starting_date_long_form,
+                'start time': self.start_time,
                 'end date': self.end_date,
-                'end time': self.end_time_12_hour_notation,
+                'end time': self.end_time,
                }
-
-    @property
-    def starting_date_long_form(self):
-        """Return starting date in <Day_of_the_week, Month DD, YYYY> format"""
-        MONTH = ['January', 'February', 'March', 'April', 'May',
-                 'June', 'July', 'August', 'September', 'October',
-                 'November', 'December']
-        DAY_OF_THE_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
-                           'Friday', 'Saturday', 'Sunday']
-        return '{}, {} {}, {}'.format(
-                 DAY_OF_THE_WEEK[self.start_date.weekday()],
-                 MONTH[self.start_date.month - 1],
-                 self.start_date.day,
-                 self.start_date.year)
-
-    @starting_date_long_form.setter
-    def starting_date_long_form(self, starting_date):
-        """Starting date in long form notation is read-only"""
-        raise AttributeError('<starting_date_long_form> is read-only')
-
-    @property
-    def ending_date_long_form(self):
-        """Return ending date in <Day_of_the_week, Month DD, YYYY> format"""
-        MONTH = ['January', 'February', 'March', 'April', 'May',
-                 'June', 'July', 'August', 'September', 'October',
-                 'November', 'December']
-        DAY_OF_THE_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
-                           'Friday', 'Saturday', 'Sunday']
-        return '{}, {} {}, {}'.format(
-                 DAY_OF_THE_WEEK[self.end_date.weekday()],
-                 MONTH[self.end_date.month - 1],
-                 self.end_date.day,
-                 self.end_date.year)
-
-    @ending_date_long_form.setter
-    def ending_date_long_form(self, ending_date):
-        """Ending date in long form notation is read-only"""
-        raise AttributeError('<ending_date_long_form> is read-only')
 
     @property
     def start_time(self):
@@ -206,48 +167,6 @@ class Event(declarative_base):
     def end_time(self, end_time):
         """Set end time"""
         self._end_time = end_time
-
-    @property
-    def start_time_12_hour_notation(self):
-        """Return the start time in <HH:MM AM/PM> format"""
-        try:
-            start_time = str(self._start_time)
-            hour = int(start_time[:2])
-        except:
-            pass
-        else:
-            if hour > 11:
-                hour = hour - 12 if hour > 12 else hour
-                return '{}:{} PM'.format(hour, start_time[3:5])
-            else:
-                hour = 12 if hour is 0 else hour
-                return '{}:{} AM'.format(hour, start_time[3:5])
-
-    @start_time_12_hour_notation.setter
-    def start_time_12_hour_notation(self, start_time):
-        """12-hour-notation version of start time is read-only"""
-        raise AttributeError('<start_time_12_hour_notation> is read-only')
-
-    @property
-    def end_time_12_hour_notation(self):
-        """Return the end time in <HH:MM AM/PM> format"""
-        try:
-            end_time = str(self._end_time)
-            hour = int(end_time[:2])
-        except:
-            pass
-        else:
-            if hour > 11:
-                hour = hour - 12 if hour > 12 else hour
-                return '{}:{} PM'.format(hour, end_time[3:5])
-            else:
-                hour = 12 if hour is 0 else hour
-                return '{}:{} AM'.format(hour, end_time[3:5])
-
-    @end_time_12_hour_notation.setter
-    def end_time_12_hour_notation(self, end_time):
-        """12-hour-notation version of end time is read-only"""
-        raise AttributeError('<start_time_12_hour_notation> is read-only')
 
 
 engine = sqlalchemy.create_engine(DB)
