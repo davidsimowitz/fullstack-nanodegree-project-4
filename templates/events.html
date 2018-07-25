@@ -30,26 +30,58 @@
     <!-- events list: start -->
     <section id="event-container">
     {% for event in events %}
-      {% if loop.first and loop.changed(event.start_date) %}
+      {% if loop.first and loop.changed(event.event_date) %}
       <section class="date-wrapper">
-        <p class="event-date">{{ event.starting_date_long_form }}</p>
-      {% elif loop.changed(event.start_date) %}
+        {% if event.date %}
+        <p class="event-date">{{ event.date }}</p>
+        {% endif %}
+      {% elif loop.changed(event.event_date) %}
       </section>
       <section class="date-wrapper">
-        <p class="event-date">{{ event.starting_date_long_form }}</p>
+        {% if event.date %}
+        <p class="event-date">{{ event.date }}</p>
+        {% endif %}
       {% endif %}
         <a href="{{url_for('display_event', activity_id=activity.id, event_id=event.id)}}"
            class="display-event"
            title="{{event.name}} details">
           <section class="event-wrapper">
             <div class="event-time">
-              <p>{{ event.start_time_12_hour_notation }}–{{ event.end_time_12_hour_notation }}</p>
+            {% if event.start_date and event.end_date and event.start_date==event.end_date %}
+              {% if event.start_time and event.end_time %}
+              <p>{{ event.start_time }}–{{ event.end_time }}</p>
+              {% elif event.start_time %}
+              <p>begins {{ event.start_time }}</p>
+              {% elif event.end_time %}
+              <p>finishes {{ event.end_time }}</p>
+              {% else %}
+              <p>all day</p>
+              {% endif %}
+            {% elif event.start_date and event.end_date and event.start_date!=event.end_date %}
+              {% if event.event_date==event.start_date %}
+                {% if event.start_time %}
+                <p>begins {{ event.start_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% elif event.event_date==event.end_date %}
+                {% if event.end_time %}
+                <p>finishes {{ event.end_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% else %}
+                <p>all day</p>
+              {% endif %}
+            {% endif %}
             </div>
             <div class="event-name">
               <p>{{ event.name }}</p>
             </div>
             <div class="event-description">
+              {% if event.description %}
               <p>{{ event.description }}</p>
+              {% endif %}
             </div>
           </section>
         </a>
