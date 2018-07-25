@@ -47,13 +47,33 @@
            title="{{event.name}} details">
           <section class="event-wrapper">
             <div class="event-time">
+            {% if event.start_date and event.end_date and event.start_date==event.end_date %}
               {% if event.start_time and event.end_time %}
               <p>{{ event.start_time }}–{{ event.end_time }}</p>
               {% elif event.start_time %}
-              <p>{{ event.start_time }}</p>
+              <p>begins {{ event.start_time }}</p>
               {% elif event.end_time %}
-              <p>ends at {{ event.end_time }}</p>
+              <p>finishes {{ event.end_time }}</p>
+              {% else %}
+              <p>all day</p>
               {% endif %}
+            {% elif event.start_date and event.end_date and event.start_date!=event.end_date %}
+              {% if event.event_date==event.start_date %}
+                {% if event.start_time %}
+                <p>begins {{ event.start_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% elif event.event_date==event.end_date %}
+                {% if event.end_time %}
+                <p>finishes {{ event.end_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% else %}
+                <p>all day</p>
+              {% endif %}
+            {% endif %}
             </div>
             <div class="event-name">
               <p>{{ event.name }}</p>
