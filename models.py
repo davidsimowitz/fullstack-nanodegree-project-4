@@ -167,5 +167,33 @@ class Event(declarative_base):
         self._end_time = end_time
 
 
+class Hosting(declarative_base):
+    """Hosting object
+
+    A hosting object represents a relationship between a user and an event they are hosting.
+
+    Attributes:
+        user_id: The id for the user hosting the associated event.
+        event_id: The id for the event being hosted by the associated user.
+
+    Dependencies:
+        sqlalchemy.Column
+        sqlalchemy.ext.declarative.declarative_base
+        sqlalchemy.ForeignKey
+        sqlalchemy.Integer
+        sqlalchemy.orm.relationship
+    """
+    __tablename__ = 'hosting'
+
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey('user_account.id'),
+                                primary_key=True)
+    event_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                 sqlalchemy.ForeignKey('event.id'),
+                                 primary_key=True)
+    user_account = sqlalchemy.orm.relationship(UserAccount)
+    event = sqlalchemy.orm.relationship(Event)
+
+
 engine = sqlalchemy.create_engine(DB)
 declarative_base.metadata.create_all(engine)
