@@ -20,7 +20,7 @@
         title="{{session['username']}}'s profile photo">
     <nav class="account-actions-container">
       <ul>
-        <a href="#"
+        <a href="{{url_for('display_hosting')}}"
            title="hosting">
           <p class="account-actions">Hosting</p>
         </a>
@@ -89,7 +89,7 @@
     {% else %}
     <nav class="account-actions-container">
       <ul>
-        <a href="#"
+        <a href="{{url_for('display_hosting')}}"
            title="hosting">
           <p class="account-actions">Hosting</p>
         </a>
