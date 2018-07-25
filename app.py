@@ -1240,9 +1240,21 @@ def delete_event(activity_id, event_id):
                          sqlalchemy.func.to_char(models.Event.start_date,
                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
                                         .label('starting_date'), \
+                         sqlalchemy.func.to_char(models.Event.start_date,
+                                                 sqlalchemy.text("'FMMon FMDDth'")) \
+                                        .label('abbr_starting_date'), \
+                         sqlalchemy.func.to_char(models.Event.start_date,
+                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
+                                        .label('abbr_starting_day'), \
                          sqlalchemy.func.to_char(models.Event.end_date,
                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
                                         .label('ending_date'), \
+                         sqlalchemy.func.to_char(models.Event.end_date,
+                                                 sqlalchemy.text("'FMMon FMDDth'")) \
+                                        .label('abbr_ending_date'), \
+                         sqlalchemy.func.to_char(models.Event.end_date,
+                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
+                                        .label('abbr_ending_day'), \
                          sqlalchemy.func.to_char(models.Event._start_time,
                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
                                         .label('start_time'), \
