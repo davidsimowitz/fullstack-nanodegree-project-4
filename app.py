@@ -1132,6 +1132,13 @@ def make_event(activity_id):
         with db_session() as db:
             db.add(new_event)
             db.commit()
+            hosting = models.Hosting(event_id=new_event.id,
+                                     user_id=get_user_id(
+                                             user_email=flask.session['email']
+                                             )
+                                     )
+            db.add(hosting)
+            db.commit()
             return flask.redirect(
                        flask.url_for('display_event',
                                      activity_id=activity_id,
@@ -1212,6 +1219,9 @@ def delete_event(activity_id, event_id):
                   .filter_by(id=event_id,
                              activity_id=activity_id) \
                   .one()
+        hosting = db.query(models.Hosting) \
+                    .filter_by(event_id=event.id) \
+                    .one()
 
     # Event can only be deleted by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
@@ -1223,6 +1233,7 @@ def delete_event(activity_id, event_id):
     if flask.request.method == 'POST':
         with db_session() as db:
             db.delete(event)
+            db.delete(hosting)
             db.commit()
         return flask.redirect(
                    flask.url_for('display_activity',
