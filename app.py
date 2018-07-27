@@ -1345,6 +1345,71 @@ def display_hosting():
                                  back= flask.url_for('display_activities'))
 
 
+@app.route('/activities/attending/')
+@entry_and_exit_logger
+def display_attending():
+    """Display Event records from DB that user is attending.
+
+    List all Event records that have a corresponding entry
+    in the Attending table for the user.
+    """
+    # User login required
+    if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                             'display_attending')
+        return flask.redirect('/login/')
+
+    with db_session() as db:
+        dates = db.query(models.Event,
+                         sqlalchemy.func.generate_series(models.Event.start_date,
+                                                         models.Event.end_date,
+                                                         sqlalchemy.text("'1 day'::interval")) \
+                  .cast(sqlalchemy.Date) \
+                  .label('event_date')) \
+                  .subquery()
+        events = db.query(models.Event,
+                          models.Event.id,
+                          models.Event.name,
+                          models.Event.description,
+                          models.Event.start_date,
+                          models.Event.end_date,
+                          models.Event._start_time,
+                          models.Event._end_time,
+                          models.Event.user_id,
+                          models.Event.activity_id,
+                          models.Attending,
+                          sqlalchemy.func.to_char(dates.c.event_date,
+                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                         .label('date'), \
+                          sqlalchemy.func.to_char(models.Event._start_time,
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
+                                         .label('start_time'), \
+                          sqlalchemy.func.to_char(models.Event._end_time,
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
+                                         .label('end_time'), \
+                          dates) \
+                   .join(models.Attending,
+                         models.Event.id == models.Attending.event_id ) \
+                   .join(dates,
+                         models.Event.id == dates.c.id) \
+                   .order_by(dates.c.event_date.asc(),
+                             models.Event._start_time.asc(),
+                             models.Event._end_time.asc()) \
+                   .filter( \
+                        sqlalchemy.and_( \
+                            dates.c.event_date >= datetime.date.today(),
+                            models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                            ) \
+                        ) \
+                   .all()
+
+    return flask.render_template('attending.html',
+                                 events=events,
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
+                                 back= flask.url_for('display_activities'))
+
+
 @entry_and_exit_logger
 def make_user(*, session):
     """Create User object.
