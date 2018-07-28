@@ -18,6 +18,22 @@
 <main>
     {% include "user-account-menu.html" %}
 
+    {% if 'username' in session %}
+    <section class="account-actions-nav">
+      <section class="account-actions-bar">
+        <a href="javascript:void(0)"
+           id="attending-button"
+           title="attend"
+           onclick="">
+           <img id="attending-img"
+                src="{{ url_for('static', filename='img/attending.svg') }}"
+                title="attending"
+                alt="Attending event">
+        </a>
+      </section>
+    </section>
+    {% endif %}
+
     <section id="event-container">
 
       <section class="date-wrapper">
