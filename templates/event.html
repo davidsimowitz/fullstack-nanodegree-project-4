@@ -26,7 +26,7 @@
            title="attend"
            onclick="">
            <img id="attending-img"
-                src="{{ url_for('static', filename='img/attending.svg') }}"
+                src=""
                 title="attending"
                 alt="Attending event">
         </a>
@@ -109,6 +109,35 @@
 </section>
 
 <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    updateAttendingStatusFromServer();
+  });
+
+  function updateAttendingStatusFromServer() {
+    var request = new XMLHttpRequest();
+    request.open('GET',
+                 "{{url_for('check_attending_status', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // retrieve attending status from server
+        document.getElementById("attending-img").setAttribute("src", this.response);
+      }
+      else {
+        // encountered server error
+        document.getElementById("attending-img").setAttribute("src", "{{ url_for('static', filename='img/error-attending.svg') }}");
+        console.log("ERROR: encountered server error while retrieving attending status");
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      document.getElementById("attending-img").setAttribute("src", "{{ url_for('static', filename='img/error-attending.svg') }}");
+      console.log("ERROR: transaction to retrieve attending status failed");
+    };
+    request.send();
+  }
+
   var userMenuBackground = document.getElementById("user-menu-background");
 
   function openUserMenu() {

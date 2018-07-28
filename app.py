@@ -1410,6 +1410,69 @@ def display_attending():
                                  back= flask.url_for('display_activities'))
 
 
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/attending.status/', methods=['GET'])
+@entry_and_exit_logger
+def check_attending_status(activity_id, event_id):
+    """Check if the user is attending the associated event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('check_attending_status() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_attending = db.query(models.Attending) \
+                               .filter( \
+                                   sqlalchemy.and_( \
+                                       models.Attending.event_id==event_id,
+                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                                       ) \
+                                   ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('check_attending_status() - - VARS'
+             '    [database query error: activity_id={}, '\
+                                        'event_id={}, ' \
+                                        'username={}]' \
+                                        .format(activity_id,
+                                                event_id,
+                                                flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        if user_attending:
+            response = flask.url_for('static', filename='img/attending.svg')
+            app.logger.debug(
+                ('check_attending_status() - - VARS'
+                 '    [attending : activity_id={}, '\
+                                  'event_id={}, ' \
+                                  'username={}]' \
+                                  .format(activity_id,
+                                          event_id,
+                                          flask.session.get('username', None))))
+        else:
+            response = flask.url_for('static', filename='img/not-attending.svg')
+            app.logger.debug(
+                ('check_attending_status() - - VARS'
+                 '    [not attending : activity_id={}, '\
+                                      'event_id={}, ' \
+                                      'username={}]' \
+                                      .format(activity_id,
+                                              event_id,
+                                              flask.session.get('username', None))))
+        return response
+
+
 @entry_and_exit_logger
 def make_user(*, session):
     """Create User object.
