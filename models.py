@@ -195,5 +195,33 @@ class Hosting(declarative_base):
     event = sqlalchemy.orm.relationship(Event)
 
 
+class Attending(declarative_base):
+    """Attending object
+
+    An attending object represents a relationship between a user and an event they are attending.
+
+    Attributes:
+        user_id: The id for the user attending the associated event.
+        event_id: The id for the event being attended by the associated user.
+
+    Dependencies:
+        sqlalchemy.Column
+        sqlalchemy.ext.declarative.declarative_base
+        sqlalchemy.ForeignKey
+        sqlalchemy.Integer
+        sqlalchemy.orm.relationship
+    """
+    __tablename__ = 'attending'
+
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey('user_account.id'),
+                                primary_key=True)
+    event_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                 sqlalchemy.ForeignKey('event.id'),
+                                 primary_key=True)
+    user_account = sqlalchemy.orm.relationship(UserAccount)
+    event = sqlalchemy.orm.relationship(Event)
+
+
 engine = sqlalchemy.create_engine(DB)
 declarative_base.metadata.create_all(engine)

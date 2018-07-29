@@ -1345,6 +1345,314 @@ def display_hosting():
                                  back= flask.url_for('display_activities'))
 
 
+@app.route('/activities/attending/')
+@entry_and_exit_logger
+def display_attending():
+    """Display Event records from DB that user is attending.
+
+    List all Event records that have a corresponding entry
+    in the Attending table for the user.
+    """
+    # User login required
+    if 'username' not in flask.session:
+        # Store current page to redirect back to after login
+        flask.session['prelogin_page'] = flask.url_for(
+                                             'display_attending')
+        return flask.redirect('/login/')
+
+    with db_session() as db:
+        dates = db.query(models.Event,
+                         sqlalchemy.func.generate_series(models.Event.start_date,
+                                                         models.Event.end_date,
+                                                         sqlalchemy.text("'1 day'::interval")) \
+                  .cast(sqlalchemy.Date) \
+                  .label('event_date')) \
+                  .subquery()
+        events = db.query(models.Event,
+                          models.Event.id,
+                          models.Event.name,
+                          models.Event.description,
+                          models.Event.start_date,
+                          models.Event.end_date,
+                          models.Event._start_time,
+                          models.Event._end_time,
+                          models.Event.user_id,
+                          models.Event.activity_id,
+                          models.Attending,
+                          sqlalchemy.func.to_char(dates.c.event_date,
+                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
+                                         .label('date'), \
+                          sqlalchemy.func.to_char(models.Event._start_time,
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
+                                         .label('start_time'), \
+                          sqlalchemy.func.to_char(models.Event._end_time,
+                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
+                                         .label('end_time'), \
+                          dates) \
+                   .join(models.Attending,
+                         models.Event.id == models.Attending.event_id ) \
+                   .join(dates,
+                         models.Event.id == dates.c.id) \
+                   .order_by(dates.c.event_date.asc(),
+                             models.Event._start_time.asc(),
+                             models.Event._end_time.asc()) \
+                   .filter( \
+                        sqlalchemy.and_( \
+                            dates.c.event_date >= datetime.date.today(),
+                            models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                            ) \
+                        ) \
+                   .all()
+
+    return flask.render_template('attending.html',
+                                 events=events,
+                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
+                                 back= flask.url_for('display_activities'))
+
+
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/attending.status/', methods=['GET'])
+@entry_and_exit_logger
+def check_attending_status(activity_id, event_id):
+    """Check if the user is attending the associated event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('check_attending_status() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_attending = db.query(models.Attending) \
+                               .filter( \
+                                   sqlalchemy.and_( \
+                                       models.Attending.event_id==event_id,
+                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                                       ) \
+                                   ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('check_attending_status() - - VARS'
+             '    [database query error: activity_id={}, '\
+                                        'event_id={}, ' \
+                                        'username={}]' \
+                                        .format(activity_id,
+                                                event_id,
+                                                flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        if user_attending:
+            app.logger.debug(
+                ('check_attending_status() - - VARS'
+                 '    [attending : activity_id={}, '\
+                                  'event_id={}, ' \
+                                  'username={}]' \
+                                  .format(activity_id,
+                                          event_id,
+                                          flask.session.get('username', None))))
+            response = json.dumps(
+                {'Attending_Status_Image': flask.url_for('static', filename='img/attending.svg'),
+                 'Attending_Status_Button': 'leaveEvent()'}
+            )
+        else:
+            app.logger.debug(
+                ('check_attending_status() - - VARS'
+                 '    [not attending : activity_id={}, '\
+                                      'event_id={}, ' \
+                                      'username={}]' \
+                                      .format(activity_id,
+                                              event_id,
+                                              flask.session.get('username', None))))
+            response = json.dumps(
+                {'Attending_Status_Image': flask.url_for('static', filename='img/not-attending.svg'),
+                 'Attending_Status_Button': 'attendEvent()'}
+            )
+
+        return response
+
+
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/attend/', methods=['POST'])
+@entry_and_exit_logger
+def attend_event(activity_id, event_id):
+    """Update attending table to show that the user is attending the associated event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('attend_event() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_attending = db.query(models.Attending) \
+                               .filter( \
+                                   sqlalchemy.and_( \
+                                       models.Attending.event_id==event_id,
+                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                                       ) \
+                                   ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('attend_event() - - VARS'
+             '    [database query error: activity_id={}, '\
+                                        'event_id={}, ' \
+                                        'username={}]' \
+                                        .format(activity_id,
+                                                event_id,
+                                                flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    if user_attending:
+        app.logger.error(
+            ('attend_event() - - VARS'
+             '    [user already attending : activity_id={}, '\
+                                           'event_id={}, ' \
+                                           'username={}]' \
+                                           .format(activity_id,
+                                                   event_id,
+                                                   flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('User already attending'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            attend_event = models.Attending(event_id=event_id,
+                                            user_id=get_user_id(
+                                                    user_email=flask.session['email']
+                                                    )
+                                            )
+            db.add(attend_event)
+            db.commit()
+    except:
+        app.logger.error(
+            ('attend_event() - - VARS'
+             '    [database error: activity_id={}, '\
+                                  'event_id={}, ' \
+                                  'username={}]' \
+                                   .format(activity_id,
+                                           event_id,
+                                           flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        app.logger.debug(
+            ('attend_event() - - VARS'
+             '    [user now attending : activity_id={}, '\
+                                       'event_id={}, ' \
+                                       'username={}]' \
+                                       .format(activity_id,
+                                               event_id,
+                                               flask.session.get('username', None))))
+
+
+@app.route('/activities/<int:activity_id>/events/<int:event_id>/leave/', methods=['POST'])
+@entry_and_exit_logger
+def leave_event(activity_id, event_id):
+    """Update attending table to show that the user is not attending the associated event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('leave_event() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_attending = db.query(models.Attending) \
+                               .filter( \
+                                   sqlalchemy.and_( \
+                                       models.Attending.event_id==event_id,
+                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
+                                       ) \
+                                   ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('leave_event() - - VARS'
+             '    [database query error: activity_id={}, '\
+                                        'event_id={}, ' \
+                                        'username={}]' \
+                                        .format(activity_id,
+                                                event_id,
+                                                flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    if not user_attending:
+        app.logger.error(
+            ('leave_event() - - VARS'
+             '    [user was not attending : activity_id={}, '\
+                                           'event_id={}, ' \
+                                           'username={}]' \
+                                           .format(activity_id,
+                                                   event_id,
+                                                   flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('User was not attending'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            db.delete(user_attending)
+            db.commit()
+    except:
+        app.logger.error(
+            ('leave_event() - - VARS'
+             '    [database error: activity_id={}, '\
+                                  'event_id={}, ' \
+                                  'username={}]' \
+                                   .format(activity_id,
+                                           event_id,
+                                           flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        app.logger.debug(
+            ('leave_event() - - VARS'
+             '    [user no longer attending : activity_id={}, '\
+                                             'event_id={}, ' \
+                                             'username={}]' \
+                                             .format(activity_id,
+                                                     event_id,
+                                                     flask.session.get('username', None))))
+
+
 @entry_and_exit_logger
 def make_user(*, session):
     """Create User object.
