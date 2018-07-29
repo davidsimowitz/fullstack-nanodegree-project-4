@@ -122,7 +122,9 @@
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
         // retrieve attending status from server
-        document.getElementById("attending-img").setAttribute("src", this.response);
+        data = JSON.parse(this.response);
+        document.getElementById("attending-img").setAttribute("src", data.Attending_Status_Image);
+        document.getElementById("attending-button").setAttribute("onclick", data.Attending_Status_Button);
       }
       else {
         // encountered server error
@@ -134,6 +136,56 @@
       // XMLHttpRequest transaction failed
       document.getElementById("attending-img").setAttribute("src", "{{ url_for('static', filename='img/error-attending.svg') }}");
       console.log("ERROR: transaction to retrieve attending status failed");
+    };
+    request.send();
+  }
+
+  function attendEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('attend_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update attending status from server
+        updateAttendingStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while attending event");
+        updateAttendingStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to attend event failed");
+      updateAttendingStatusFromServer();
+    };
+    request.send();
+  }
+
+  function leaveEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('leave_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update attending status from server
+        updateAttendingStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while leaving event");
+        updateAttendingStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to leave event failed");
+      updateAttendingStatusFromServer();
     };
     request.send();
   }
