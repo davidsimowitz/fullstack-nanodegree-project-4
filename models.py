@@ -9,6 +9,7 @@ import sys
 DB = 'postgresql:///events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
+
 def icon_list(path='static/img/'):
     """returns a list of icon urls
 
@@ -22,7 +23,7 @@ def icon_list(path='static/img/'):
     Dependencies:
         os.walk
     """
-    icons= []
+    icons = []
     for root, _, images in os.walk(path):
         for image in images:
             if image.endswith('-icon.svg'):
@@ -63,7 +64,8 @@ class Activity(declarative_base):
         id: Integer primary key for the activity record.
         name: The name of the activity.
         icon: The icon for the activity stored as a URL.
-        user_id: The id for the user account record associated with this activity.
+        user_id: The id for the user account record associated with
+            this activity.
 
     Dependencies:
         sqlalchemy.Column
@@ -170,7 +172,8 @@ class Event(declarative_base):
 class Hosting(declarative_base):
     """Hosting object
 
-    A hosting object represents a relationship between a user and an event they are hosting.
+    A hosting object represents a relationship between a user and
+    an event they are hosting.
 
     Attributes:
         user_id: The id for the user hosting the associated event.
@@ -198,7 +201,8 @@ class Hosting(declarative_base):
 class Attending(declarative_base):
     """Attending object
 
-    An attending object represents a relationship between a user and an event they are attending.
+    An attending object represents a relationship between a user and
+    an event they are attending.
 
     Attributes:
         user_id: The id for the user attending the associated event.
