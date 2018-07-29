@@ -50,6 +50,8 @@
         <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}"
            class="display-event"
            title="modify event">
+        {% else %}
+        <section class="display-event">
         {% endif %}
           <section class="event-wrapper span-date-wrapper">
             <div class="event-time">
@@ -90,6 +92,8 @@
           </section>
         {% if event.user_id==user_id %}
         </a>
+        {% else %}
+        </section>
         {% endif %}
       </section>
 
