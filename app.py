@@ -1549,8 +1549,8 @@ def check_attending_status(activity_id, event_id):
         app.logger.error(
             ('check_attending_status() - - VARS'
              '    [database query error: activity_id={},'
-                                       ' event_id={},'
-                                       ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1566,8 +1566,8 @@ def check_attending_status(activity_id, event_id):
             app.logger.debug(
                 ('check_attending_status() - - VARS'
                  '    [attending : activity_id={},'
-                                 ' event_id={},'
-                                 ' username={}]'
+                 ' event_id={},'
+                 ' username={}]'
                  .format(activity_id,
                          event_id,
                          flask.session.get('username', None))
@@ -1584,8 +1584,8 @@ def check_attending_status(activity_id, event_id):
             app.logger.debug(
                 ('check_attending_status() - - VARS'
                  '    [not attending : activity_id={},'
-                                     ' event_id={},'
-                                     ' username={}]'
+                 ' event_id={},'
+                 ' username={}]'
                  .format(activity_id,
                          event_id,
                          flask.session.get('username', None))
@@ -1639,8 +1639,8 @@ def attend_event(activity_id, event_id):
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database query error: activity_id={},'
-                                       ' event_id={},'
-                                       ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1656,8 +1656,8 @@ def attend_event(activity_id, event_id):
         app.logger.error(
             ('attend_event() - - VARS'
              '    [user already attending : activity_id={},'
-                                          ' event_id={},'
-                                          ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1684,8 +1684,8 @@ def attend_event(activity_id, event_id):
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database error: activity_id={},'
-                                 ' event_id={},'
-                                 ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1700,8 +1700,8 @@ def attend_event(activity_id, event_id):
         app.logger.debug(
             ('attend_event() - - VARS'
              '    [user now attending : activity_id={},'
-                                      ' event_id={},'
-                                      ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1747,8 +1747,8 @@ def leave_event(activity_id, event_id):
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database query error: activity_id={},'
-                                       ' event_id={},'
-                                       ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1764,8 +1764,8 @@ def leave_event(activity_id, event_id):
         app.logger.error(
             ('leave_event() - - VARS'
              '    [user was not attending : activity_id={},'
-                                          ' event_id={},'
-                                          ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))
@@ -1785,8 +1785,8 @@ def leave_event(activity_id, event_id):
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database error: activity_id={},'
-                                 ' event_id={},'
-                                 ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))))
@@ -1799,8 +1799,8 @@ def leave_event(activity_id, event_id):
         app.logger.debug(
             ('leave_event() - - VARS'
              '    [user no longer attending : activity_id={},'
-                                            ' event_id={},'
-                                            ' username={}]'
+             ' event_id={},'
+             ' username={}]'
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))))
