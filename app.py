@@ -44,6 +44,7 @@ engine = sqlalchemy.create_engine(models.DB)
 models.declarative_base.metadata.bind = engine
 create_sqlalchemy_session = sqlalchemy.orm.sessionmaker(bind=engine)
 
+
 @contextlib.contextmanager
 def db_session():
     db = create_sqlalchemy_session()
@@ -631,7 +632,8 @@ def google_connect():
         user_id = make_user(session=flask.session)
     flask.session['user_id'] = user_id
 
-    return login_splash_page(picture=flask.session['picture']) + flask.session['username']
+    return login_splash_page(picture=flask.session['picture']) + \
+        flask.session['username']
 
 
 @app.route('/google.disconnect/')
@@ -868,63 +870,56 @@ def facebook_disconnect():
 def display_activity(activity_id):
     """Display Activity record from DB with matching activity_id.
 
-    Display Activity and list all Event records corresponding to it.
-
-    Activity query as SQL:
-
-        query = "SELECT * FROM " \
-                    "(SELECT *, " \
-                          "to_char(event_date, 'day') AS day_of_week, " \
-                          "to_char(event_date, 'month') AS month, " \
-                          "extract(day from event_date)::int AS day_of_month, " \
-                          "extract(year from event_date)::int AS year, " \
-                          "to_char(_start_time, 'HH12:MI AM') AS start_time, " \
-                          "to_char(_end_time, 'HH12:MI AM') AS end_time " \
-                          " FROM (SELECT *, generate_series(event.start_date," \
-                                                           "event.end_date, " \
-                                                           "'1 day'::interval)::date "\
-                                "AS event_date " \
-                                "FROM event " \
-                                "WHERE activity_id = {} " \
-                                "GROUP BY id) "\
-                          "AS sq1) "\
-                    "AS sq2 "\
-                "WHERE event_date >= current_date " \
-                "ORDER BY event_date " \
-                "ASC;".format(activity.id)
-        events = db.execute(sqlalchemy.text(query))
-"""
+    Display Activity and list all Event records corresponding to it
+    in date order.
+    """
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
                      .one()
-        dates = db.query(models.Event,
-                         sqlalchemy.func.generate_series(models.Event.start_date,
-                                                         models.Event.end_date,
-                                                         sqlalchemy.text("'1 day'::interval")) \
-                  .cast(sqlalchemy.Date) \
-                  .label('event_date')) \
-                  .subquery()
-        events = db.query(models.Event,
-                          models.Event.id,
-                          models.Event.name,
-                          models.Event.description,
+        dates = db.query(
+                      models.Event,
+                      sqlalchemy.func.generate_series(
                           models.Event.start_date,
                           models.Event.end_date,
-                          models.Event._start_time,
-                          models.Event._end_time,
-                          models.Event.user_id,
-                          models.Event.activity_id,
-                          sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                         .label('date'), \
-                          sqlalchemy.func.to_char(models.Event._start_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('start_time'), \
-                          sqlalchemy.func.to_char(models.Event._end_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('end_time'), \
-                          dates) \
+                          sqlalchemy.text("'1 day'::interval")
+                          )
+                      .cast(sqlalchemy.Date)
+                      .label('event_date')
+                      ) \
+                  .subquery()
+        events = db.query(
+                       models.Event,
+                       models.Event.id,
+                       models.Event.name,
+                       models.Event.description,
+                       models.Event.start_date,
+                       models.Event.end_date,
+                       models.Event._start_time,
+                       models.Event._end_time,
+                       models.Event.user_id,
+                       models.Event.activity_id,
+                       sqlalchemy.func.to_char(
+                                          dates.c.event_date,
+                                          sqlalchemy.text(
+                                              "'FMDay, FMMonth FMDD, FMYYYY'"
+                                              )
+                                          )
+                       .label('date'),
+                       sqlalchemy.func.to_char(
+                                          models.Event._start_time,
+                                          sqlalchemy.text(
+                                              "'FMHH12:MI pm'"
+                                              )
+                                          )
+                       .label('start_time'),
+                       sqlalchemy.func.to_char(models.Event._end_time,
+                                               sqlalchemy.text(
+                                                   "'FMHH12:MI pm'"
+                                                   )
+                                               )
+                       .label('end_time'),
+                       dates) \
                    .join(dates, models.Event.id == dates.c.id) \
                    .filter_by(activity_id=activity.id) \
                    .order_by(dates.c.event_date.asc(),
@@ -936,8 +931,10 @@ def display_activity(activity_id):
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
-                                 back= flask.url_for('display_activities'))
+                                 user_id=get_user_id(
+                                     user_email=flask.session.get('email', 0)
+                                     ),
+                                 back=flask.url_for('display_activities'))
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
@@ -1072,30 +1069,62 @@ def display_event(activity_id, event_id):
                          models.Event.end_date,
                          models.Event.user_id,
                          models.Event.activity_id,
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                        .label('starting_date'), \
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMMon FMDDth'")) \
-                                        .label('abbr_starting_date'), \
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
-                                        .label('abbr_starting_day'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                        .label('ending_date'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMMon FMDDth'")) \
-                                        .label('abbr_ending_date'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
-                                        .label('abbr_ending_day'), \
-                         sqlalchemy.func.to_char(models.Event._start_time,
-                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
-                                        .label('start_time'), \
-                         sqlalchemy.func.to_char(models.Event._end_time,
-                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
-                                        .label('end_time') \
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMDay, FMMonth FMDD, FMYYYY'"
+                                                )
+                                            )
+                         .label('starting_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_starting_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMDy, FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_starting_day'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMDay, FMMonth FMDD, FMYYYY'"
+                                                )
+                                            )
+                         .label('ending_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_ending_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMDy, FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_ending_day'),
+                         sqlalchemy.func.to_char(
+                                            models.Event._start_time,
+                                            sqlalchemy.text(
+                                                "'FMHH12:MI pm'"
+                                                )
+                                            )
+                         .label('start_time'),
+                         sqlalchemy.func.to_char(
+                                            models.Event._end_time,
+                                            sqlalchemy.text(
+                                                "'FMHH12:MI pm'"
+                                                )
+                                            )
+                         .label('end_time')
                          ) \
                   .filter_by(id=event_id,
                              activity_id=activity_id) \
@@ -1103,9 +1132,11 @@ def display_event(activity_id, event_id):
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
-                                 back= flask.url_for('display_activity',
-                                                     activity_id=activity.id))
+                                 user_id=get_user_id(
+                                     user_email=flask.session.get('email', 0)
+                                     ),
+                                 back=flask.url_for('display_activity',
+                                                    activity_id=activity.id))
 
 
 @app.route('/activities/<int:activity_id>/events/new/',
@@ -1248,30 +1279,62 @@ def delete_event(activity_id, event_id):
                          models.Event.end_date,
                          models.Event.user_id,
                          models.Event.activity_id,
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                        .label('starting_date'), \
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMMon FMDDth'")) \
-                                        .label('abbr_starting_date'), \
-                         sqlalchemy.func.to_char(models.Event.start_date,
-                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
-                                        .label('abbr_starting_day'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                        .label('ending_date'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMMon FMDDth'")) \
-                                        .label('abbr_ending_date'), \
-                         sqlalchemy.func.to_char(models.Event.end_date,
-                                                 sqlalchemy.text("'FMDy, FMMon FMDDth'")) \
-                                        .label('abbr_ending_day'), \
-                         sqlalchemy.func.to_char(models.Event._start_time,
-                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
-                                        .label('start_time'), \
-                         sqlalchemy.func.to_char(models.Event._end_time,
-                                                 sqlalchemy.text("'FMHH12:MI pm'")) \
-                                        .label('end_time') \
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMDay, FMMonth FMDD, FMYYYY'"
+                                                )
+                                            )
+                         .label('starting_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_starting_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.start_date,
+                                            sqlalchemy.text(
+                                                "'FMDy, FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_starting_day'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMDay, FMMonth FMDD, FMYYYY'"
+                                                )
+                                            )
+                         .label('ending_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_ending_date'),
+                         sqlalchemy.func.to_char(
+                                            models.Event.end_date,
+                                            sqlalchemy.text(
+                                                "'FMDy, FMMon FMDDth'"
+                                                )
+                                            )
+                         .label('abbr_ending_day'),
+                         sqlalchemy.func.to_char(
+                                            models.Event._start_time,
+                                            sqlalchemy.text(
+                                                "'FMHH12:MI pm'"
+                                                )
+                                            )
+                         .label('start_time'),
+                         sqlalchemy.func.to_char(
+                                            models.Event._end_time,
+                                            sqlalchemy.text(
+                                                "'FMHH12:MI pm'"
+                                                )
+                                            )
+                         .label('end_time')
                          ) \
                   .filter_by(id=event_id,
                              activity_id=activity_id) \
@@ -1296,53 +1359,79 @@ def display_hosting():
         return flask.redirect('/login/')
 
     with db_session() as db:
-        dates = db.query(models.Event,
-                         sqlalchemy.func.generate_series(models.Event.start_date,
-                                                         models.Event.end_date,
-                                                         sqlalchemy.text("'1 day'::interval")) \
-                  .cast(sqlalchemy.Date) \
+        dates = db.query(
+                      models.Event,
+                      sqlalchemy.func.generate_series(
+                                         models.Event.start_date,
+                                         models.Event.end_date,
+                                         sqlalchemy.text(
+                                             "'1 day'::interval"
+                                             )
+                                         )
+                  .cast(sqlalchemy.Date)
                   .label('event_date')) \
                   .subquery()
-        events = db.query(models.Event,
-                          models.Event.id,
-                          models.Event.name,
-                          models.Event.description,
-                          models.Event.start_date,
-                          models.Event.end_date,
-                          models.Event._start_time,
-                          models.Event._end_time,
-                          models.Event.user_id,
-                          models.Event.activity_id,
-                          models.Hosting,
-                          sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                         .label('date'), \
-                          sqlalchemy.func.to_char(models.Event._start_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('start_time'), \
-                          sqlalchemy.func.to_char(models.Event._end_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('end_time'), \
-                          dates) \
+        events = db.query(
+                       models.Event,
+                       models.Event.id,
+                       models.Event.name,
+                       models.Event.description,
+                       models.Event.start_date,
+                       models.Event.end_date,
+                       models.Event._start_time,
+                       models.Event._end_time,
+                       models.Event.user_id,
+                       models.Event.activity_id,
+                       models.Hosting,
+                       sqlalchemy.func.to_char(
+                                          dates.c.event_date,
+                                          sqlalchemy.text(
+                                              "'FMDay, FMMonth FMDD, FMYYYY'"
+                                              )
+                                          )
+                       .label('date'),
+                       sqlalchemy.func.to_char(
+                                          models.Event._start_time,
+                                          sqlalchemy.text(
+                                              "'FMHH12:MI pm'"
+                                              )
+                                          )
+                       .label('start_time'),
+                       sqlalchemy.func.to_char(
+                                          models.Event._end_time,
+                                          sqlalchemy.text(
+                                              "'FMHH12:MI pm'"
+                                              )
+                                          )
+                       .label('end_time'),
+                       dates) \
                    .join(models.Hosting,
-                         models.Event.id == models.Hosting.event_id ) \
+                         models.Event.id == models.Hosting.event_id) \
                    .join(dates,
                          models.Event.id == dates.c.id) \
                    .order_by(dates.c.event_date.asc(),
                              models.Event._start_time.asc(),
                              models.Event._end_time.asc()) \
-                   .filter( \
-                        sqlalchemy.and_( \
-                            dates.c.event_date >= datetime.date.today(),
-                            models.Hosting.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
-                            ) \
-                        ) \
+                   .filter(
+                       sqlalchemy.and_(
+                           dates.c.event_date >= datetime.date.today(),
+                           models.Hosting.user_id ==
+                           get_user_id(
+                                   user_email=flask.session.get('email', 0)
+                                   )
+                           )
+                       ) \
                    .all()
 
     return flask.render_template('hosting.html',
                                  events=events,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
-                                 back= flask.url_for('display_activities'))
+                                 user_id=get_user_id(
+                                             user_email=flask.session.get(
+                                                 'email',
+                                                 0
+                                                 )
+                                             ),
+                                 back=flask.url_for('display_activities'))
 
 
 @app.route('/activities/attending/')
@@ -1361,56 +1450,72 @@ def display_attending():
         return flask.redirect('/login/')
 
     with db_session() as db:
-        dates = db.query(models.Event,
-                         sqlalchemy.func.generate_series(models.Event.start_date,
-                                                         models.Event.end_date,
-                                                         sqlalchemy.text("'1 day'::interval")) \
-                  .cast(sqlalchemy.Date) \
+        dates = db.query(
+                      models.Event,
+                      sqlalchemy.func.generate_series(
+                                         models.Event.start_date,
+                                         models.Event.end_date,
+                                         sqlalchemy.text("'1 day'::interval"))
+                  .cast(sqlalchemy.Date)
                   .label('event_date')) \
                   .subquery()
-        events = db.query(models.Event,
-                          models.Event.id,
-                          models.Event.name,
-                          models.Event.description,
-                          models.Event.start_date,
-                          models.Event.end_date,
-                          models.Event._start_time,
-                          models.Event._end_time,
-                          models.Event.user_id,
-                          models.Event.activity_id,
-                          models.Attending,
-                          sqlalchemy.func.to_char(dates.c.event_date,
-                                                  sqlalchemy.text("'FMDay, FMMonth FMDD, FMYYYY'")) \
-                                         .label('date'), \
-                          sqlalchemy.func.to_char(models.Event._start_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('start_time'), \
-                          sqlalchemy.func.to_char(models.Event._end_time,
-                                                  sqlalchemy.text("'FMHH12:MI pm'")) \
-                                         .label('end_time'), \
-                          dates) \
+        events = db.query(
+                       models.Event,
+                       models.Event.id,
+                       models.Event.name,
+                       models.Event.description,
+                       models.Event.start_date,
+                       models.Event.end_date,
+                       models.Event._start_time,
+                       models.Event._end_time,
+                       models.Event.user_id,
+                       models.Event.activity_id,
+                       models.Attending,
+                       sqlalchemy.func.to_char(
+                                          dates.c.event_date,
+                                          sqlalchemy.text(
+                                              "'FMDay, FMMonth FMDD, FMYYYY'"
+                                              )
+                                          )
+                       .label('date'),
+                       sqlalchemy.func.to_char(
+                                          models.Event._start_time,
+                                          sqlalchemy.text("'FMHH12:MI pm'"))
+                       .label('start_time'),
+                       sqlalchemy.func.to_char(
+                                          models.Event._end_time,
+                                          sqlalchemy.text("'FMHH12:MI pm'"))
+                       .label('end_time'),
+                       dates) \
                    .join(models.Attending,
-                         models.Event.id == models.Attending.event_id ) \
+                         models.Event.id == models.Attending.event_id) \
                    .join(dates,
                          models.Event.id == dates.c.id) \
                    .order_by(dates.c.event_date.asc(),
                              models.Event._start_time.asc(),
                              models.Event._end_time.asc()) \
-                   .filter( \
-                        sqlalchemy.and_( \
+                   .filter(
+                        sqlalchemy.and_(
                             dates.c.event_date >= datetime.date.today(),
-                            models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
-                            ) \
+                            models.Attending.user_id == get_user_id(
+                                user_email=flask.session.get('email', 0)
+                                )
+                            )
                         ) \
                    .all()
 
     return flask.render_template('attending.html',
                                  events=events,
-                                 user_id=get_user_id(user_email=flask.session.get('email', 0)),
-                                 back= flask.url_for('display_activities'))
+                                 user_id=get_user_id(
+                                     user_email=flask.session.get('email', 0)
+                                     ),
+                                 back=flask.url_for('display_activities'))
 
 
-@app.route('/activities/<int:activity_id>/events/<int:event_id>/attending.status/', methods=['GET'])
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/attending.status/',
+    methods=['GET']
+    )
 @entry_and_exit_logger
 def check_attending_status(activity_id, event_id):
     """Check if the user is attending the associated event"""
@@ -1428,22 +1533,29 @@ def check_attending_status(activity_id, event_id):
     try:
         with db_session() as db:
             user_attending = db.query(models.Attending) \
-                               .filter( \
-                                   sqlalchemy.and_( \
-                                       models.Attending.event_id==event_id,
-                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
-                                       ) \
+                               .filter(
+                                   sqlalchemy.and_(
+                                       models.Attending.event_id == event_id,
+                                       models.Attending.user_id == get_user_id(
+                                           user_email=flask.session.get(
+                                               'email',
+                                               0
+                                               )
+                                           )
+                                       )
                                    ) \
                                .first()
     except:
         app.logger.error(
             ('check_attending_status() - - VARS'
-             '    [database query error: activity_id={}, '\
-                                        'event_id={}, ' \
-                                        'username={}]' \
-                                        .format(activity_id,
-                                                event_id,
-                                                flask.session.get('username', None))))
+             '    [database query error: activity_id={},'
+                                       ' event_id={},'
+                                       ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1453,37 +1565,50 @@ def check_attending_status(activity_id, event_id):
         if user_attending:
             app.logger.debug(
                 ('check_attending_status() - - VARS'
-                 '    [attending : activity_id={}, '\
-                                  'event_id={}, ' \
-                                  'username={}]' \
-                                  .format(activity_id,
-                                          event_id,
-                                          flask.session.get('username', None))))
+                 '    [attending : activity_id={},'
+                                 ' event_id={},'
+                                 ' username={}]'
+                 .format(activity_id,
+                         event_id,
+                         flask.session.get('username', None))
+                 )
+            )
             response = json.dumps(
-                {'Attending_Status_Image': flask.url_for('static', filename='img/attending.svg'),
+                {'Attending_Status_Image': flask.url_for(
+                                               'static',
+                                               filename='img/attending.svg'
+                                               ),
                  'Attending_Status_Button': 'leaveEvent()'}
             )
         else:
             app.logger.debug(
                 ('check_attending_status() - - VARS'
-                 '    [not attending : activity_id={}, '\
-                                      'event_id={}, ' \
-                                      'username={}]' \
-                                      .format(activity_id,
-                                              event_id,
-                                              flask.session.get('username', None))))
+                 '    [not attending : activity_id={},'
+                                     ' event_id={},'
+                                     ' username={}]'
+                 .format(activity_id,
+                         event_id,
+                         flask.session.get('username', None))
+                 )
+            )
             response = json.dumps(
-                {'Attending_Status_Image': flask.url_for('static', filename='img/not-attending.svg'),
+                {'Attending_Status_Image': flask.url_for(
+                                               'static',
+                                               filename='img/not-attending.svg'
+                                               ),
                  'Attending_Status_Button': 'attendEvent()'}
             )
 
         return response
 
 
-@app.route('/activities/<int:activity_id>/events/<int:event_id>/attend/', methods=['POST'])
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/attend/',
+    methods=['POST']
+    )
 @entry_and_exit_logger
 def attend_event(activity_id, event_id):
-    """Update attending table to show that the user is attending the associated event"""
+    """Update attending table to show user is attending the associated event"""
     # User login required
     if 'username' not in flask.session:
         app.logger.error(
@@ -1498,22 +1623,29 @@ def attend_event(activity_id, event_id):
     try:
         with db_session() as db:
             user_attending = db.query(models.Attending) \
-                               .filter( \
-                                   sqlalchemy.and_( \
-                                       models.Attending.event_id==event_id,
-                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
-                                       ) \
+                               .filter(
+                                   sqlalchemy.and_(
+                                       models.Attending.event_id == event_id,
+                                       models.Attending.user_id == get_user_id(
+                                           user_email=flask.session.get(
+                                               'email',
+                                               0
+                                               )
+                                           )
+                                       )
                                    ) \
                                .first()
     except:
         app.logger.error(
             ('attend_event() - - VARS'
-             '    [database query error: activity_id={}, '\
-                                        'event_id={}, ' \
-                                        'username={}]' \
-                                        .format(activity_id,
-                                                event_id,
-                                                flask.session.get('username', None))))
+             '    [database query error: activity_id={},'
+                                       ' event_id={},'
+                                       ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1523,12 +1655,14 @@ def attend_event(activity_id, event_id):
     if user_attending:
         app.logger.error(
             ('attend_event() - - VARS'
-             '    [user already attending : activity_id={}, '\
-                                           'event_id={}, ' \
-                                           'username={}]' \
-                                           .format(activity_id,
-                                                   event_id,
-                                                   flask.session.get('username', None))))
+             '    [user already attending : activity_id={},'
+                                          ' event_id={},'
+                                          ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('User already attending'),
                        500)
@@ -1539,20 +1673,24 @@ def attend_event(activity_id, event_id):
         with db_session() as db:
             attend_event = models.Attending(event_id=event_id,
                                             user_id=get_user_id(
-                                                    user_email=flask.session['email']
-                                                    )
+                                                user_email=flask.session[
+                                                               'email'
+                                                               ]
+                                                )
                                             )
             db.add(attend_event)
             db.commit()
     except:
         app.logger.error(
             ('attend_event() - - VARS'
-             '    [database error: activity_id={}, '\
-                                  'event_id={}, ' \
-                                  'username={}]' \
-                                   .format(activity_id,
-                                           event_id,
-                                           flask.session.get('username', None))))
+             '    [database error: activity_id={},'
+                                 ' event_id={},'
+                                 ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1561,18 +1699,23 @@ def attend_event(activity_id, event_id):
     else:
         app.logger.debug(
             ('attend_event() - - VARS'
-             '    [user now attending : activity_id={}, '\
-                                       'event_id={}, ' \
-                                       'username={}]' \
-                                       .format(activity_id,
-                                               event_id,
-                                               flask.session.get('username', None))))
+             '    [user now attending : activity_id={},'
+                                      ' event_id={},'
+                                      ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
 
 
-@app.route('/activities/<int:activity_id>/events/<int:event_id>/leave/', methods=['POST'])
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/leave/',
+    methods=['POST']
+    )
 @entry_and_exit_logger
 def leave_event(activity_id, event_id):
-    """Update attending table to show that the user is not attending the associated event"""
+    """Update attending table to show user is not attending associated event"""
     # User login required
     if 'username' not in flask.session:
         app.logger.error(
@@ -1587,22 +1730,30 @@ def leave_event(activity_id, event_id):
     try:
         with db_session() as db:
             user_attending = db.query(models.Attending) \
-                               .filter( \
-                                   sqlalchemy.and_( \
-                                       models.Attending.event_id==event_id,
-                                       models.Attending.user_id==get_user_id(user_email=flask.session.get('email', 0)) \
-                                       ) \
+                               .filter(
+                                   sqlalchemy.and_(
+                                       models.Attending.event_id == event_id,
+                                       models.Attending.user_id ==
+                                       get_user_id(
+                                           user_email=flask.session.get(
+                                               'email',
+                                               0
+                                               )
+                                           )
+                                       )
                                    ) \
                                .first()
     except:
         app.logger.error(
             ('leave_event() - - VARS'
-             '    [database query error: activity_id={}, '\
-                                        'event_id={}, ' \
-                                        'username={}]' \
-                                        .format(activity_id,
-                                                event_id,
-                                                flask.session.get('username', None))))
+             '    [database query error: activity_id={},'
+                                       ' event_id={},'
+                                       ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1612,12 +1763,14 @@ def leave_event(activity_id, event_id):
     if not user_attending:
         app.logger.error(
             ('leave_event() - - VARS'
-             '    [user was not attending : activity_id={}, '\
-                                           'event_id={}, ' \
-                                           'username={}]' \
-                                           .format(activity_id,
-                                                   event_id,
-                                                   flask.session.get('username', None))))
+             '    [user was not attending : activity_id={},'
+                                          ' event_id={},'
+                                          ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
         response = flask.make_response(
                        json.dumps('User was not attending'),
                        500)
@@ -1631,12 +1784,12 @@ def leave_event(activity_id, event_id):
     except:
         app.logger.error(
             ('leave_event() - - VARS'
-             '    [database error: activity_id={}, '\
-                                  'event_id={}, ' \
-                                  'username={}]' \
-                                   .format(activity_id,
-                                           event_id,
-                                           flask.session.get('username', None))))
+             '    [database error: activity_id={},'
+                                 ' event_id={},'
+                                 ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))))
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1645,12 +1798,12 @@ def leave_event(activity_id, event_id):
     else:
         app.logger.debug(
             ('leave_event() - - VARS'
-             '    [user no longer attending : activity_id={}, '\
-                                             'event_id={}, ' \
-                                             'username={}]' \
-                                             .format(activity_id,
-                                                     event_id,
-                                                     flask.session.get('username', None))))
+             '    [user no longer attending : activity_id={},'
+                                            ' event_id={},'
+                                            ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))))
 
 
 @entry_and_exit_logger
