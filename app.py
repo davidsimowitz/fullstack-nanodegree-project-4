@@ -1712,6 +1712,11 @@ def attend_event(activity_id, event_id):
                      flask.session.get('username', None))
              )
         )
+        response = flask.make_response(
+                     json.dumps('Successfully marked as attending event.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route(
@@ -1777,7 +1782,7 @@ def leave_event(activity_id, event_id):
              )
         )
         response = flask.make_response(
-                       json.dumps('User was not attending'),
+                       json.dumps('User was not attending event'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1809,6 +1814,11 @@ def leave_event(activity_id, event_id):
              .format(activity_id,
                      event_id,
                      flask.session.get('username', None))))
+        response = flask.make_response(
+                     json.dumps('Successfully marked as not attending event.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @entry_and_exit_logger
@@ -1934,6 +1944,10 @@ def activities_endpoint():
         app.logger.error(
             ('activities_endpoint() - - MSG    [database error]')
         )
+        return flask.jsonify({
+                              'status': 500,
+                              'error': 'database error',
+                             })
     else:
         if not activities:
             app.logger.error(
