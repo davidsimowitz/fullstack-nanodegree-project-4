@@ -51,6 +51,9 @@ def db_session():
     try:
         yield db
     except:
+        app.logger.critical(
+            ('db_session() - - MSG'
+             '    [database error encountered]'))
         db.rollback()
         raise
     finally:
