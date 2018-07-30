@@ -1263,6 +1263,11 @@ def delete_event(activity_id, event_id):
 
     if flask.request.method == 'POST':
         with db_session() as db:
+            delete_attendings = db.query(models.Attending) \
+                                  .filter(
+                                      models.Attending.event_id == event.id
+                                      ) \
+                                  .delete(synchronize_session='fetch')
             db.delete(event)
             db.delete(hosting)
             db.commit()
