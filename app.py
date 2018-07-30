@@ -1828,16 +1828,29 @@ def make_user(*, session):
         flask.session
         sqlalchemy
     """
-    new_user = models.UserAccount(name=session['username'],
-                                  email=session['email'],
-                                  picture=session['picture'])
-    with db_session() as db:
-        db.add(new_user)
-        db.commit()
-        user = db.query(models.UserAccount) \
-                 .filter_by(email=session['email']) \
-                 .one()
-    return user.id
+    try:
+        new_user = models.UserAccount(name=session['username'],
+                                      email=session['email'],
+                                      picture=session['picture'])
+        with db_session() as db:
+            db.add(new_user)
+            db.commit()
+            user = db.query(models.UserAccount) \
+                     .filter_by(email=session['email']) \
+                     .one()
+    except:
+        app.logger.error(
+            ('make_user() - - VARS'
+             '    [database error: username={},'
+             ' email={},'
+             ' picture={}]'
+             .format(flask.session.get('username', None),
+                     flask.session.get('email', None),
+                     flask.session.get('picture', None))
+             )
+        )
+    else:
+        return user.id
 
 
 @entry_and_exit_logger
@@ -1854,11 +1867,22 @@ def get_user(*, user_id):
         models.UserAccount
         sqlalchemy
     """
-    with db_session() as db:
-        user = db.query(models.UserAccount) \
-                 .filter_by(id=user_id) \
-                 .one()
-    return user
+    try:
+        with db_session() as db:
+            user = db.query(models.UserAccount) \
+                     .filter_by(id=user_id) \
+                     .one()
+    except:
+        app.logger.error(
+            ('get_user() - - VARS'
+             '    [database error: user_id={},'
+             ' username={}]'
+             .format(user_id,
+                     flask.session.get('username', None))
+             )
+        )
+    else:
+        return user
 
 
 @entry_and_exit_logger
@@ -1880,9 +1904,16 @@ def get_user_id(*, user_email):
             user = db.query(models.UserAccount) \
                      .filter_by(email=user_email) \
                      .one()
-        return user.id
     except:
+        app.logger.error(
+            ('get_user_id() - - VARS'
+             '    [database error: user_email={}]'
+             .format(user_email)
+             )
+        )
         return None
+    else:
+        return user.id
 
 
 @app.route('/activities/JSON/')
@@ -1890,26 +1921,30 @@ def get_user_id(*, user_email):
 def activities_endpoint():
     """Returns a JSON endpoint for all activities"""
     activities = []
-    with db_session() as db:
-        for activity in db.query(models.Activity).all():
-            activity = activity.serialize
-            activity['events'] = [event.serialize for event in
-                                  db.query(models.Event)
-                                    .filter_by(activity_id=activity['id'])
-                                    .all()]
-            activities.append(activity)
-
-    if activities:
-        return flask.jsonify(activities)
-
-    else:
+    try:
+        with db_session() as db:
+            for activity in db.query(models.Activity).all():
+                activity = activity.serialize
+                activity['events'] = [event.serialize for event in
+                                      db.query(models.Event)
+                                        .filter_by(activity_id=activity['id'])
+                                        .all()]
+                activities.append(activity)
+    except:
         app.logger.error(
-            ('activities_endpoint() - -'
-             '    [NO Activities FOUND]'))
-        return flask.jsonify({
-                              'status': 404,
-                              'error': 'No Activities found',
-                             })
+            ('activities_endpoint() - - MSG    [database error]')
+        )
+    else:
+        if not activities:
+            app.logger.error(
+                ('activities_endpoint() - - MSG'
+                 '    [NO Activities FOUND]'))
+            return flask.jsonify({
+                                  'status': 404,
+                                  'error': 'No Activities found',
+                                 })
+        else:
+            return flask.jsonify(activities)
 
 
 @app.route('/activities/<int:activity_id>/events/JSON/')
@@ -1923,7 +1958,7 @@ def activity_endpoint(activity_id):
                          .one()
     except:
         app.logger.error(
-            ('activity_endpoint() - -'
+            ('activity_endpoint() - - VARS'
              '    [NOT FOUND: activity_id={}]'.format(activity_id)))
         return flask.jsonify({
                               'status': 404,
@@ -1950,7 +1985,7 @@ def event_endpoint(activity_id, event_id):
                       .one()
     except:
         app.logger.error(
-            ('event_endpoint() - -'
+            ('event_endpoint() - - VARS'
              '    [NOT FOUND: event_id={}]'.format(event_id)))
         return flask.jsonify({
                               'status': 404,
