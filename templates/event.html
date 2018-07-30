@@ -124,6 +124,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     updateAttendingStatusFromServer();
+    updateConsideringStatusFromServer();
   });
 
   function updateAttendingStatusFromServer() {
@@ -199,6 +200,33 @@
       // XMLHttpRequest transaction failed
       console.log("ERROR: transaction to leave event failed");
       updateAttendingStatusFromServer();
+    };
+    request.send();
+  }
+
+  function updateConsideringStatusFromServer() {
+    var request = new XMLHttpRequest();
+    request.open('GET',
+                 "{{url_for('check_considering_status', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // retrieve considering status from server
+        data = JSON.parse(this.response);
+        document.getElementById("considering-img").setAttribute("src", data.Considering_Status_Image);
+        document.getElementById("considering-button").setAttribute("onclick", data.Considering_Status_Button);
+      }
+      else {
+        // encountered server error
+        document.getElementById("considering-img").setAttribute("src", "{{ url_for('static', filename='img/error-considering.svg') }}");
+        console.log("ERROR: encountered server error while retrieving considering status");
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      document.getElementById("considering-img").setAttribute("src", "{{ url_for('static', filename='img/error-considering.svg') }}");
+      console.log("ERROR: transaction to retrieve considering status failed");
     };
     request.send();
   }

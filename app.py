@@ -1824,6 +1824,96 @@ def leave_event(activity_id, event_id):
         return response
 
 
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/considering.status/',
+    methods=['GET']
+    )
+@entry_and_exit_logger
+def check_considering_status(activity_id, event_id):
+    """Check if the user is considering attending the associated event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('check_considering_status() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_considering = db.query(models.Considering) \
+                                 .filter(
+                                   sqlalchemy.and_(
+                                     models.Considering.event_id == event_id,
+                                     models.Considering.user_id == get_user_id(
+                                           user_email=flask.session.get(
+                                               'email',
+                                               0
+                                               )
+                                           )
+                                       )
+                                   ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('check_considering_status() - - VARS'
+             '    [database query error: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        if user_considering:
+            app.logger.debug(
+                ('check_considering_status() - - VARS'
+                 '    [considering : activity_id={},'
+                 ' event_id={},'
+                 ' username={}]'
+                 .format(activity_id,
+                         event_id,
+                         flask.session.get('username', None))
+                 )
+            )
+            response = json.dumps(
+                {'Considering_Status_Image': flask.url_for(
+                                               'static',
+                                               filename='img/considering.svg'
+                                               ),
+                 'Considering_Status_Button': 'unconsiderEvent()'}
+            )
+        else:
+            app.logger.debug(
+                ('check_considering_status() - - VARS'
+                 '    [not considering : activity_id={},'
+                 ' event_id={},'
+                 ' username={}]'
+                 .format(activity_id,
+                         event_id,
+                         flask.session.get('username', None))
+                 )
+            )
+            response = json.dumps(
+                {'Considering_Status_Image': flask.url_for(
+                                               'static',
+                                               filename='img/not-considering.svg'
+                                               ),
+                 'Considering_Status_Button': 'considerEvent()'}
+            )
+
+        return response
+
+
 @entry_and_exit_logger
 def make_user(*, session):
     """Create User object.
