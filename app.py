@@ -1659,8 +1659,8 @@ def attend_event(activity_id, event_id):
                                              )
                                          )
                                      )
-                                 ) \
-                               .first()
+                                  ) \
+                                 .first()
     except:
         app.logger.error(
             ('attend_event() - - VARS'
@@ -1924,10 +1924,10 @@ def check_considering_status(activity_id, event_id):
                  )
             )
             response = json.dumps(
-                {'Considering_Status_Image': flask.url_for(
-                                               'static',
-                                               filename='img/not-considering.svg'
-                                               ),
+                {'Considering_Status_Image':
+                    flask.url_for('static',
+                                  filename='img/not-considering.svg'
+                                  ),
                  'Considering_Status_Button': 'considerEvent()'}
             )
 
@@ -2056,8 +2056,8 @@ def consider_event(activity_id, event_id):
                                              )
                                          )
                                      )
-                                 ) \
-                               .first()
+                                  ) \
+                                 .first()
     except:
         app.logger.error(
             ('consider_event() - - VARS'
@@ -2100,7 +2100,7 @@ def consider_event(activity_id, event_id):
                                                                    'email'
                                                                    ]
                                                     )
-                                               )
+                                                )
             if user_attending:
                 db.delete(user_attending)
             db.add(consider_event)
