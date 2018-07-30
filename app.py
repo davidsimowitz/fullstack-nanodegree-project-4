@@ -1648,6 +1648,19 @@ def attend_event(activity_id, event_id):
                                        )
                                    ) \
                                .first()
+            user_considering = db.query(models.Considering) \
+                                 .filter(
+                                   sqlalchemy.and_(
+                                     models.Considering.event_id == event_id,
+                                     models.Considering.user_id == get_user_id(
+                                         user_email=flask.session.get(
+                                             'email',
+                                             0
+                                             )
+                                         )
+                                     )
+                                 ) \
+                               .first()
     except:
         app.logger.error(
             ('attend_event() - - VARS'
@@ -1691,6 +1704,8 @@ def attend_event(activity_id, event_id):
                                                                ]
                                                 )
                                             )
+            if user_considering:
+                db.delete(user_considering)
             db.add(attend_event)
             db.commit()
     except:
@@ -2017,6 +2032,19 @@ def consider_event(activity_id, event_id):
 
     try:
         with db_session() as db:
+            user_attending = db.query(models.Attending) \
+                               .filter(
+                                   sqlalchemy.and_(
+                                       models.Attending.event_id == event_id,
+                                       models.Attending.user_id == get_user_id(
+                                           user_email=flask.session.get(
+                                               'email',
+                                               0
+                                               )
+                                           )
+                                       )
+                                   ) \
+                               .first()
             user_considering = db.query(models.Considering) \
                                  .filter(
                                    sqlalchemy.and_(
@@ -2073,6 +2101,8 @@ def consider_event(activity_id, event_id):
                                                                    ]
                                                     )
                                                )
+            if user_attending:
+                db.delete(user_attending)
             db.add(consider_event)
             db.commit()
     except:
