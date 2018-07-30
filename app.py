@@ -1271,6 +1271,11 @@ def delete_event(activity_id, event_id):
                                       models.Attending.event_id == event.id
                                       ) \
                                   .delete(synchronize_session='fetch')
+            delete_considerings = db.query(models.Considering) \
+                                    .filter(
+                                        models.Considering.event_id == event.id
+                                        ) \
+                                    .delete(synchronize_session='fetch')
             db.delete(event)
             db.delete(hosting)
             db.commit()
@@ -1911,6 +1916,221 @@ def check_considering_status(activity_id, event_id):
                  'Considering_Status_Button': 'considerEvent()'}
             )
 
+        return response
+
+
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/consider/',
+    methods=['POST']
+    )
+@entry_and_exit_logger
+def consider_event(activity_id, event_id):
+    """Update attending table to show user is considering the event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('consider_event() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_considering = db.query(models.Considering) \
+                                 .filter(
+                                   sqlalchemy.and_(
+                                     models.Considering.event_id == event_id,
+                                     models.Considering.user_id == get_user_id(
+                                         user_email=flask.session.get(
+                                             'email',
+                                             0
+                                             )
+                                         )
+                                     )
+                                 ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('consider_event() - - VARS'
+             '    [database query error: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    if user_considering:
+        app.logger.error(
+            ('consider_event() - - VARS'
+             '    [user already considering: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('User already considering'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            consider_event = models.Considering(event_id=event_id,
+                                                user_id=get_user_id(
+                                                    user_email=flask.session[
+                                                                   'email'
+                                                                   ]
+                                                    )
+                                               )
+            db.add(consider_event)
+            db.commit()
+    except:
+        app.logger.error(
+            ('consider_event() - - VARS'
+             '    [database error: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        app.logger.debug(
+            ('consider_event() - - VARS'
+             '    [user now considering: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                     json.dumps('Successfully marked as considering event.'),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
+@app.route(
+    '/activities/<int:activity_id>/events/<int:event_id>/unconsider/',
+    methods=['POST']
+    )
+@entry_and_exit_logger
+def unconsider_event(activity_id, event_id):
+    """Update considering table to show user has unconsidered the event"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('unconsider_event() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            user_considering = db.query(models.Considering) \
+                                 .filter(
+                                   sqlalchemy.and_(
+                                     models.Considering.event_id == event_id,
+                                     models.Considering.user_id == get_user_id(
+                                         user_email=flask.session.get(
+                                             'email',
+                                             0
+                                             )
+                                         )
+                                     )
+                                 ) \
+                               .first()
+    except:
+        app.logger.error(
+            ('unconsider_event() - - VARS'
+             '    [database query error: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    if not user_considering:
+        app.logger.error(
+            ('unconsider_event() - - VARS'
+             '    [user was not considering: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('User was not considering event'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            db.delete(user_considering)
+            db.commit()
+    except:
+        app.logger.error(
+            ('unconsider_event() - - VARS'
+             '    [database error: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))))
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        app.logger.debug(
+            ('unconsider_event() - - VARS'
+             '    [user no longer considering: activity_id={},'
+             ' event_id={},'
+             ' username={}]'
+             .format(activity_id,
+                     event_id,
+                     flask.session.get('username', None))))
+        response = flask.make_response(
+                     json.dumps(
+                         'Successfully marked as not considering event.'
+                     ),
+                     200)
+        response.headers['Content-Type'] = 'application/json'
         return response
 
 

@@ -231,6 +231,56 @@
     request.send();
   }
 
+  function considerEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('consider_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update considering status from server
+        updateConsideringStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while considering event");
+        updateConsideringStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to consider event failed");
+      updateConsideringStatusFromServer();
+    };
+    request.send();
+  }
+
+  function unconsiderEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('unconsider_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update considering status from server
+        updateConsideringStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while unconsidering event");
+        updateConsideringStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to unconsider event failed");
+      updateConsideringStatusFromServer();
+    };
+    request.send();
+  }
+
   var userMenuBackground = document.getElementById("user-menu-background");
 
   function openUserMenu() {
