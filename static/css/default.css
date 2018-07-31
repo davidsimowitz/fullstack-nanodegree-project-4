@@ -354,7 +354,7 @@ header {
   display: grid;
   grid-column: 2 / 10;
   grid-row: 2 / 12;
-  grid-template-columns: 1fr repeat(1, 24px);
+  grid-template-columns: 1fr repeat(2, 24px);
   grid-template-rows: 1fr;
   grid-gap: 8px;
   margin: -5px 31px 0 0;
@@ -366,7 +366,17 @@ header {
   margin: 0;
 }
 
+#considering-button {
+  grid-column: 3 / 4;
+  margin: 0;
+}
+
 #attending-img {
+  height: 36px;
+  width: auto;
+}
+
+#considering-img {
   height: 36px;
   width: auto;
 }

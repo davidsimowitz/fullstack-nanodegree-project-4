@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header id="header">
+  <div class="header-bar-top"></div>
+  <div class="header-bar-mid"></div>
+  <div class="header-bar-bot"></div>
+  <h1 class="title">Considering Events</h1>
+  <!-- user image: start -->
+  {% if 'picture' in session %}
+  <img id="account-image-wrapper"
+       src="{{session['picture']}}"
+       title="{{session['username']}}'s profile photo"
+       alt="{{session['username']}}'s profile photo">
+  {% endif %}
+  <!-- user image: end -->
+  {% include "login-menu.html" %}
+  <a href="javascript:void(0)"
+     id="user-account-button"
+     title="open menu"
+     onclick="openUserMenu()">
+    <b>☰</b>
+  </a>
+</header>
+
+<main>
+    {% include "user-account-menu.html" %}
+
+    {% if 'picture' in session %}
+    <section class="account-image-spacer">
+    </section>
+    {% endif %}
+
+    <!-- events list: start -->
+    <section id="event-container">
+    {% for event in events %}
+      {% if loop.first and loop.changed(event.event_date) %}
+      <section class="date-wrapper">
+        {% if event.date %}
+        <p class="event-date">{{ event.date }}</p>
+        {% endif %}
+      {% elif loop.changed(event.event_date) %}
+      </section>
+      <section class="date-wrapper">
+        {% if event.date %}
+        <p class="event-date">{{ event.date }}</p>
+        {% endif %}
+      {% endif %}
+        <a href="{{url_for('display_event', activity_id=event.activity_id , event_id=event.id)}}"
+           class="display-event"
+           title="{{event.name}} details">
+          <section class="event-wrapper">
+            <div class="event-time">
+            {% if event.start_date and event.end_date and event.start_date==event.end_date %}
+              {% if event.start_time and event.end_time %}
+              <p>{{ event.start_time }}–{{ event.end_time }}</p>
+              {% elif event.start_time %}
+              <p>begins {{ event.start_time }}</p>
+              {% elif event.end_time %}
+              <p>finishes {{ event.end_time }}</p>
+              {% else %}
+              <p>all day</p>
+              {% endif %}
+            {% elif event.start_date and event.end_date and event.start_date!=event.end_date %}
+              {% if event.event_date==event.start_date %}
+                {% if event.start_time %}
+                <p>begins {{ event.start_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% elif event.event_date==event.end_date %}
+                {% if event.end_time %}
+                <p>finishes {{ event.end_time }}</p>
+                {% else %}
+                <p>all day</p>
+                {% endif %}
+              {% else %}
+                <p>all day</p>
+              {% endif %}
+            {% endif %}
+            </div>
+            <div class="event-name">
+              <p>{{ event.name }}</p>
+            </div>
+            <div class="event-description">
+              {% if event.description %}
+              <p>{{ event.description }}</p>
+              {% endif %}
+            </div>
+          </section>
+        </a>
+      {% if loop.last %}
+      </section>
+      {% endif %}
+    {% endfor %}
+
+    <section class="spacer">
+    </section>
+
+    </section>
+    <!-- events list: end -->
+
+</main>
+
+<footer>
+  {% include "footer.html" %}
+  {% include "footer-nav.html" %}
+</footer>
+
+<section id="user-menu-background" class="modal">
+</section>
+
+<script>
+  var userMenuBackground = document.getElementById("user-menu-background");
+
+  function openUserMenu() {
+    document.getElementById("user-account-menu").style.width = "350px";
+    userMenuBackground.style.display = "grid";
+  }
+
+  function closeUserMenu() {
+    document.getElementById("user-account-menu").style.width = "0";
+    userMenuBackground.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == userMenuBackground) {
+      closeUserMenu();
+    }
+  }
+</script>
+
+{% endblock %}

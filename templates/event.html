@@ -30,6 +30,15 @@
                 title="attending"
                 alt="Attending event">
         </a>
+        <a href="javascript:void(0)"
+           id="considering-button"
+           title="consider"
+           onclick="">
+           <img id="considering-img"
+                src="{{ url_for('static', filename='img/considering.svg') }}"
+                title="considering"
+                alt="Considering event">
+        </a>
       </section>
     </section>
     {% endif %}
@@ -115,6 +124,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     updateAttendingStatusFromServer();
+    updateConsideringStatusFromServer();
   });
 
   function updateAttendingStatusFromServer() {
@@ -154,17 +164,20 @@
       if (this.status >= 200 && this.status < 400) {
         // update attending status from server
         updateAttendingStatusFromServer();
+        updateConsideringStatusFromServer();
       }
       else {
         // encountered server error
         console.log("ERROR: encountered server error while attending event");
         updateAttendingStatusFromServer();
+        updateConsideringStatusFromServer();
       }
     };
     request.onerror = function() {
       // XMLHttpRequest transaction failed
       console.log("ERROR: transaction to attend event failed");
       updateAttendingStatusFromServer();
+      updateConsideringStatusFromServer();
     };
     request.send();
   }
@@ -190,6 +203,86 @@
       // XMLHttpRequest transaction failed
       console.log("ERROR: transaction to leave event failed");
       updateAttendingStatusFromServer();
+    };
+    request.send();
+  }
+
+  function updateConsideringStatusFromServer() {
+    var request = new XMLHttpRequest();
+    request.open('GET',
+                 "{{url_for('check_considering_status', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // retrieve considering status from server
+        data = JSON.parse(this.response);
+        document.getElementById("considering-img").setAttribute("src", data.Considering_Status_Image);
+        document.getElementById("considering-button").setAttribute("onclick", data.Considering_Status_Button);
+      }
+      else {
+        // encountered server error
+        document.getElementById("considering-img").setAttribute("src", "{{ url_for('static', filename='img/error-considering.svg') }}");
+        console.log("ERROR: encountered server error while retrieving considering status");
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      document.getElementById("considering-img").setAttribute("src", "{{ url_for('static', filename='img/error-considering.svg') }}");
+      console.log("ERROR: transaction to retrieve considering status failed");
+    };
+    request.send();
+  }
+
+  function considerEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('consider_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update considering status from server
+        updateConsideringStatusFromServer();
+        updateAttendingStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while considering event");
+        updateConsideringStatusFromServer();
+        updateAttendingStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to consider event failed");
+      updateConsideringStatusFromServer();
+      updateAttendingStatusFromServer();
+    };
+    request.send();
+  }
+
+  function unconsiderEvent() {
+    var request = new XMLHttpRequest();
+    request.open('POST',
+                 "{{url_for('unconsider_event', activity_id=activity.id, event_id=event.id)}}",
+                 true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // update considering status from server
+        updateConsideringStatusFromServer();
+      }
+      else {
+        // encountered server error
+        console.log("ERROR: encountered server error while unconsidering event");
+        updateConsideringStatusFromServer();
+      }
+    };
+    request.onerror = function() {
+      // XMLHttpRequest transaction failed
+      console.log("ERROR: transaction to unconsider event failed");
+      updateConsideringStatusFromServer();
     };
     request.send();
   }
