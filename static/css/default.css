@@ -402,7 +402,10 @@ main {
   border: 8px solid hsl(242, 12%, 64%);
   box-shadow: 6px 6px 8px 2px hsl(231, 8%, 68%);
   border-radius: 50%;
+  justify-self: center;
   margin: 0;
+  max-height: 300px;
+  max-width: 300px;
   overflow: hidden;
 }
 
