@@ -55,29 +55,12 @@ $ vagrant up
 $ vagrant ssh
 ```
 
-  + Update system/software packages:
-  (after ssh'ing into your vagrant machine)
-```bash
-$ sudo pip3 install -U Flask
-$ sudo pip3 install -U httplib2
-$ sudo pip3 install -U sqlalchemy
-$ sudo pip3 install -U psycopg2
-$ sudo pip3 install -U oauth2client
-$ sudo pip3 install psycopg2-binary
-```
-
-  + Create the database and intialize with test values:
-  (after ssh'ing into your vagrant machine)
-```bash
-$ sudo -u postgres createdb events.db
-$ python3 populate_events_db.py
-```
-
 * Startup the backend for the site:
 
   + Run the app:
   (after ssh'ing into your vagrant machine)
 ```bash
+$ cd /vagrant
 $ python3 app.py
 ```
 
