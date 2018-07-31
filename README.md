@@ -50,7 +50,7 @@ $ cd fullstack-nanodegree-project-4
 $ vagrant up
 ```
 
-  + SHH into the machine.
+  + SSH into the machine.
 ```bash
 $ vagrant ssh
 ```
