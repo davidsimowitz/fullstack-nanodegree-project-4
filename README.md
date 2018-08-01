@@ -42,6 +42,7 @@ $ cd fullstack-nanodegree-project-4
     * README.md
     * static
     * templates
+    * Vagrantfile
 
 * Setup the environment:
 
