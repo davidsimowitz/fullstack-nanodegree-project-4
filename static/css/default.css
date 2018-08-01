@@ -266,46 +266,72 @@ header {
   width: 200px;
 }
 
-.account-actions-container {
-  color: hsl(0, 0%, 51%);
-}
-
-.account-actions {
-  font-size: 21px;
-  height: 35px;
-  margin: 0 0 10px 25px;
-}
-
-.account-actions:hover {
-  color: hsl(0, 0%, 0%);
-}
-
-.activity-actions-container {
-  color: hsl(0, 0%, 13%);
-}
-
-.activity-actions {
-  font-size: 21px;
-  height: 35px;
-  margin: 0 0 10px 25px;
-}
-
-.activity-actions:hover {
-  color: hsl(0, 0%, 51%);
-}
-
+.account-actions-container,
+.activity-actions-container,
 .event-actions-container {
-  color: hsl(231, 100%, 46%);
+  color: hsl(0, 0%, 51%);
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
-.event-actions {
-  font-size: 21px;
+.account-actions-container,
+.activity-actions-container {
+  border-bottom: 2px solid  hsl(0, 0%, 81%);
+}
+
+.account-actions-wrapper,
+.activity-actions-wrapper,
+.event-actions-wrapper {
+  border-radius: 18px;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 1fr 5fr;
+  grid-template-rows: auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.account-actions-wrapper:hover,
+.activity-actions-wrapper:hover,
+.event-actions-wrapper:hover {
+  background-color: hsl(231, 12%, 96%);
+  color: hsl(0, 0%, 46%);
+}
+
+.account-actions-wrapper:active,
+.activity-actions-wrapper:active,
+.event-actions-wrapper:active {
+  background-color: hsl(231, 12%, 92%);
+  color: hsl(0, 0%, 41%);
+  margin: 0 0 0 0;
+}
+
+.account-actions-icon,
+.activity-actions-icon,
+.event-actions-icon {
   height: 35px;
-  margin: 0 0 10px 25px;
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0 10px 0 15px;
+  margin: 0 0 0 10px;
 }
 
-.event-actions:hover {
-  color: hsl(231, 100%, 88%);
+.account-actions-title,
+.activity-actions-title,
+.event-actions-title {
+  font-size: 21px;
+  grid-column: 2;
+  grid-row: 1;
+  height: 35px;
+  margin: 0 10px 0 0;
+  padding: 4px 5px 0 5px;
+}
+
+.activity-actions-title,
+.event-actions-title {
+  font-size: 18px;
 }
 
 #sign-up {

@@ -18,139 +18,219 @@
         class="account-image"
         src="{{session['picture']}}"
         title="{{session['username']}}'s profile photo">
-    <nav class="account-actions-container">
-      <ul>
+    <nav>
+      <ul class="account-actions-container">
         <a href="{{url_for('display_hosting')}}"
+           class="account-actions-wrapper"
            title="hosting">
-          <p class="account-actions">Hosting</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-hosting.svg') }}">
+          <p class="account-actions-title">hosting</p>
         </a>
         <a href="{{url_for('display_attending')}}"
+           class="account-actions-wrapper"
            title="attending">
-          <p class="account-actions">Attending</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-attending.svg') }}">
+          <p class="account-actions-title">attending</p>
         </a>
         <a href="{{url_for('display_considering')}}"
+           class="account-actions-wrapper"
            title="considering">
-          <p class="account-actions">Considering</p>
-        </a>
-        <a href="#"
-           title="settings">
-          <p class="account-actions">Settings</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-considering.svg') }}">
+          <p class="account-actions-title">considering</p>
         </a>
       </ul>
     </nav>
-    <nav class="activity-actions-container">
-      <ul>
+    <nav>
+      <ul class="activity-actions-container">
         <a href="{{url_for('display_activities')}}"
+           class="activity-actions-wrapper"
            title="view activities">
-          <p class="activity-actions">View activities</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-home.svg') }}">
+          <p class="activity-actions-title">view activities</p>
         </a>
         <a href="{{url_for('make_activity')}}"
+           class="activity-actions-wrapper"
            title="new activity">
-          <p class="activity-actions">New activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-new.svg') }}">
+          <p class="activity-actions-title">new activity</p>
         </a>
         {% if activity and activity.user_id==user_id %}
         <a href="{{url_for('update_activity', activity_id=activity.id)}}"
+           class="activity-actions-wrapper"
            title="edit {{activity.name.lower()}}">
-          <p class="activity-actions">Edit activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-edit.svg') }}">
+          <p class="activity-actions-title">edit activity</p>
         </a>
         <a href="{{url_for('delete_activity', activity_id=activity.id)}}"
+           class="activity-actions-wrapper"
            title="remove {{activity.name.lower()}}">
-          <p class="activity-actions">Remove activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-delete.svg') }}">
+          <p class="activity-actions-title">remove activity</p>
         </a>
         {% endif %}
       </ul>
     </nav>
-    <nav class="event-actions-container">
-      <ul>
+    <nav>
+      <ul class="event-actions-container">
         {% if activity and event%}
         <a href="{{url_for('display_activity', activity_id=activity.id)}}"
+           class="event-actions-wrapper"
            title="view events">
-          <p class="event-actions">View events</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-events.svg') }}">
+          <p class="event-actions-title">view events</p>
         </a>
         {% endif %}
         {% if activity %}
         <a href="{{url_for('make_event', activity_id=activity.id)}}"
+           class="event-actions-wrapper"
            title="plan event">
-          <p class="event-actions">Plan event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-new.svg') }}">
+          <p class="event-actions-title">plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
         <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}"
+           class="event-actions-wrapper"
            title="modify {{event.name.lower()}}">
-          <p class="event-actions">Modify event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-edit.svg') }}">
+          <p class="event-actions-title">modify event</p>
         </a>
         <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}"
+           class="event-actions-wrapper"
            title="cancel {{event.name.lower()}}">
-          <p class="event-actions">Cancel event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-delete.svg') }}">
+          <p class="event-actions-title">cancel event</p>
         </a>
         {% endif %}
       </ul>
     </nav>
     {% else %}
-    <nav class="account-actions-container">
-      <ul>
+    <nav>
+      <ul class="account-actions-container">
         <a href="{{url_for('display_hosting')}}"
+           class="account-actions-wrapper"
            title="hosting">
-          <p class="account-actions">Hosting</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-hosting.svg') }}">
+          <p class="account-actions-title">hosting</p>
         </a>
         <a href="{{url_for('display_attending')}}"
+           class="account-actions-wrapper"
            title="attending">
-          <p class="account-actions">Attending</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-attending.svg') }}">
+          <p class="account-actions-title">attending</p>
         </a>
         <a href="{{url_for('display_considering')}}"
+           class="account-actions-wrapper"
            title="considering">
-          <p class="account-actions">Considering</p>
-        </a>
-        <a href="#"
-           title="settings">
-          <p class="account-actions">Settings</p>
+          <img
+              class="account-actions-icon"
+              src="{{ url_for('static', filename='img/menu-considering.svg') }}">
+          <p class="account-actions-title">considering</p>
         </a>
       </ul>
     </nav>
-    <nav class="activity-actions-container">
-      <ul>
+    <nav>
+      <ul class="activity-actions-container">
         <a href="{{url_for('display_activities')}}"
+           class="activity-actions-wrapper"
            title="view activities">
-          <p class="activity-actions">View activities</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-home.svg') }}">
+          <p class="activity-actions-title">view activities</p>
         </a>
         <a href="{{url_for('make_activity')}}"
+           class="activity-actions-wrapper"
            title="new activity">
-          <p class="activity-actions">New activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-new.svg') }}">
+          <p class="activity-actions-title">new activity</p>
         </a>
         {% if activity and activity.user_id==user_id %}
         <a href="{{url_for('update_activity', activity_id=activity.id)}}"
+           class="activity-actions-wrapper"
            title="edit {{activity.name.lower()}}">
-          <p class="activity-actions">Edit activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-edit.svg') }}">
+          <p class="activity-actions-title">edit activity</p>
         </a>
         <a href="{{url_for('delete_activity', activity_id=activity.id)}}"
+           class="activity-actions-wrapper"
            title="remove {{activity.name.lower()}}">
-          <p class="activity-actions">Remove activity</p>
+          <img
+              class="activity-actions-icon"
+              src="{{ url_for('static', filename='img/menu-delete.svg') }}">
+          <p class="activity-actions-title">remove activity</p>
         </a>
         {% endif %}
       </ul>
     </nav>
-    <nav class="event-actions-container">
-      <ul>
+    <nav>
+      <ul class="event-actions-container">
         {% if activity and event%}
         <a href="{{url_for('display_activity', activity_id=activity.id)}}"
+           class="event-actions-wrapper"
            title="view events">
-          <p class="event-actions">View events</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-events.svg') }}">
+          <p class="event-actions-title">view events</p>
         </a>
         {% endif %}
         {% if activity %}
         <a href="{{url_for('make_event', activity_id=activity.id)}}"
+           class="event-actions-wrapper"
            title="plan event">
-          <p class="event-actions">Plan event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-new.svg') }}">
+          <p class="event-actions-title">plan event</p>
         </a>
         {% endif %}
         {% if event and event.user_id==user_id %}
         <a href="{{url_for('update_event', activity_id=activity.id, event_id=event.id)}}"
+           class="event-actions-wrapper"
            title="modify {{event.name.lower()}}">
-          <p class="event-actions">Modify event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-edit.svg') }}">
+          <p class="event-actions-title">modify event</p>
         </a>
         <a href="{{url_for('delete_event', activity_id=activity.id, event_id=event.id)}}"
+           class="event-actions-wrapper"
            title="cancel {{event.name.lower()}}">
-          <p class="event-actions">Cancel event</p>
+          <img
+              class="event-actions-icon"
+              src="{{ url_for('static', filename='img/menu-delete.svg') }}">
+          <p class="event-actions-title">cancel event</p>
         </a>
         {% endif %}
       </ul>
