@@ -413,6 +413,7 @@ def set_event_fields(event):
 
     Returns:
         event: Updated Event object.
+        valid: Boolean representing whether the event has valid values.
 
     Dependencies:
         models.Event
@@ -420,11 +421,6 @@ def set_event_fields(event):
         time_checker()
     """
     valid = True
-
-    if flask.request.form['name']:
-        event.name = flask.request.form['name']
-    else:
-        valid = False
 
     # determine start/end dates based on available input.
     start_date, end_date = None, None
@@ -438,7 +434,11 @@ def set_event_fields(event):
         end_date = date_checker(end_date)
 
     if start_date and end_date:
-        event.start_date, event.end_date = start_date, end_date
+        if start_date <= end_date:
+            event.start_date, event.end_date = start_date, end_date
+        else:
+            event.start_date, event.end_date = None, None
+            valid = False
     elif start_date:
         event.start_date, event.end_date = start_date, start_date
     elif end_date:
@@ -447,16 +447,32 @@ def set_event_fields(event):
         valid = False
 
     # determine start/end times based on available input.
+    start_time, end_time = None, None
+
     if flask.request.form['start_time']:
         start_time = flask.request.form['start_time']
         start_time = time_checker(start_time)
-        if start_time:
-            event.start_time = start_time
+
     if flask.request.form['end_time']:
         end_time = flask.request.form['end_time']
         end_time = time_checker(end_time)
+
+    if start_date and end_date and start_date == end_date:
+        if start_time and end_time and start_time <= end_time:
+            event.start_time, event.end_time = start_time, end_time
+        else:
+            event.start_time, event.end_time = None, None
+            valid = False
+    else:
+        if start_time:
+            event.start_time = start_time
         if end_time:
             event.end_time = end_time
+
+    if flask.request.form['name']:
+        event.name = flask.request.form['name']
+    else:
+        valid = False
 
     if flask.request.form['description']:
         event.description = flask.request.form['description']
@@ -1245,6 +1261,11 @@ def update_event(activity_id, event_id):
 
     if flask.request.method == 'POST':
         valid, event = set_event_fields(event)
+        if not valid:
+            return flask.render_template('edit-event.html',
+                                         activity=activity,
+                                         event=event)
+
         with db_session() as db:
             db.add(event)
             db.commit()
