@@ -50,8 +50,8 @@ class UserAccount(declarative_base):
     __tablename__ = 'user_account'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
-    email = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    name = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
+    email = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
     picture = sqlalchemy.Column(sqlalchemy.String(250))
 
 
@@ -76,7 +76,7 @@ class Activity(declarative_base):
     __tablename__ = 'activity'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
+    name = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
     icon = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey('user_account.id'))
@@ -122,8 +122,8 @@ class Event(declarative_base):
     __tablename__ = 'event'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(250), nullable=False)
-    description = sqlalchemy.Column(sqlalchemy.String(250))
+    name = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
+    description = sqlalchemy.Column(sqlalchemy.String(1000))
     start_date = sqlalchemy.Column(sqlalchemy.Date)
     _start_time = sqlalchemy.Column(sqlalchemy.Time)
     end_date = sqlalchemy.Column(sqlalchemy.Date)
