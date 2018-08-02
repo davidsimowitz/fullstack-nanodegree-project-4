@@ -81,7 +81,9 @@
           <section class="event-wrapper span-date-wrapper">
             <div class="event-time">
             {% if event.start_date and event.end_date and event.start_date==event.end_date %}
-              {% if event.start_time and event.end_time %}
+              {% if event.start_time and event.end_time and event.start_time==event.end_time %}
+              <p>exactly at {{ event.start_time }}</p>
+              {% elif event.start_time and event.end_time %}
               <p>{{ event.start_time }}–{{ event.end_time }}</p>
               {% elif event.start_time %}
               <p>begins {{ event.start_time }}</p>
