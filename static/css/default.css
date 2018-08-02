@@ -575,8 +575,7 @@ main {
   margin: 0;
   overflow: hidden;
   padding: 4px 14px 0 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: hard;
 }
 
 .event-description {
@@ -586,8 +585,7 @@ main {
   margin: 0;
   overflow: hidden;
   padding: 0 14px 6px 0;
-  text-align: justify;
-  text-justify: inter-word;
+  text-align: left;
 }
 
 /* Forms */
@@ -657,8 +655,7 @@ main {
   margin: 0;
   overflow: hidden;
   padding: 2px 12px 0 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
 }
 
 .icon {
