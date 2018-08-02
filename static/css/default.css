@@ -397,12 +397,22 @@ header {
   margin: 0;
 }
 
+#hosting-status {
+  grid-column: 3 / 4;
+  margin: 0;
+}
+
 #attending-img {
   height: 36px;
   width: auto;
 }
 
 #considering-img {
+  height: 36px;
+  width: auto;
+}
+
+#hosting-img {
   height: 36px;
   width: auto;
 }

@@ -1132,12 +1132,24 @@ def display_event(activity_id, event_id):
                   .filter_by(id=event_id,
                              activity_id=activity_id) \
                   .one()
+        is_hosting = db.query(models.Hosting) \
+                       .filter(
+                         sqlalchemy.and_(
+                           models.Hosting.event_id == models.Event.id,
+                           models.Hosting.user_id ==
+                           get_user_id(
+                                   user_email=flask.session.get('email', 0)
+                                   )
+                           )
+                        ) \
+                       .first()
     return flask.render_template('event.html',
                                  activity=activity,
                                  event=event,
                                  user_id=get_user_id(
                                      user_email=flask.session.get('email', 0)
                                      ),
+                                 hosting=is_hosting,
                                  back=flask.url_for('display_activity',
                                                     activity_id=activity.id))
 

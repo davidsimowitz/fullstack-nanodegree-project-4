@@ -18,7 +18,19 @@
 <main>
     {% include "user-account-menu.html" %}
 
-    {% if 'username' in session %}
+    {% if hosting %}
+    <section class="account-actions-nav">
+      <section class="account-actions-bar">
+        <div id="hosting-status"
+             title="hosting status">
+           <img id="hosting-img"
+                src="{{ url_for('static', filename='img/hosting.svg') }}"
+                title="hosting status"
+                alt="Hosting event">
+        </div>
+      </section>
+    </section>
+    {% elif 'username' in session %}
     <section class="account-actions-nav">
       <section class="account-actions-bar">
         <a href="javascript:void(0)"
