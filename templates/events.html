@@ -5,7 +5,11 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
+  {% if activity.name[21:] %}
+  <h1 class="title">{{ activity.name.title()[:18]}}…</h1>
+  {% else %}
   <h1 class="title">{{ activity.name.title() }}</h1>
+  {% endif %}
   <!-- activity icon: start -->
   <img id="activity-icon-wrapper"
        src="{{ activity.icon }}"
@@ -76,10 +80,16 @@
             {% endif %}
             </div>
             <div class="event-name">
+              {% if event.name[32:] %}
+              <p>{{ event.name[:29] }}…</p>
+              {% else %}
               <p>{{ event.name }}</p>
+              {% endif %}
             </div>
             <div class="event-description">
-              {% if event.description %}
+              {% if event.description and event.description[176:] %}
+              <p>{{ event.description[:173] }}…</p>
+              {% elif event.description %}
               <p>{{ event.description }}</p>
               {% endif %}
             </div>

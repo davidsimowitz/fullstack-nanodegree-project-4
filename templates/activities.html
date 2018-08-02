@@ -43,10 +43,17 @@
                    A 100,100 0 1,0 180.3,39.3" />
           </defs>
           <text class="activity-name">
+            {% if activity.name[35:] %}
+            <textPath xlink:href="#TextPath"
+                      startOffset="50%"
+                      text-anchor="middle"
+                      class="activity-name-fill">{{ activity.name[:32] }}…</textPath>
+            {% else %}
             <textPath xlink:href="#TextPath"
                       startOffset="50%"
                       text-anchor="middle"
                       class="activity-name-fill">{{ activity.name }}</textPath>
+            {% endif %}
           </text>
         </svg>
       </a>

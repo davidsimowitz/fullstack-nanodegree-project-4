@@ -5,7 +5,11 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
+  {% if event.name[18:] %}
+  <h1 class="title">{{ event.name[:15] }}…</h1>
+  {% else %}
   <h1 class="title">{{ event.name }}</h1>
+  {% endif %}
   {% include "login-menu.html" %}
   <a href="javascript:void(0)"
      id="user-account-button"
