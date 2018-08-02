@@ -124,9 +124,9 @@ class Event(declarative_base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(100), nullable=False)
     description = sqlalchemy.Column(sqlalchemy.String(1000))
-    start_date = sqlalchemy.Column(sqlalchemy.Date)
+    start_date = sqlalchemy.Column(sqlalchemy.Date, nullable=False)
     _start_time = sqlalchemy.Column(sqlalchemy.Time)
-    end_date = sqlalchemy.Column(sqlalchemy.Date)
+    end_date = sqlalchemy.Column(sqlalchemy.Date, nullable=False)
     _end_time = sqlalchemy.Column(sqlalchemy.Time)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey('user_account.id'))

@@ -35,7 +35,11 @@
                 size="16"
                 id="start_date"
                 name="start_date"
-                class="input-field starting">
+                class="input-field starting"
+                {% if previous and previous.start_date %}
+                value="{{previous.start_date}}"
+                {% endif %}
+                >
             <p class="range">–</p>
             <label for="end_date">ending date</label>
             <input
@@ -43,7 +47,11 @@
                 size="16"
                 id="end_date"
                 name="end_date"
-                class="input-field ending">
+                class="input-field ending"
+                {% if previous and previous.end_date %}
+                value="{{previous.end_date}}"
+                {% endif %}
+                >
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">time</p>
@@ -56,7 +64,11 @@
                 size="16"
                 id="start_time"
                 name="start_time"
-                class="input-field starting">
+                class="input-field starting"
+                {% if previous and previous.start_time %}
+                value="{{previous.start_time}}"
+                {% endif %}
+                >
             <p class="range">–</p>
             <label for="end_time">ending time</label>
             <input
@@ -64,7 +76,11 @@
                 size="16"
                 id="end_time"
                 name="end_time"
-                class="input-field ending">
+                class="input-field ending"
+                {% if previous and previous.end_time %}
+                value="{{previous.end_time}}"
+                {% endif %}
+                >
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">name</p>
@@ -78,7 +94,11 @@
                 id="name"
                 name="name"
                 class="input-field"
-                placeholder="enter the name of your event here">
+                placeholder="enter the name of your event here"
+                {% if previous and previous.name %}
+                value="{{previous.name}}"
+                {% endif %}
+                >
           </fieldset>
           <section class="field-wrapper">
             <p class="input-title">description</p>
@@ -94,7 +114,8 @@
                 id="description"
                 name="description"
                 class="input-field"
-                placeholder="describe the event you are hosting"></textarea>
+                placeholder="describe the event you are hosting"
+                >{% if previous and previous.description %}{{previous.description}}{% endif %}</textarea>
           </fieldset>
           <!-- event fields end -->
           <fieldset class="field-wrapper bottom-bar">

@@ -419,13 +419,12 @@ def set_event_fields(event):
         date_checker()
         time_checker()
     """
+    valid = True
+
     if flask.request.form['name']:
         event.name = flask.request.form['name']
-
-    if flask.request.form['description']:
-        event.description = flask.request.form['description']
     else:
-        event.description = 'please add a description'
+        valid = False
 
     # determine start/end dates based on available input.
     start_date, end_date = None, None
@@ -444,6 +443,8 @@ def set_event_fields(event):
         event.start_date, event.end_date = start_date, start_date
     elif end_date:
         event.start_date, event.end_date = end_date, end_date
+    else:
+        valid = False
 
     # determine start/end times based on available input.
     if flask.request.form['start_time']:
@@ -456,7 +457,13 @@ def set_event_fields(event):
         end_time = time_checker(end_time)
         if end_time:
             event.end_time = end_time
-    return event
+
+    if flask.request.form['description']:
+        event.description = flask.request.form['description']
+    elif valid:
+        event.description = 'please add a description'
+
+    return valid, event
 
 
 @app.route('/')
@@ -1174,7 +1181,15 @@ def make_event(activity_id):
                                              user_email=flask.session['email']
                                          )
                                  )
-        new_event = set_event_fields(new_event)
+        valid, new_event = set_event_fields(new_event)
+        if not valid:
+            with db_session() as db:
+                activity = db.query(models.Activity) \
+                             .filter_by(id=activity_id) \
+                             .one()
+            return flask.render_template('new-event.html',
+                                         activity=activity,
+                                         previous=new_event)
         with db_session() as db:
             db.add(new_event)
             db.commit()
@@ -1229,7 +1244,7 @@ def update_event(activity_id, event_id):
                                  event_id=event.id))
 
     if flask.request.method == 'POST':
-        event = set_event_fields(event)
+        valid, event = set_event_fields(event)
         with db_session() as db:
             db.add(event)
             db.commit()
