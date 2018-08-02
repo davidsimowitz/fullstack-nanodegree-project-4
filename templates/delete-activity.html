@@ -5,7 +5,11 @@
   <div class="header-bar-top"></div>
   <div class="header-bar-mid"></div>
   <div class="header-bar-bot"></div>
-  <h1 class="title">{{activity.name}}</h1>
+  {% if activity.name[21:] %}
+  <h1 class="title">{{ activity.name.title()[:18]}}…</h1>
+  {% else %}
+  <h1 class="title">{{ activity.name.title() }}</h1>
+  {% endif %}
   <!-- activity icon: start -->
   <img id="activity-icon-wrapper"
        src="{{ activity.icon }}"
