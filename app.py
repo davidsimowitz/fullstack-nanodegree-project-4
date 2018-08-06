@@ -421,6 +421,7 @@ def set_event_fields(event):
         time_checker()
     """
     valid = True
+    messages = dict()
 
     # determine start/end dates based on available input.
     start_date, end_date = None, None
@@ -428,22 +429,28 @@ def set_event_fields(event):
     if flask.request.form['start_date']:
         start_date = flask.request.form['start_date']
         start_date = date_checker(start_date)
+        if not start_date:
+            messages['date'] = "date is invalid"
 
     if flask.request.form['end_date']:
         end_date = flask.request.form['end_date']
         end_date = date_checker(end_date)
+        if not end_date:
+            messages['date'] = "date is invalid"
 
     if start_date and end_date:
         if start_date <= end_date:
             event.start_date, event.end_date = start_date, end_date
         else:
             event.start_date, event.end_date = None, None
+            messages['date'] = "ending date cannot occur before starting date"
             valid = False
     elif start_date:
         event.start_date, event.end_date = start_date, start_date
     elif end_date:
         event.start_date, event.end_date = end_date, end_date
     else:
+        messages['date'] = "date is required"
         valid = False
 
     # determine start/end times based on available input.
@@ -452,16 +459,21 @@ def set_event_fields(event):
     if flask.request.form['start_time']:
         start_time = flask.request.form['start_time']
         start_time = time_checker(start_time)
+        if not start_time:
+            messages['time'] = "time is invalid"
 
     if flask.request.form['end_time']:
         end_time = flask.request.form['end_time']
         end_time = time_checker(end_time)
+        if not end_time:
+            messages['time'] = "time is invalid"
 
     if start_date and end_date and start_date == end_date:
         if start_time and end_time and start_time <= end_time:
             event.start_time, event.end_time = start_time, end_time
         else:
             event.start_time, event.end_time = None, None
+            messages['time'] = "ending time cannot occur before starting time"
             valid = False
     else:
         if start_time:
@@ -472,6 +484,7 @@ def set_event_fields(event):
     if flask.request.form['name']:
         event.name = flask.request.form['name']
     else:
+        messages['name'] = "name is required"
         valid = False
 
     if flask.request.form['description']:
@@ -479,7 +492,7 @@ def set_event_fields(event):
     elif valid:
         event.description = 'please add a description'
 
-    return valid, event
+    return valid, messages, event
 
 
 @app.route('/')
@@ -1197,7 +1210,7 @@ def make_event(activity_id):
                                              user_email=flask.session['email']
                                          )
                                  )
-        valid, new_event = set_event_fields(new_event)
+        valid, messages, new_event = set_event_fields(new_event)
         if not valid:
             with db_session() as db:
                 activity = db.query(models.Activity) \
@@ -1205,7 +1218,8 @@ def make_event(activity_id):
                              .one()
             return flask.render_template('new-event.html',
                                          activity=activity,
-                                         previous=new_event)
+                                         previous=new_event,
+                                         error_msg=messages)
         with db_session() as db:
             db.add(new_event)
             db.commit()
@@ -1260,19 +1274,20 @@ def update_event(activity_id, event_id):
                                  event_id=event.id))
 
     if flask.request.method == 'POST':
-        valid, event = set_event_fields(event)
+        valid, messages, edited_event = set_event_fields(event)
         if not valid:
             return flask.render_template('edit-event.html',
                                          activity=activity,
-                                         event=event)
+                                         event=edited_event,
+                                         error_msg=messages)
 
         with db_session() as db:
-            db.add(event)
+            db.add(edited_event)
             db.commit()
             return flask.redirect(
                        flask.url_for('display_event',
                                      activity_id=activity_id,
-                                     event_id=event.id))
+                                     event_id=edited_event.id))
     else:
         return flask.render_template('edit-event.html',
                                      activity=activity,

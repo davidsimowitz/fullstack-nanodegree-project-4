@@ -29,7 +29,11 @@
         <p class="form-title">host event</p>
           <!-- event fields start -->
           <section class="field-wrapper">
+            {% if error_msg and 'date' in error_msg %}
+            <p class="input-title">error: {{ error_msg['date'] }}</p>
+            {% else %}
             <p class="input-title">date</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Event Date</legend>
@@ -58,7 +62,11 @@
                 >
           </fieldset>
           <section class="field-wrapper">
+            {% if error_msg and 'time' in error_msg %}
+            <p class="input-title">error: {{ error_msg['time'] }}</p>
+            {% else %}
             <p class="input-title">time</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Event Time</legend>
@@ -87,7 +95,11 @@
                 >
           </fieldset>
           <section class="field-wrapper">
+            {% if error_msg and 'name' in error_msg %}
+            <p class="input-title">error: {{ error_msg['name'] }}</p>
+            {% else %}
             <p class="input-title">name</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Event Name</legend>
