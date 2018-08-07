@@ -589,6 +589,7 @@ main {
 }
 
 .attending-img,
+.considering-img,
 .hosting-img {
   grid-column: 10 / 11;
   grid-row: 1;
