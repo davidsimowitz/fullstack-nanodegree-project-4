@@ -588,6 +588,7 @@ main {
   white-space: hard;
 }
 
+.attending-img,
 .hosting-img {
   grid-column: 10 / 11;
   grid-row: 1;

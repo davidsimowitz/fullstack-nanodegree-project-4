@@ -93,6 +93,11 @@
                  src="{{ url_for('static', filename='img/event-hosting.svg') }}"
                  title="hosting"
                  alt="hosting">
+            {% elif attending and event.id in attending %}
+            <img class="attending-img"
+                 src="{{ url_for('static', filename='img/event-attending.svg') }}"
+                 title="attending"
+                 alt="attending">
             {% endif %}
             <div class="event-description">
               {% if event.description and event.description[176:] %}
