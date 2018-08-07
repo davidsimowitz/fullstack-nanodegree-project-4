@@ -82,6 +82,10 @@
             <div class="event-name">
               <p>{{ event.name }}</p>
             </div>
+            <img class="considering-img"
+                 src="{{ url_for('static', filename='img/event-considering.svg') }}"
+                 title="considering"
+                 alt="considering">
             <div class="event-description">
               {% if event.description %}
               <p>{{ event.description }}</p>
