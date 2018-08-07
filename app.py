@@ -1324,7 +1324,7 @@ def delete_event(activity_id, event_id):
                   .one()
         hosting = db.query(models.Hosting) \
                     .filter_by(event_id=event.id) \
-                    .one()
+                    .first()
 
     # Event can only be deleted by its owner
     if event.user_id != get_user_id(user_email=flask.session['email']):
@@ -1346,7 +1346,8 @@ def delete_event(activity_id, event_id):
                                         ) \
                                     .delete(synchronize_session='fetch')
             db.delete(event)
-            db.delete(hosting)
+            if hosting:
+                db.delete(hosting)
             db.commit()
         return flask.redirect(
                    flask.url_for('display_activity',
