@@ -1179,7 +1179,7 @@ def display_event(activity_id, event_id):
         is_hosting = db.query(models.Hosting) \
                        .filter(
                          sqlalchemy.and_(
-                           models.Hosting.event_id == models.Event.id,
+                           models.Hosting.event_id == event.id,
                            models.Hosting.user_id ==
                            get_user_id(
                                    user_email=flask.session.get('email', 0)
