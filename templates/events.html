@@ -88,6 +88,12 @@
               <p>{{ event.name }}</p>
               {% endif %}
             </div>
+            {% if hosting and event.id in hosting %}
+            <img class="hosting-img"
+                 src="{{ url_for('static', filename='img/event-hosting.svg') }}"
+                 title="hosting"
+                 alt="hosting">
+            {% endif %}
             <div class="event-description">
               {% if event.description and event.description[176:] %}
               <p>{{ event.description[:173] }}…</p>

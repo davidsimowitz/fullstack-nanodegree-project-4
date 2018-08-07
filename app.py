@@ -912,6 +912,11 @@ def display_activity(activity_id):
     Display Activity and list all Event records corresponding to it
     in date order.
     """
+    hosting = None
+    # User login required for hosting/attending/considering status
+    if 'username' in flask.session:
+        hosting = hosting_events()
+
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -970,6 +975,7 @@ def display_activity(activity_id):
     return flask.render_template('events.html',
                                  activity=activity,
                                  events=events,
+                                 hosting=hosting,
                                  user_id=get_user_id(
                                      user_email=flask.session.get('email', 0)
                                      ),
@@ -2303,6 +2309,52 @@ def unconsider_event(activity_id, event_id):
                      200)
         response.headers['Content-Type'] = 'application/json'
         return response
+
+
+@entry_and_exit_logger
+def hosting_events():
+    """Return a list of ids for all events being hosted by the user"""
+    # User login required
+    if 'username' not in flask.session:
+        app.logger.error(
+            ('unconsider_event() - - MSG'
+             '    [user login required]'))
+        response = flask.make_response(
+                       json.dumps('User login required'),
+                       401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        with db_session() as db:
+            hosted_events = db.query(
+                               models.Hosting,
+                               ) \
+                              .order_by(models.Hosting.event_id.asc()) \
+                              .filter(
+                                  sqlalchemy.and_(
+                                  models.Hosting.user_id ==
+                                    get_user_id(
+                                      user_email=flask.session.get('email', 0)
+                                    )
+                                  )
+                               ) \
+                              .all()
+    except:
+        app.logger.error(
+            ('hosting_eventst() - - VARS'
+             '    [database query error: username={}]'
+             .format(flask.session.get('username', None))
+             )
+        )
+        response = flask.make_response(
+                       json.dumps('Database error encountered'),
+                       500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        hosted_event_ids = [event.event_id for event in hosted_events]
+        return hosted_event_ids
 
 
 @entry_and_exit_logger
