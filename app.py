@@ -412,8 +412,10 @@ def set_event_fields(event):
         event: Event object.
 
     Returns:
-        event: Updated Event object.
         valid: Boolean representing whether the event has valid values.
+        messages: A lookup table mapping event fields to error messages if
+                  values are not valid.
+        event: Updated Event object.
 
     Dependencies:
         models.Event
