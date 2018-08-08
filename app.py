@@ -2322,7 +2322,7 @@ def hosting_events():
     # User login required
     if 'username' not in flask.session:
         app.logger.error(
-            ('unconsider_event() - - MSG'
+            ('hosting_events() - - MSG'
              '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
@@ -2347,7 +2347,7 @@ def hosting_events():
                               .all()
     except:
         app.logger.error(
-            ('hosting_eventst() - - VARS'
+            ('hosting_events() - - VARS'
              '    [database query error: username={}]'
              .format(flask.session.get('username', None))
              )
