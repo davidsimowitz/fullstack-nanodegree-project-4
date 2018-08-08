@@ -53,7 +53,7 @@ def create_admin():
     admin_user = User(
                      "David Simowitz",
                      "david.simowitz@gmail.com",
-                     "https://lh6.googleusercontent.com/-bO6Jr_RkpXw" \
+                     "https://lh6.googleusercontent.com/-bO6Jr_RkpXw"
                      "/AAAAAAAAAAI/AAAAAAAACXQ/4ykCbz_oqF8/photo.jpg"
                      )
     message = "create_admin(): {}".format(admin_user)
@@ -68,7 +68,7 @@ def create_admin():
 
 
 def get_admin_id():
-    message="get_admin_id()"
+    message = "get_admin_id()"
     with db_session(message) as db:
         admin = db.query(models.UserAccount) \
                   .filter_by(email=ADMIN_EMAIL) \
@@ -89,15 +89,22 @@ def create_activities():
     activities.append(new_activity)
 
     new_activity = Activity(
-                       "beach",
-                       "/static/img/towel-on-sand-icon.svg",
+                       "movies",
+                       "/static/img/popcorn-and-soda-icon.svg",
                        user_id
                        )
     activities.append(new_activity)
 
     new_activity = Activity(
-                       "movies",
-                       "/static/img/popcorn-and-soda-icon.svg",
+                       "outdoors",
+                       "/static/img/tree-icon.svg",
+                       user_id
+                       )
+    activities.append(new_activity)
+
+    new_activity = Activity(
+                       "running",
+                       "/static/img/sun-icon.svg",
                        user_id
                        )
     activities.append(new_activity)
@@ -110,57 +117,8 @@ def create_activities():
     activities.append(new_activity)
 
     new_activity = Activity(
-                       "hiking",
-                       "/static/img/tree-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
                        "BBQ",
                        "/static/img/burger-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "drinks",
-                       "/static/img/wine-glasses-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "Coney Island",
-                       "/static/img/hotdog-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "outdoors",
-                       "/static/img/sun-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "camping",
-                       "/static/img/tent-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "boating",
-                       "/static/img/sail-boat-icon.svg",
-                       user_id
-                       )
-    activities.append(new_activity)
-
-    new_activity = Activity(
-                       "arts & film",
-                       "/static/img/film-camera-icon.svg",
                        user_id
                        )
     activities.append(new_activity)
@@ -192,82 +150,195 @@ def create_events():
                     calendar_end,
                     sqlalchemy.text("'{}'::interval".format(interval))
                     )
-                    .cast(sqlalchemy.Date)
-                    .label('event_date')
-                    )
+                .cast(sqlalchemy.Date)
+                .label('event_date')
+                )
             return dates
 
     def insert_event(event_record):
         """insert event into table"""
-        if isinstance(event_record, tuple):
-            message = "create_events(): {}".format(event_record)
+        def insert(event, message):
             with db_session(message) as db:
-                new_event = models.Event(
-                                name=event_record.name,
-                                description=event_record.description,
-                                start_date=event_record.start_date,
-                                _start_time=event_record.start_time,
-                                end_date=event_record.end_date,
-                                _end_time=event_record.end_time,
-                                user_id=event_record.user_id,
-                                activity_id=event_record.activity_id
-                                )
+                if event.start_time and event.end_time:
+                    new_event = models.Event(
+                                       name=event.name,
+                                       description=event.description,
+                                       start_date=event.start_date,
+                                       _start_time=event.start_time,
+                                       end_date=event.end_date,
+                                       _end_time=event.end_time,
+                                       user_id=event.user_id,
+                                       activity_id=event.activity_id
+                                       )
+                elif event.start_time:
+                    new_event = models.Event(
+                                       name=event.name,
+                                       description=event.description,
+                                       start_date=event.start_date,
+                                       _start_time=event.start_time,
+                                       end_date=event.end_date,
+                                       user_id=event.user_id,
+                                       activity_id=event.activity_id
+                                       )
+                elif event.end_time:
+                    new_event = models.Event(
+                                       name=event.name,
+                                       description=event.description,
+                                       start_date=event.start_date,
+                                       end_date=event.end_date,
+                                       _end_time=event.end_time,
+                                       user_id=event.user_id,
+                                       activity_id=event.activity_id
+                                       )
+                else:
+                    new_event = models.Event(
+                                       name=event.name,
+                                       description=event.description,
+                                       start_date=event.start_date,
+                                       end_date=event.end_date,
+                                       user_id=event.user_id,
+                                       activity_id=event.activity_id
+                                       )
                 db.add(new_event)
                 db.commit()
-        else:    
+
+        if isinstance(event_record, tuple):
+            message = "create_events(): {}".format(event_record)
+            insert(event_record, message)
+        else:
             for event in event_record:
                 message = "create_events(): {}".format(event)
-                with db_session(message) as db:
-                    new_event = models.Event(
-                                    name=event.name,
-                                    description=event.description,
-                                    start_date=event.start_date,
-                                    _start_time=event.start_time,
-                                    end_date=event.end_date,
-                                    _end_time=event.end_time,
-                                    user_id=event.user_id,
-                                    activity_id=event.activity_id
-                                    )
-                    db.add(new_event)
-                    db.commit()
+                insert(event, message)
 
-    #swimming events
+    # swimming events
     message = "create_events(): {}".format("lookup swimming activity")
     with db_session(message) as db:
         swimming = db.query(models.Activity) \
                      .filter_by(name="swimming") \
                      .one()
 
+    # Brooklyn Bridge Park: Pop-Up Pool
     events.clear()
-    for date in recurring_event(calendar_start='2018-6-27',
-                                calendar_end='2018-9-21'):
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
         new_event = Event(
-            "Brooklyn Bridge Park Pop-Up Pool",
-            "Take a dip in one of New York City's coolest hidden " \
-            "gems, then relax on the beach after your swim.\nhttps" \
-            "://www.brooklynbridgepark.org/attractions/pop-up-pool\n" \
-            "Address: Brooklyn Bridge Park: Pier 2\n" \
-            "150 Furman St, Brooklyn, NY 11201",
-            date.event_date,
-            "10:00",
-            date.event_date,
-            "18:00",
-            get_admin_id(),
-            swimming.id
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="10:00",
+            end_date=date.event_date,
+            end_time="10:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
             )
         print(new_event)
         events.append(new_event)
     print(events)
     insert_event(events)
 
-    #beach events
-    message = "create_events(): {}".format("lookup beach activity")
-    with db_session(message) as db:
-        beach = db.query(models.Activity) \
-                  .filter_by(name="beach") \
-                  .one()
+    events.clear()
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
+        new_event = Event(
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="11:00",
+            end_date=date.event_date,
+            end_time="11:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
+            )
+        print(new_event)
+        events.append(new_event)
+    print(events)
+    insert_event(events)
 
-    #movies events
+    events.clear()
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
+        new_event = Event(
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="12:00",
+            end_date=date.event_date,
+            end_time="12:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
+            )
+        print(new_event)
+        events.append(new_event)
+    print(events)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
+        new_event = Event(
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="13:00",
+            end_date=date.event_date,
+            end_time="13:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
+            )
+        print(new_event)
+        events.append(new_event)
+    print(events)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
+        new_event = Event(
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="14:00",
+            end_date=date.event_date,
+            end_time="14:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
+            )
+        print(new_event)
+        events.append(new_event)
+    print(events)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start='2018-8-6',
+                                calendar_end='2018-8-18'):
+        new_event = Event(
+            name="Pop-Up Pool",
+            description="Take a dip in one of New York City's coolest hidden "
+            "gems, then relax on the beach after your swim.\n\n"
+            "Brooklyn Bridge Park: Pier 2",
+            start_date=date.event_date,
+            start_time="15:00",
+            end_date=date.event_date,
+            end_time="15:45",
+            user_id=get_admin_id(),
+            activity_id=swimming.id
+            )
+        print(new_event)
+        events.append(new_event)
+    print(events)
+    insert_event(events)
+
+    # movies events
     message = "create_events(): {}".format("lookup movies activity")
     with db_session(message) as db:
         movies = db.query(models.Activity) \
@@ -275,156 +346,186 @@ def create_events():
                    .one()
 
     new_event = Event(
-        "BlacKkKlansman (premier)",
-        "From visionary filmmaker Spike Lee comes the incredible true " \
-        "story of an American hero. It's the early 1970s, and Ron " \
-        "Stallworth (John David Washington) is the first African-American " \
-        "detective to serve in the Colorado Springs Police Department. " \
-        "Determined to make a name for himself, Stallworth bravely sets " \
-        "out on a dangerous mission: infiltrate and expose the Ku Klux " \
-        "Klan. The young detective soon recruits a more seasoned " \
-        "colleague, Flip Zimmerman (Adam Driver), into the undercover " \
-        "investigation of a lifetime. Together, they team up to take " \
-        "down the extremist hate group as the organization aims to " \
-        "sanitize its violent rhetoric to appeal to the mainstream. " \
-        "Produced by the team behind the Academy-Award® winning Get Out.\n\n" \
-        "http://www.focusfeatures.com/blackkklansman",
-        "2018-8-10",
-        "19:00",
-        "2018-8-10",
-        None,
-        get_admin_id(),
-        movies.id
+        name="BlacKkKlansman (premier)",
+        description="From visionary filmmaker Spike Lee comes the "
+        "incredible true story of an American hero. It's the early "
+        "1970s, and Ron Stallworth (John David Washington) is the first "
+        "African-American detective to serve in the Colorado Springs "
+        "Police Department. Determined to make a name for himself, "
+        "Stallworth bravely sets out on a dangerous mission: infiltrate "
+        "and expose the Ku Klux Klan. The young detective soon recruits a "
+        "more seasoned colleague, Flip Zimmerman (Adam Driver), into the "
+        "undercover investigation of a lifetime. Together, they team up to "
+        "take down the extremist hate group as the organization aims to "
+        "sanitize its violent rhetoric to appeal to the mainstream. "
+        "Produced by the team behind the Academy-Award® winning Get Out.",
+        start_date="2018-8-10",
+        start_time="19:00",
+        end_date="2018-8-10",
+        end_time=None,
+        user_id=get_admin_id(),
+        activity_id=movies.id
         )
     insert_event(new_event)
 
-    new_event = Event(
-        "Venom (premier)",
-        "One of Marvel's most enigmatic, complex and badass characters " \
-        "comes to the big screen, starring Academy Award® nominated " \
-        "actor Tom Hardy as the lethal protector Venom.\n\n" \
-        "http://www.venom.movie/site/",
-        "2018-10-5",
-        None,
-        "2018-10-5",
-        None,
-        get_admin_id(),
-        movies.id
-        )
-    insert_event(new_event)
-
-    new_event = Event(
-        "FIRST MAN (premier)",
-        "The riveting story of NASA's mission to land a man on the " \
-        "moon, focusing on Neil Armstrong and the years 1961-1969, " \
-        "and explores the sacrifices and the cost-on Armstrong and on " \
-        "the nation-of one of the most dangerous missions in history.\n\n" \
-        "https://www.firstman.com/",
-        "2018-10-12",
-        None,
-        "2018-10-12",
-        None,
-        get_admin_id(),
-        movies.id
-        )
-    insert_event(new_event)
-
-    #music events
+    # music events
     message = "create_events(): {}".format("lookup music activity")
     with db_session(message) as db:
         music = db.query(models.Activity) \
                   .filter_by(name="music") \
                   .one()
-
-    #Doctors Orchestra concerts
+    # Bargemusic events
     events.clear()
-    new_event = Event(
-        "DOCTORS ORCHESTRA",
-        "Bizet Jeux d'Enfant Suite, Mozart Flute Concerto, Cesar Frank " \
-        "Symphony in D minor\n\nhttp://www.doctorsorchestra.org/",
-        "2018-10-18",
-        "19:30",
-        "2018-10-18",
-        "21:30",
-        get_admin_id(),
-        music.id
-        )
-    events.append(new_event)
-
-    new_event = Event(
-        "DOCTORS ORCHESTRA",
-        "Wagner Tannhauser Overture, Chopin Piano Concerto No. 2 in F " \
-        "minor, Shostakovich Symphony No. 1 in F minor\n" \
-        "http://www.doctorsorchestra.org/",
-        "2018-12-20",
-        "19:30",
-        "2018-12-20",
-        "21:30",
-        get_admin_id(),
-        music.id
-        )
-    events.append(new_event)
-
-    new_event = Event(
-        "DOCTORS ORCHESTRA",
-        "Grieg Peer Gynt Suite No. 1, M. Bruch Violin Concerto No. 1 in " \
-        "G minor, Gliere Bronze Horseman Suite\n" \
-        "http://www.doctorsorchestra.org/",
-        "2019-2-28",
-        "19:30",
-        "2019-2-28",
-        "21:30",
-        get_admin_id(),
-        music.id
-        )
-    events.append(new_event)
-
-    new_event = Event(
-        "DOCTORS ORCHESTRA",
-        "F. Delius In a Summer Garden, Saint-Saens Cello Concerto No. 1 in A " \
-        "minor, Rimsky Korsakov Scheherazade\n\n" \
-        "http://www.doctorsorchestra.org/",
-        "2019-5-14",
-        "19:30",
-        "2019-5-14",
-        "21:30",
-        get_admin_id(),
-        music.id
-        )
-    events.append(new_event)
-    insert_event(events)
-
-    events.clear()
-    for date in recurring_event(calendar_start='2018-6-27',
-                                calendar_end='2018-9-21'):
+    for date in recurring_event(calendar_start="2018-8-4",
+                                calendar_end="2018-8-18",
+                                interval="1 week"):
         new_event = Event(
-            "Bargemusic",
-            "Walk across the gangplank of a renovated coffee barge for a " \
-            "one-hour, family-friendly concert.\n"
-            "Visit Bargemusic for their free Neighborhood Family Concerts. " \
-            "This one-hour performance includes a Q & A session with the " \
-            "musicians. Doors open 15 minutes before the performance - no " \
-            "reserved seating is available. Visit bargemusic.org for more!\n" \
-            "Location: Brooklyn Bridge Park: Pier 1\n" \
-            "Brooklyn Bridge Blvd, Brooklyn, NY 11201",
-            date.event_date,
-            "10:00",
-            date.event_date,
-            "18:00",
-            get_admin_id(),
-            music.id
+            name="Bargemusic",
+            description="Bargemusic Presents Admission FREE Concerts, "
+            "the 'Music in Motion' Series - a one hour performance (no "
+            "intermission), including a Q & A session with the musicians. "
+            "Doors open 15 minutes before the performance - no "
+            "reserved seating is available. Visit bargemusic.org for more!",
+            start_date=date.event_date,
+            start_time="16:00",
+            end_date=date.event_date,
+            end_time="17:00",
+            user_id=get_admin_id(),
+            activity_id=music.id
             )
         events.append(new_event)
     insert_event(events)
 
-    #hiking events
+    # outdoors events
     message = "create_events(): {}".format("lookup hiking activity")
     with db_session(message) as db:
-        hiking = db.query(models.Activity) \
-                   .filter_by(name="hiking") \
+        outdoors = db.query(models.Activity) \
+                   .filter_by(name="outdoors") \
                    .one()
 
-    #BBQ events
+    # Farmer's Market
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-4",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="Farmer's Market",
+            description="Join the Wyckoff farm team as we share our "
+            "harvest with the community. Stop by and grab your veggies, "
+            "fruits, herbs, seeds, and local crafts at affordable "
+            "prices. Make a day of it and check out other events that "
+            "may be happening that day, including workshops, family "
+            "day, or hands-on skill building.\n\n"
+            "Fidler-Wyckoff House Park, Brooklyn",
+            start_date=date.event_date,
+            start_time="11:00",
+            end_date=date.event_date,
+            end_time="15:00",
+            user_id=get_admin_id(),
+            activity_id=outdoors.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # Beach Walk
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-1",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="Beach Walk",
+            description="Explore the shore! Enjoy an interpretive "
+            "walk at Conference House Park's Joline Avenue beach. "
+            "Beachcomb along one of Staten Island's most diverse "
+            "natural shorelines.\n\nStaten Island, Tottenville Pool\n"
+            "The walk starts at the corner of Hylan Boulevard "
+            "and Joline Avenue (Tottenville Pool).",
+            start_date=date.event_date,
+            start_time="15:00",
+            end_date=date.event_date,
+            end_time="16:00",
+            user_id=get_admin_id(),
+            activity_id=outdoors.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # Brooklyn Bridge Park - Green Team
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-4",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="Green Team",
+            description="The Green Team provides essential horticultural "
+            "care to the Park, including planting, mulching, and removing "
+            "invasive plants. The Green Team is a wonderful opportunity "
+            "to learn about gardening, enjoy nature, and make the Park "
+            "look its best. Join this dedicated corps of volunteers who "
+            "beautify the Park every week!\n\n"
+            "Brooklyn Bridge Park - Pier 1",
+            start_date=date.event_date,
+            start_time="10:00",
+            end_date=date.event_date,
+            end_time="12:00",
+            user_id=get_admin_id(),
+            activity_id=outdoors.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # Brooklyn Bridge Park - Green Team
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-2",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="Smorgasburg at the Movies",
+            description="Enjoy sweet treats, savory snacks, and "
+            "drinks from Smorgasburg during Movies With A View!"
+            "Leave the picnic baskets at home and enjoy food and "
+            "drink from Smorgasburg. Enjoy cheeseburgers from Burger "
+            "Supreme, crab cakes from Musser's Famous Crab Cake "
+            "Sandwiches, Belgian-cut fries and fried chicken sandwiches "
+            "from Home Frite, pizza by Wood Fired Edibles, and homemade "
+            "ice cream from Bona Bona Ice Cream.\n\n"
+            "Brooklyn Bridge Park - Granite Prospect",
+            start_date=date.event_date,
+            start_time="18:00",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=outdoors.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # Brooklyn Bridge Park - Waterfront Workouts Zumba
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-5",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="Waterfront Workouts",
+            description="Dodge YMCA fitness instructor Alma Bonilla's "
+            "Zumba classes are so much fun you'll forget that you're "
+            "burning calories. ZUMBA is a fusion of Latin and "
+            "International music, utilizing dance themes that create "
+            "a dynamic, exciting, effective fitness program. The "
+            "routines feature aerobic training with a combination of "
+            "fast and slow rhythms that tone and sculpt the body.\n\n"
+            "Brooklyn Bridge Park - Bocce Courts",
+            start_date=date.event_date,
+            start_time="16:00",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=outdoors.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # BBQ events
     message = "create_events(): {}".format("lookup BBQ activity")
     with db_session(message) as db:
         bbq = db.query(models.Activity) \
@@ -432,255 +533,331 @@ def create_events():
                 .one()
 
     new_event = Event(
-        "Battle of the Burger 2018",
-        "Time Out New York's Battle of the Burger 2018\n" \
-        "Battle is back and set to sizzle in 2018. Join us by the water " \
-        "at LIC Landing for a summer cookout of epic proportions. Your " \
-        "Instagram shots will be framed by the Empire State Building on " \
-        "one side and the Chrysler Building on the other, as you dig " \
-        "into some of the city's most delicious burgers, washed down " \
-        "with icy Budweiser." \
-        "https://www.timeout.com/newyork/restaurants/time-out-new-yorks-battle-of-the-burger-2018",
-        "2018-8-16",
-        "17:30",
-        "2018-8-16",
-        "22:00",
-        get_admin_id(),
-        bbq.id
+        name="Battle of the Burger 2018",
+        description="Time Out New York's Battle of the Burger 2018\n"
+        "Battle is back and set to sizzle in 2018. Join us by the water "
+        "at LIC Landing for a summer cookout of epic proportions. Your "
+        "Instagram shots will be framed by the Empire State Building on "
+        "one side and the Chrysler Building on the other, as you dig "
+        "into some of the city's most delicious burgers, washed down "
+        "with icy Budweiser.\n\nhttps://www.timeout.com/newyork/restaurants"
+        "/time-out-new-yorks-battle-of-the-burger-2018",
+        start_date="2018-8-16",
+        start_time="17:30",
+        end_date="2018-8-16",
+        end_time="22:00",
+        user_id=get_admin_id(),
+        activity_id=bbq.id
         )
     insert_event(new_event)
 
-    #drinks events
-    message = "create_events(): {}".format("lookup drinks activity")
-    with db_session(message) as db:
-        drinks = db.query(models.Activity) \
-                   .filter_by(name="drinks") \
-                   .one()
-
-    #Coney Island events
-    message = "create_events(): {}".format("lookup Coney Island activity")
-    with db_session(message) as db:
-        coney_island = db.query(models.Activity) \
-                         .filter_by(name="Coney Island") \
-                         .one()
-
-    events.clear()
-    for date in recurring_event(calendar_start='2018-6-22',
-                                calendar_end='2018-8-31',
-                                interval='1 week'):
-        new_event = Event(
-            "Coney Island Friday Night Fireworks",
-            "Coney Island's Friday Night Firework Series are on and " \
-            "popping once again for summer 2018! Light up your Friday " \
-            "nights, by joining us for a FREE firework show, every " \
-            "Friday (weather permitting) this summer, until August 31. " \
-            "For the best viewing, visitors are welcomed anywhere in " \
-            "the Amusement District down to the beach and boardwalk. " \
-            "Brought to you by Alliance for Coney Island\n\n" \
-            "Location: Between West 10th Street and West 15th Street " \
-            "in Coney Island Beach & Boardwalk Brooklyn",
-            date.event_date,
-            "21:30",
-            date.event_date,
-            "22:00",
-            get_admin_id(),
-            coney_island.id
-            )
-        events.append(new_event)
-    insert_event(events)
-
-    #outdoors events
+    # running events
     message = "create_events(): {}".format("lookup outdoors activity")
     with db_session(message) as db:
-        outdoors = db.query(models.Activity) \
-                     .filter_by(name="outdoors") \
+        running = db.query(models.Activity) \
+                     .filter_by(name="running") \
                      .one()
 
-    #camping events
-    message = "create_events(): {}".format("lookup camping activity")
-    with db_session(message) as db:
-        camping = db.query(models.Activity) \
-                    .filter_by(name="camping") \
-                    .one()
-
-    new_event = Event(
-        "Glamping on Governors Island",
-        "A quick ferry ride from downtown Manhattan, this peaceful " \
-        "oasis is nestled near the hills of historic Governors " \
-        "Island. You'll be surrounded by sprawling green space " \
-        "with unparalleled views of the Statue of Liberty across " \
-        "the New York Harbor. It's a retreat unlike any other in " \
-        "the world.\n\nhttps://www.collectiveretreats.com/retreat/" \
-        "collective-governors-island/\n\n" \
-        "Location: Collective Governors Island, NYC",
-        "2018-8-3",
-        "10:00",
-        "2018-10-31",
-        "16:15",
-        get_admin_id(),
-        camping.id
-        )
-    insert_event(new_event)
-
-    #boating events
-    message = "create_events(): {}".format("lookup boating activity")
-    with db_session(message) as db:
-        boating = db.query(models.Activity) \
-                    .filter_by(name="boating") \
-                    .one()
-
+    # NYRR: Turnover Tuesdays
     events.clear()
-    for date in recurring_event(calendar_start='2018-5-31',
-                                calendar_end='2018-9-30',
+    for date in recurring_event(calendar_start="2018-8-7",
+                                calendar_end="2018-8-31",
                                 interval='1 week'):
         new_event = Event(
-            "Kayaking",
-            "Glide along the water while kayaking with the Brooklyn " \
-            "Bridge Park Boathouse at the Pier 2 floating dock! Children " \
-            "under 18 must have an adult guardian present. All levels " \
-            "are welcome and no experience is necessary.\n\n" \
-            "https://www.brooklynbridgepark.org/events/kayaking\n\n" \
-            "Location: Brooklyn Bridge Park: Pier 2",
-            date.event_date,
-            "17:30",
-            date.event_date,
-            "18:45",
-            get_admin_id(),
-            boating.id
+            name="NYRR: Turnover Tuesdays",
+            description="Turnover Tuesdays, which focus on interval "
+            "training (faster short runs with rest intervals between "
+            "them).\n\nManhattan - Central Park\n"
+            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
             )
         events.append(new_event)
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-6-2',
-                                calendar_end='2018-9-30',
+    for date in recurring_event(calendar_start="2018-8-7",
+                                calendar_end="2018-8-31",
                                 interval='1 week'):
         new_event = Event(
-            "Kayaking",
-            "Glide along the water while kayaking with the Brooklyn " \
-            "Bridge Park Boathouse at the Pier 2 floating dock! Children " \
-            "under 18 must have an adult guardian present. All levels " \
-            "are welcome and no experience is necessary.\n\n" \
-            "https://www.brooklynbridgepark.org/events/kayaking\n\n" \
-            "Location: Brooklyn Bridge Park: Pier 2",
-            date.event_date,
-            "10:00",
-            date.event_date,
-            "14:00",
-            get_admin_id(),
-            boating.id
+            name="NYRR: Turnover Tuesdays",
+            description="Turnover Tuesdays, which focus on interval "
+            "training (faster short runs with rest intervals between "
+            "them).\n\nBrooklyn - Prospect Park\n"
+            "Meet at Grand Army Plaza entrance to Prospect Park",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
             )
         events.append(new_event)
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-6-3',
-                                calendar_end='2018-9-30',
+    for date in recurring_event(calendar_start="2018-8-7",
+                                calendar_end="2018-8-31",
                                 interval='1 week'):
         new_event = Event(
-            "Kayaking",
-            "Glide along the water while kayaking with the Brooklyn " \
-            "Bridge Park Boathouse at the Pier 2 floating dock! Children " \
-            "under 18 must have an adult guardian present. All levels " \
-            "are welcome and no experience is necessary.\n\n" \
-            "https://www.brooklynbridgepark.org/events/kayaking\n\n" \
-            "Location: Brooklyn Bridge Park: Pier 2",
-            date.event_date,
-            "10:00",
-            date.event_date,
-            "14:00",
-            get_admin_id(),
-            boating.id
+            name="NYRR: Turnover Tuesdays",
+            description="Turnover Tuesdays, which focus on interval "
+            "training (faster short runs with rest intervals between "
+            "them).\n\nManhattan - Central Park\n"
+            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
             )
         events.append(new_event)
     insert_event(events)
 
-    #arts & film events
-    message = "create_events(): {}".format("lookup arts & film activity")
-    with db_session(message) as db:
-        arts_and_film = db.query(models.Activity) \
-                          .filter_by(name="arts & film") \
-                          .one()
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-7",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Turnover Tuesdays",
+            description="Turnover Tuesdays, which focus on interval "
+            "training (faster short runs with rest intervals between "
+            "them).\n\nBrooklyn - Prospect Park\n"
+            "Meet at Grand Army Plaza entrance to Prospect Park",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
 
-    new_event = Event(
-        "Fantastic Mr. Fox",
-        "SummerScreen Movie Series: " \
-        "SummerScreen is Brooklyn's longest running film and music " \
-        "series. Now in its 13th year, SummerScreen brings crowds to " \
-        "Williamsburg's McCarren Park on Wednesdays in July and August " \
-        "to enjoy a lineup of cult classic movies, live music, and " \
-        "food and drink from local vendors.\n\n" \
-        "You can bring: blankets, chairs, snacks, dogs, debit " \
-        "card / cash\n\nhttps://www.nycgovparks.org/events/2018/08/08/" \
-        "summerscreen-movie-series-fantastic-mr-fox",
-        "2018-8-8",
-        "18:00",
-        "2018-8-8",
-        "22:30",
-        get_admin_id(),
-        arts_and_film.id
-        )
-    insert_event(new_event)
+    # NYRR: Mashup Wednesdays
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Mashup Wednesdays",
+            description="Mashup Wednesdays, which offer a variety of "
+            "interval and tempo workouts.\n\nManhattan - Central Park\n"
+            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            start_date=date.event_date,
+            start_time="9:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
 
-    new_event = Event(
-        "Die Hard",
-        "SummerScreen Movie Series: " \
-        "SummerScreen is Brooklyn's longest running film and music " \
-        "series. Now in its 13th year, SummerScreen brings crowds to " \
-        "Williamsburg's McCarren Park on Wednesdays in July and August " \
-        "to enjoy a lineup of cult classic movies, live music, and " \
-        "food and drink from local vendors.\n\n" \
-        "You can bring: blankets, chairs, snacks, dogs, debit " \
-        "card / cash\n\nhttps://www.nycgovparks.org/events/2018/08/15/" \
-        "summerscreen-movie-series-die-hard",
-        "2018-8-15",
-        "18:00",
-        "2018-8-15",
-        "22:30",
-        get_admin_id(),
-        arts_and_film.id
-        )
-    insert_event(new_event)
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Mashup Wednesdays",
+            description="Mashup Wednesdays, which offer a variety of "
+            "interval and tempo workouts.\n\nBronx - Van Cortlandt Park\n"
+            "Meet at the benches next to the handball court",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
 
-    new_event = Event(
-        "This is the Spinal Tap",
-        "SummerScreen Movie Series: " \
-        "SummerScreen is Brooklyn's longest running film and music " \
-        "series. Now in its 13th year, SummerScreen brings crowds to " \
-        "Williamsburg's McCarren Park on Wednesdays in July and August " \
-        "to enjoy a lineup of cult classic movies, live music, and " \
-        "food and drink from local vendors.\n\n" \
-        "You can bring: blankets, chairs, snacks, dogs, debit " \
-        "card / cash\n\nhttps://www.nycgovparks.org/events/2018/08/22/" \
-        "summerscreen-movie-series",
-        "2018-8-22",
-        "18:00",
-        "2018-8-22",
-        "22:30",
-        get_admin_id(),
-        arts_and_film.id
-        )
-    insert_event(new_event)
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Mashup Wednesdays",
+            description="Mashup Wednesdays, which offer a variety of "
+            "interval and tempo workouts.\n\nQueens - Astoria Park\n"
+            "Meet at the field house, between the track and the tennis courts",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
 
-    new_event = Event(
-        "Audience Choice",
-        "SummerScreen Movie Series: " \
-        "SummerScreen is Brooklyn's longest running film and music " \
-        "series. Now in its 13th year, SummerScreen brings crowds to " \
-        "Williamsburg's McCarren Park on Wednesdays in July and August " \
-        "to enjoy a lineup of cult classic movies, live music, and " \
-        "food and drink from local vendors.\n\n" \
-        "You can bring: blankets, chairs, snacks, dogs, debit " \
-        "card / cash\n\nhttps://www.nycgovparks.org/events/2018/08/29/" \
-        "summerscreen-movie-series",
-        "2018-8-29",
-        "18:00",
-        "2018-8-29",
-        "22:30",
-        get_admin_id(),
-        arts_and_film.id
-        )
-    insert_event(new_event)
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Mashup Wednesdays",
+            description="Mashup Wednesdays, which offer a variety of "
+            "interval and tempo workouts.\n\n"
+            "Queens - Astoria Park\n"
+            "Meet at the field house, between the track and the tennis courts",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Mashup Wednesdays",
+            description="Mashup Wednesdays, which offer a variety of "
+            "interval and tempo workouts.\n\n"
+            "Staten Island - Clove Lakes Park\n"
+            "Meet at Park Drive off of Clove Road",
+            start_date=date.event_date,
+            start_time="19:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # NYRR: Winged-Foot Wednesdays
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-8",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Winged-Foot Wednesdays",
+            description="Winged-Foot Wednesdays, which concentrate on "
+            "speed intervals.\n\n"
+            "Manhattan - East River Track\n"
+            "Meet at East River Track entrance",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # NYRR: Tempo Thursdays
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-9",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Tempo Thursdays",
+            description="Tempo Thursdays, which primarily feature tempo "
+            "runs (steady runs at a challenging effort).\n\n"
+            "Manhattan - Central Park\n"
+            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-9",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Tempo Thursdays",
+            description="Tempo Thursdays, which primarily feature tempo "
+            "runs (steady runs at a challenging effort).\n\n"
+            "Brooklyn - Prospect Park\n"
+            "Meet at Grand Army Plaza entrance to Prospect Park",
+            start_date=date.event_date,
+            start_time="6:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-9",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Tempo Thursdays",
+            description="Tempo Thursdays, which primarily feature tempo "
+            "runs (steady runs at a challenging effort).\n\n"
+            "Manhattan - Central Park\n"
+            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-9",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Tempo Thursdays",
+            description="Tempo Thursdays, which primarily feature tempo "
+            "runs (steady runs at a challenging effort).\n\n"
+            "Brooklyn - Prospect Park\n"
+            "Meet at Grand Army Plaza entrance to Prospect Park",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
+
+    # NYRR: Long Weekend Runs
+    events.clear()
+    for date in recurring_event(calendar_start="2018-8-11",
+                                calendar_end="2018-8-31",
+                                interval='1 week'):
+        new_event = Event(
+            name="NYRR: Weekend Long Runs",
+            description="Coach-led runs on the streets of NYC in the "
+            "weeks leading up to key NYRR races throughout the year.\n\n"
+            "NYC - Various locations\n",
+            start_date=date.event_date,
+            start_time="18:30",
+            end_date=date.event_date,
+            end_time=None,
+            user_id=get_admin_id(),
+            activity_id=running.id
+            )
+        events.append(new_event)
+    insert_event(events)
 
 
 def initialize_db():
@@ -695,51 +872,9 @@ def initialize_db():
     create_events()
 
 
-def print_activities():
-    """print activity table records"""
-    message = "print_activities()"
-    with db_session(message) as db:
-        activities = db.query(models.Activity) \
-                       .all()
-
-    print('\nActivities: ')
-    for activity in activities:
-        print(activity.name.title())
-
-
-def print_events():
-    """print event table records"""
-    message = "print_events()"
-    with db_session(message) as db:
-        events = db.query(models.Event).all()
-
-    print('\nEvents: ')
-    for event in events:
-        message = "print_events(): {}".format(event)
-        with db_session(message) as db:
-            activity = db.query(models.Activity) \
-                         .filter_by(id=event.activity_id) \
-                         .one()
-        print('{} -> {}:\n          {}\n          start: {} {}' +
-              '\n          end:   {} {}'.format(activity.name.title(),
-                                                event.name,
-                                                event.description,
-                                                event.start_date,
-                                                event.start_time,
-                                                event.end_date,
-                                                event.end_time))
-
-
-def print_db():
-    """print database records"""
-    print_activities()
-    print_events()
-
-
 def main():
     """populate events database with test data"""
     initialize_db()
-    #print_db()
 
 
 if __name__ == '__main__':
