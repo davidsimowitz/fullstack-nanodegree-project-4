@@ -497,6 +497,50 @@ def set_event_fields(event):
     return valid, messages, event
 
 
+@entry_and_exit_logger
+def set_activity_fields(activity):
+    """Set or update Activity object fields.
+
+    Use in a POST method to return an updated Activity object. Activity
+    fields will be updated from str values pulled from form data.
+
+    Args:
+        activity: Activity object.
+
+    Returns:
+        valid: Boolean representing whether the activity has valid values.
+        messages: A lookup table mapping activity fields to error messages if
+                  values are not valid.
+        activity: Updated Activity object.
+
+    Dependencies:
+        models.Activity
+        models.icon_list()
+    """
+    valid = True
+    messages = dict()
+
+    if flask.request.form['name']:
+        activity.name = flask.request.form['name']
+    else:
+        messages['name'] = "name is required"
+        valid = False
+
+    if flask.request.form['icon'] and flask.request.form['icon'] != "/static/img/placeholder-logo.svg":
+        icon = flask.request.form['icon']
+        #verify valid icon selection
+        if icon in models.icon_list():
+            activity.icon = icon
+        else:
+            messages['icon'] = 'selected icon is invalid'
+            valid = False
+    else:
+        messages['icon'] = 'icon is required'
+        valid = False
+
+    return valid, messages, activity
+
+
 @app.route('/')
 @app.route('/activities/')
 @entry_and_exit_logger
@@ -1000,10 +1044,15 @@ def make_activity():
 
     if flask.request.method == 'POST':
         new_activity = models.Activity(
-                           name=flask.request.form['name'],
-                           icon=flask.request.form['icon'],
                            user_id=get_user_id(
                                        user_email=flask.session['email']))
+        valid, messages, new_activity = set_activity_fields(new_activity)
+        if not valid:
+            icons = models.icon_list()
+            return flask.render_template('new-activity.html',
+                                         previous=new_activity,
+                                         error_msg=messages,
+                                         icons=icons)
         with db_session() as db:
             db.add(new_activity)
             db.commit()
@@ -1041,17 +1090,20 @@ def update_activity(activity_id):
                                  activity_id=activity.id))
 
     if flask.request.method == 'POST':
-        if flask.request.form['name']:
-            activity.name = flask.request.form['name']
-        if flask.request.form['icon']:
-            activity.icon = flask.request.form['icon']
+        valid, messages, edited_activity = set_activity_fields(activity)
+        if not valid:
+            icons = models.icon_list()
+            return flask.render_template('edit-activity.html',
+                                         activity=edited_activity,
+                                         error_msg=messages,
+                                         icons=icons)
         with db_session() as db:
-            db.add(activity)
+            db.add(edited_activity)
             db.commit()
 
             return flask.redirect(
                        flask.url_for('display_activity',
-                                     activity_id=activity.id))
+                                     activity_id=edited_activity.id))
     else:
         icons = models.icon_list()
         return flask.render_template('edit-activity.html',

@@ -33,7 +33,11 @@
       <section class="form-wrapper">
         <p class="form-title">{{activity.name}}</p>
           <section class="field-wrapper">
+            {% if error_msg and 'name' in error_msg %}
+            <p class="input-title">error: {{ error_msg['name'] }}</p>
+            {% else %}
             <p class="input-title">name</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Activity Name</legend>
@@ -47,7 +51,11 @@
                    value="{{activity.name}}">
           </fieldset>
           <section class="field-wrapper">
+            {% if error_msg and 'icon' in error_msg %}
+            <p class="input-title">error: {{ error_msg['icon'] }}</p>
+            {% else %}
             <p class="input-title">icon</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Activity Icon</legend>

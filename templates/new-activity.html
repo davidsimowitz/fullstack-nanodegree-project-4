@@ -24,7 +24,11 @@
       <section class="form-wrapper">
         <p class="form-title">new activity</p>
           <section class="field-wrapper">
+            {% if error_msg and 'name' in error_msg %}
+            <p class="input-title">error: {{ error_msg['name'] }}</p>
+            {% else %}
             <p class="input-title">name</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Activity Name</legend>
@@ -35,10 +39,17 @@
                    name="name"
                    class="input-field"
                    title="select name"
-                   placeholder="enter the name of the activity here">
+                   placeholder="enter the name of the activity here"
+                   {% if previous and previous.name %}
+                   value="{{previous.name}}"
+                   {% endif %}>
           </fieldset>
           <section class="field-wrapper">
+            {% if error_msg and 'icon' in error_msg %}
+            <p class="input-title">error: {{ error_msg['icon'] }}</p>
+            {% else %}
             <p class="input-title">icon</p>
+            {% endif %}
           </section>
           <fieldset class="field-wrapper">
             <legend>Activity Icon</legend>
@@ -47,7 +58,11 @@
             <a id="modal-open">
               <img class="icon"
                    id="iconImage"
+                   {% if previous and previous.icon %}
+                   src="{{previous.icon}}"
+                   {% else %}
                    src="/static/img/placeholder-logo.svg"
+                   {% endif %}
                    title="select icon"
                    alt="select activity's icon">
             </a>
@@ -56,7 +71,11 @@
                    id="icon"
                    name="icon"
                    class="input-field"
-                   value="/static/img/placeholder-logo.svg">
+                   {% if previous and previous.icon %}
+                   value="{{previous.icon}}"
+                   {% else %}
+                   value="/static/img/placeholder-logo.svg"
+                   {% endif %}>
           </fieldset>
           <fieldset class="field-wrapper bottom-bar">
             <a href="{{url_for('display_activities')}}"
