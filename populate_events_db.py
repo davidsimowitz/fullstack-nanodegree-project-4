@@ -224,8 +224,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="10:00",
             end_date=date.event_date,
@@ -244,8 +244,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="11:00",
             end_date=date.event_date,
@@ -264,8 +264,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="12:00",
             end_date=date.event_date,
@@ -284,8 +284,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="13:00",
             end_date=date.event_date,
@@ -304,8 +304,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="14:00",
             end_date=date.event_date,
@@ -324,8 +324,8 @@ def create_events():
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
-            "gems, then relax on the beach after your swim.\n\n"
-            "Brooklyn Bridge Park: Pier 2",
+            "gems, then relax on the beach after your swim. "
+            "(Brooklyn Bridge Park: Pier 2)",
             start_date=date.event_date,
             start_time="15:00",
             end_date=date.event_date,
@@ -415,8 +415,8 @@ def create_events():
             "fruits, herbs, seeds, and local crafts at affordable "
             "prices. Make a day of it and check out other events that "
             "may be happening that day, including workshops, family "
-            "day, or hands-on skill building.\n\n"
-            "Fidler-Wyckoff House Park, Brooklyn",
+            "day, or hands-on skill building. "
+            "(Fidler-Wyckoff House Park, Brooklyn)",
             start_date=date.event_date,
             start_time="11:00",
             end_date=date.event_date,
@@ -434,12 +434,11 @@ def create_events():
                                 interval='1 week'):
         new_event = Event(
             name="Beach Walk",
-            description="Explore the shore! Enjoy an interpretive "
-            "walk at Conference House Park's Joline Avenue beach. "
-            "Beachcomb along one of Staten Island's most diverse "
-            "natural shorelines.\n\nStaten Island, Tottenville Pool\n"
-            "The walk starts at the corner of Hylan Boulevard "
-            "and Joline Avenue (Tottenville Pool).",
+            description="Explore the shore! Enjoy an interpretive walk"
+            "at Conference House Park's Joline Avenue beach. Beachcomb "
+            "along one of Staten Island's most diverse natural shorelines. "
+            "The walk starts at the corner of Hylan Boulevard and Joline "
+            "Avenue (Staten Island).",
             start_date=date.event_date,
             start_time="15:00",
             end_date=date.event_date,
@@ -462,8 +461,7 @@ def create_events():
             "invasive plants. The Green Team is a wonderful opportunity "
             "to learn about gardening, enjoy nature, and make the Park "
             "look its best. Join this dedicated corps of volunteers who "
-            "beautify the Park every week!\n\n"
-            "Brooklyn Bridge Park - Pier 1",
+            "beautify the Park every week! (Brooklyn Bridge Park - Pier 1)",
             start_date=date.event_date,
             start_time="10:00",
             end_date=date.event_date,
@@ -488,8 +486,8 @@ def create_events():
             "Supreme, crab cakes from Musser's Famous Crab Cake "
             "Sandwiches, Belgian-cut fries and fried chicken sandwiches "
             "from Home Frite, pizza by Wood Fired Edibles, and homemade "
-            "ice cream from Bona Bona Ice Cream.\n\n"
-            "Brooklyn Bridge Park - Granite Prospect",
+            "ice cream from Bona Bona Ice Cream. "
+            "(Brooklyn Bridge Park - Granite Prospect)",
             start_date=date.event_date,
             start_time="18:00",
             end_date=date.event_date,
@@ -513,8 +511,8 @@ def create_events():
             "International music, utilizing dance themes that create "
             "a dynamic, exciting, effective fitness program. The "
             "routines feature aerobic training with a combination of "
-            "fast and slow rhythms that tone and sculpt the body.\n\n"
-            "Brooklyn Bridge Park - Bocce Courts",
+            "fast and slow rhythms that tone and sculpt the body."
+            "(Brooklyn Bridge Park - Bocce Courts)",
             start_date=date.event_date,
             start_time="16:00",
             end_date=date.event_date,
@@ -534,14 +532,14 @@ def create_events():
 
     new_event = Event(
         name="Battle of the Burger 2018",
-        description="Time Out New York's Battle of the Burger 2018\n"
+        description="Time Out New York's Battle of the Burger 2018 "
         "Battle is back and set to sizzle in 2018. Join us by the water "
         "at LIC Landing for a summer cookout of epic proportions. Your "
         "Instagram shots will be framed by the Empire State Building on "
         "one side and the Chrysler Building on the other, as you dig "
         "into some of the city's most delicious burgers, washed down "
-        "with icy Budweiser.\n\nhttps://www.timeout.com/newyork/restaurants"
-        "/time-out-new-yorks-battle-of-the-burger-2018",
+        "with icy Budweiser. (https://www.timeout.com/newyork/restaurants"
+        "/time-out-new-yorks-battle-of-the-burger-2018)",
         start_date="2018-8-16",
         start_time="17:30",
         end_date="2018-8-16",
@@ -567,8 +565,8 @@ def create_events():
             name="NYRR: Turnover Tuesdays",
             description="Turnover Tuesdays, which focus on interval "
             "training (faster short runs with rest intervals between "
-            "them).\n\nManhattan - Central Park\n"
-            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            "them). Meet at NYRR RUNCENTER featuring the New Balance "
+            "Run Hub. (Manhattan - Central Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -587,8 +585,8 @@ def create_events():
             name="NYRR: Turnover Tuesdays",
             description="Turnover Tuesdays, which focus on interval "
             "training (faster short runs with rest intervals between "
-            "them).\n\nBrooklyn - Prospect Park\n"
-            "Meet at Grand Army Plaza entrance to Prospect Park",
+            "them). Meet at Grand Army Plaza entrance to Prospect Park. "
+            "(Brooklyn - Prospect Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -607,8 +605,8 @@ def create_events():
             name="NYRR: Turnover Tuesdays",
             description="Turnover Tuesdays, which focus on interval "
             "training (faster short runs with rest intervals between "
-            "them).\n\nManhattan - Central Park\n"
-            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            "them). Meet at NYRR RUNCENTER featuring the New Balance "
+            "Run Hub. (Manhattan - Central Park)",
             start_date=date.event_date,
             start_time="18:30",
             end_date=date.event_date,
@@ -627,8 +625,8 @@ def create_events():
             name="NYRR: Turnover Tuesdays",
             description="Turnover Tuesdays, which focus on interval "
             "training (faster short runs with rest intervals between "
-            "them).\n\nBrooklyn - Prospect Park\n"
-            "Meet at Grand Army Plaza entrance to Prospect Park",
+            "them). Meet at Grand Army Plaza entrance to Prospect Park. "
+            "(Brooklyn - Prospect Park)",
             start_date=date.event_date,
             start_time="18:30",
             end_date=date.event_date,
@@ -647,8 +645,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
             description="Mashup Wednesdays, which offer a variety of "
-            "interval and tempo workouts.\n\nManhattan - Central Park\n"
-            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            "interval and tempo workouts. Meet at NYRR RUNCENTER featuring "
+            "the New Balance Run Hub. (Manhattan - Central Park)",
             start_date=date.event_date,
             start_time="9:30",
             end_date=date.event_date,
@@ -666,8 +664,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
             description="Mashup Wednesdays, which offer a variety of "
-            "interval and tempo workouts.\n\nBronx - Van Cortlandt Park\n"
-            "Meet at the benches next to the handball court",
+            "interval and tempo workouts. Meet at the benches next to "
+            "the handball court. (Bronx - Van Cortlandt Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -685,8 +683,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
             description="Mashup Wednesdays, which offer a variety of "
-            "interval and tempo workouts.\n\nQueens - Astoria Park\n"
-            "Meet at the field house, between the track and the tennis courts",
+            "interval and tempo workouts. Meet at the field house, "
+            "between the track and the tennis courts. (Queens - Astoria Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -704,9 +702,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
             description="Mashup Wednesdays, which offer a variety of "
-            "interval and tempo workouts.\n\n"
-            "Queens - Astoria Park\n"
-            "Meet at the field house, between the track and the tennis courts",
+            "interval and tempo workouts. Meet at the field house, "
+            "between the track and the tennis courts. (Queens - Astoria Park)",
             start_date=date.event_date,
             start_time="18:30",
             end_date=date.event_date,
@@ -724,9 +721,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
             description="Mashup Wednesdays, which offer a variety of "
-            "interval and tempo workouts.\n\n"
-            "Staten Island - Clove Lakes Park\n"
-            "Meet at Park Drive off of Clove Road",
+            "interval and tempo workouts. Meet at Park Drive off of "
+            "Clove Road. (Staten Island - Clove Lakes Park)",
             start_date=date.event_date,
             start_time="19:30",
             end_date=date.event_date,
@@ -745,9 +741,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Winged-Foot Wednesdays",
             description="Winged-Foot Wednesdays, which concentrate on "
-            "speed intervals.\n\n"
-            "Manhattan - East River Track\n"
-            "Meet at East River Track entrance",
+            "speed intervals. Meet at East River Track entrance. "
+            "(Manhattan - East River Track)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -766,9 +761,9 @@ def create_events():
         new_event = Event(
             name="NYRR: Tempo Thursdays",
             description="Tempo Thursdays, which primarily feature tempo "
-            "runs (steady runs at a challenging effort).\n\n"
-            "Manhattan - Central Park\n"
-            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            "runs (steady runs at a challenging effort). Meet at NYRR "
+            "RUNCENTER featuring the New Balance Run Hub. "
+            "(Manhattan - Central Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -786,9 +781,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Tempo Thursdays",
             description="Tempo Thursdays, which primarily feature tempo "
-            "runs (steady runs at a challenging effort).\n\n"
-            "Brooklyn - Prospect Park\n"
-            "Meet at Grand Army Plaza entrance to Prospect Park",
+            "runs (steady runs at a challenging effort). Meet at Grand "
+            "Army Plaza entrance to Prospect Park. (Brooklyn - Prospect Park)",
             start_date=date.event_date,
             start_time="6:30",
             end_date=date.event_date,
@@ -806,9 +800,9 @@ def create_events():
         new_event = Event(
             name="NYRR: Tempo Thursdays",
             description="Tempo Thursdays, which primarily feature tempo "
-            "runs (steady runs at a challenging effort).\n\n"
-            "Manhattan - Central Park\n"
-            "Meet at NYRR RUNCENTER featuring the New Balance Run Hub",
+            "runs (steady runs at a challenging effort). Meet at NYRR "
+            "RUNCENTER featuring the New Balance Run Hub. "
+            "(Manhattan - Central Park)",
             start_date=date.event_date,
             start_time="18:30",
             end_date=date.event_date,
@@ -826,9 +820,8 @@ def create_events():
         new_event = Event(
             name="NYRR: Tempo Thursdays",
             description="Tempo Thursdays, which primarily feature tempo "
-            "runs (steady runs at a challenging effort).\n\n"
-            "Brooklyn - Prospect Park\n"
-            "Meet at Grand Army Plaza entrance to Prospect Park",
+            "runs (steady runs at a challenging effort). Meet at Grand "
+            "Army Plaza entrance to Prospect Park. (Brooklyn - Prospect Park)",
             start_date=date.event_date,
             start_time="18:30",
             end_date=date.event_date,
@@ -847,10 +840,10 @@ def create_events():
         new_event = Event(
             name="NYRR: Weekend Long Runs",
             description="Coach-led runs on the streets of NYC in the "
-            "weeks leading up to key NYRR races throughout the year.\n\n"
-            "NYC - Various locations\n",
+            "weeks leading up to key NYRR races throughout the year. "
+            "(NYC - Various locations)",
             start_date=date.event_date,
-            start_time="18:30",
+            start_time="7:00",
             end_date=date.event_date,
             end_time=None,
             user_id=get_admin_id(),
