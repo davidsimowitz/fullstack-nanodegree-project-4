@@ -473,7 +473,7 @@ def set_event_fields(event):
     if start_date and end_date and start_date == end_date:
         if start_time and end_time and start_time <= end_time:
             event.start_time, event.end_time = start_time, end_time
-        else:
+        elif start_time and end_time and start_time > end_time:
             event.start_time, event.end_time = None, None
             messages['time'] = "ending time cannot occur before starting time"
             valid = False
