@@ -526,11 +526,13 @@ def set_activity_fields(activity):
         messages['name'] = "name is required"
         valid = False
 
-    if flask.request.form['icon'] and flask.request.form['icon'] != "/static/img/placeholder-logo.svg":
-        icon = flask.request.form['icon']
-        #verify valid icon selection
-        if icon in models.icon_list():
-            activity.icon = icon
+    if flask.request.form['icon']:
+        # verify valid icon selection
+        if flask.request.form['icon'] == "/static/img/placeholder-logo.svg":
+            messages['icon'] = 'icon is required'
+            valid = False
+        elif flask.request.form['icon'] in models.icon_list():
+            activity.icon = flask.request.form['icon']
         else:
             messages['icon'] = 'selected icon is invalid'
             valid = False
@@ -2386,18 +2388,15 @@ def hosting_events():
 
     try:
         with db_session() as db:
-            hosted_events = db.query(
-                               models.Hosting,
-                               ) \
+            hosted_events = db.query(models.Hosting) \
                               .order_by(models.Hosting.event_id.asc()) \
-                              .filter(
-                                  sqlalchemy.and_(
-                                  models.Hosting.user_id ==
-                                    get_user_id(
-                                      user_email=flask.session.get('email', 0)
-                                    )
+                              .filter(sqlalchemy.and_(
+                                models.Hosting.user_id ==
+                                get_user_id(
+                                  user_email=flask.session.get('email', 0)
                                   )
-                               ) \
+                                )
+                              ) \
                               .all()
     except:
         app.logger.error(
@@ -2432,18 +2431,15 @@ def attending_events():
 
     try:
         with db_session() as db:
-            attended_events = db.query(
-                                 models.Attending,
-                                 ) \
+            attended_events = db.query(models.Attending) \
                                 .order_by(models.Attending.event_id.asc()) \
-                                .filter(
-                                   sqlalchemy.and_(
-                                   models.Attending.user_id ==
-                                     get_user_id(
-                                       user_email=flask.session.get('email', 0)
-                                     )
-                                   )
-                                 ) \
+                                .filter(sqlalchemy.and_(
+                                  models.Attending.user_id ==
+                                  get_user_id(
+                                    user_email=flask.session.get('email', 0)
+                                    )
+                                  )
+                                ) \
                                 .all()
     except:
         app.logger.error(
@@ -2478,18 +2474,15 @@ def considering_events():
 
     try:
         with db_session() as db:
-            considered_events = db.query(
-                                 models.Considering,
-                                 ) \
+            considered_events = db.query(models.Considering) \
                                 .order_by(models.Considering.event_id.asc()) \
-                                .filter(
-                                   sqlalchemy.and_(
-                                   models.Considering.user_id ==
-                                     get_user_id(
-                                       user_email=flask.session.get('email', 0)
-                                     )
-                                   )
-                                 ) \
+                                .filter(sqlalchemy.and_(
+                                  models.Considering.user_id ==
+                                  get_user_id(
+                                    user_email=flask.session.get('email', 0)
+                                    )
+                                  )
+                                ) \
                                 .all()
     except:
         app.logger.error(
