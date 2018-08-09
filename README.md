@@ -3,9 +3,9 @@ Item Catalog
 
 Udacity - Full Stack Web Developer Nanodegree
 ---------------------------------------------
-P4: Item Catalog Application 
+P4: Item Catalog Application (Coordinate App)
 
-To develop an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items.
+To develop a responsive application that provides a list of events within a variety of activities as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own events and activities. Functionality on each event's page allows users to mark events they are considering or planning to attend. Events can be viewed within their respective activity or the user can list all events they are hosting, attending, or considering through navigation buttons located in the user account menu.
 
 
 Requirements
@@ -69,3 +69,11 @@ $ python3 app.py
 
   + Connect to the [frontend of the site](http://localhost:5000) using your web browser.
 
+* Accessing API endpoints:
+
+  + For all events and activities:
+    * http://localhost:5000/activities/JSON/
+  + For all events associated with an individual activity:
+    * http://localhost:5000/activities/<int:activity_id>/events/JSON/
+  + For one specific event:
+    * http://localhost:5000/activities/<int:activity_id>/events/<int:event_id>/JSON/
