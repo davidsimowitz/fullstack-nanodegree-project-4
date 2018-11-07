@@ -20,7 +20,7 @@ sys.path.insert(0, '/var/www/flask/coordinate/')
 import models
 
 CLIENT_ID = json.loads(
-    open('client_secret.json', 'r').read())['web']['client_id']
+    open('/var/www/flask/coordinate/client_secret.json', 'r').read())['web']['client_id']
 
 logging.config.dictConfig({
     'version': 1,
@@ -632,7 +632,7 @@ def google_connect():
     try:
         # Create flow from a clientsecrets file
         oauth_flow = oauth2client.client.flow_from_clientsecrets(
-                         'client_secret.json',
+                        '/var/www/flask/coordinate/client_secret.json',
                          scope=['email', 'openid'],
                          redirect_uri='postmessage')
         # Exchange authorization code for a Credentials object
