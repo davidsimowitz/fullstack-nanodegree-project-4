@@ -8,7 +8,6 @@ import json
 import logging
 import logging.config
 import logging.handlers
-import models
 import oauth2client.client
 import os
 import random
@@ -17,6 +16,8 @@ import requests
 import sqlalchemy
 import string
 
+sys.path.insert(0, '/var/www/flask/coordinate/')
+import models
 
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
