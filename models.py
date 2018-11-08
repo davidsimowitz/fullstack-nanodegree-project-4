@@ -5,8 +5,8 @@ import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import sys
 
-
-DB = 'postgresql:///events.db'
+# Update correct user for database access.
+DB = 'postgresql://<user>:<password>@<host>:<port>/events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
 
