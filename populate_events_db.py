@@ -219,8 +219,8 @@ def create_events():
 
     # Brooklyn Bridge Park: Pop-Up Pool
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -239,8 +239,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -259,8 +259,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -279,8 +279,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -299,8 +299,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -319,8 +319,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start='2018-8-6',
-                                calendar_end='2018-8-18'):
+    for date in recurring_event(calendar_start='2019-8-5',
+                                calendar_end='2019-8-18'):
         new_event = Event(
             name="Pop-Up Pool",
             description="Take a dip in one of New York City's coolest hidden "
@@ -359,9 +359,9 @@ def create_events():
         "take down the extremist hate group as the organization aims to "
         "sanitize its violent rhetoric to appeal to the mainstream. "
         "Produced by the team behind the Academy-Award® winning Get Out.",
-        start_date="2018-8-10",
+        start_date="2019-8-9",
         start_time="19:00",
-        end_date="2018-8-10",
+        end_date="2019-8-9",
         end_time=None,
         user_id=get_admin_id(),
         activity_id=movies.id
@@ -376,8 +376,8 @@ def create_events():
                   .one()
     # Bargemusic events
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-4",
-                                calendar_end="2018-8-18",
+    for date in recurring_event(calendar_start="2019-8-3",
+                                calendar_end="2019-8-18",
                                 interval="1 week"):
         new_event = Event(
             name="Bargemusic",
@@ -405,8 +405,8 @@ def create_events():
 
     # Farmer's Market
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-4",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-3",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="Farmer's Market",
@@ -429,8 +429,8 @@ def create_events():
 
     # Beach Walk
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-1",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-7-31",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="Beach Walk",
@@ -451,8 +451,8 @@ def create_events():
 
     # Brooklyn Bridge Park - Green Team
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-4",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-3",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="Green Team",
@@ -474,8 +474,8 @@ def create_events():
 
     # Brooklyn Bridge Park - Green Team
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-2",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-1",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="Smorgasburg at the Movies",
@@ -500,8 +500,8 @@ def create_events():
 
     # Brooklyn Bridge Park - Waterfront Workouts Zumba
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-5",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-4",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="Waterfront Workouts",
@@ -531,18 +531,17 @@ def create_events():
                 .one()
 
     new_event = Event(
-        name="Battle of the Burger 2018",
-        description="Time Out New York's Battle of the Burger 2018 "
-        "Battle is back and set to sizzle in 2018. Join us by the water "
+        name="Battle of the Burger 2019",
+        description="Time Out New York's Battle of the Burger 2019 "
+        "Battle is back and set to sizzle in 2019. Join us by the water "
         "at LIC Landing for a summer cookout of epic proportions. Your "
         "Instagram shots will be framed by the Empire State Building on "
         "one side and the Chrysler Building on the other, as you dig "
         "into some of the city's most delicious burgers, washed down "
-        "with icy Budweiser. (https://www.timeout.com/newyork/restaurants"
-        "/time-out-new-yorks-battle-of-the-burger-2018)",
-        start_date="2018-8-16",
+        "with icy Budweiser.",
+        start_date="2019-8-15",
         start_time="17:30",
-        end_date="2018-8-16",
+        end_date="2019-8-15",
         end_time="22:00",
         user_id=get_admin_id(),
         activity_id=bbq.id
@@ -558,8 +557,8 @@ def create_events():
 
     # NYRR: Turnover Tuesdays
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-7",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-6",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Turnover Tuesdays",
@@ -578,8 +577,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-7",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-6",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Turnover Tuesdays",
@@ -598,8 +597,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-7",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-6",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Turnover Tuesdays",
@@ -618,8 +617,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-7",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-6",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Turnover Tuesdays",
@@ -639,8 +638,8 @@ def create_events():
 
     # NYRR: Mashup Wednesdays
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
@@ -658,8 +657,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
@@ -677,8 +676,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
@@ -696,8 +695,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
@@ -715,8 +714,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Mashup Wednesdays",
@@ -735,8 +734,8 @@ def create_events():
 
     # NYRR: Winged-Foot Wednesdays
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-8",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-7",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Winged-Foot Wednesdays",
@@ -755,8 +754,8 @@ def create_events():
 
     # NYRR: Tempo Thursdays
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-9",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-8",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Tempo Thursdays",
@@ -775,8 +774,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-9",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-8",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Tempo Thursdays",
@@ -794,8 +793,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-9",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-8",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Tempo Thursdays",
@@ -814,8 +813,8 @@ def create_events():
     insert_event(events)
 
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-9",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-8",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Tempo Thursdays",
@@ -834,8 +833,8 @@ def create_events():
 
     # NYRR: Long Weekend Runs
     events.clear()
-    for date in recurring_event(calendar_start="2018-8-11",
-                                calendar_end="2018-8-31",
+    for date in recurring_event(calendar_start="2019-8-10",
+                                calendar_end="2019-8-31",
                                 interval='1 week'):
         new_event = Event(
             name="NYRR: Weekend Long Runs",
