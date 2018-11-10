@@ -346,22 +346,13 @@ def create_events():
                    .one()
 
     new_event = Event(
-        name="BlacKkKlansman (premier)",
-        description="From visionary filmmaker Spike Lee comes the "
-        "incredible true story of an American hero. It's the early "
-        "1970s, and Ron Stallworth (John David Washington) is the first "
-        "African-American detective to serve in the Colorado Springs "
-        "Police Department. Determined to make a name for himself, "
-        "Stallworth bravely sets out on a dangerous mission: infiltrate "
-        "and expose the Ku Klux Klan. The young detective soon recruits a "
-        "more seasoned colleague, Flip Zimmerman (Adam Driver), into the "
-        "undercover investigation of a lifetime. Together, they team up to "
-        "take down the extremist hate group as the organization aims to "
-        "sanitize its violent rhetoric to appeal to the mainstream. "
-        "Produced by the team behind the Academy-Award® winning Get Out.",
-        start_date="2019-8-9",
+        name="Bumblebee (premier)",
+        description="Every hero has a beginning. Watch the new official "
+        "trailer for #BumblebeeMovie, in theatres this Christmas. "
+        "(https://youtu.be/lcwmDAYt22k)",
+        start_date="2018-12-25",
         start_time="19:00",
-        end_date="2019-8-9",
+        end_date="2018-12-25",
         end_time=None,
         user_id=get_admin_id(),
         activity_id=movies.id
