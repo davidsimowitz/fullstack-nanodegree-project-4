@@ -449,9 +449,11 @@ def set_event_fields(event):
             messages['date'] = "ending date cannot occur before starting date"
             valid = False
     elif start_date:
-        event.start_date, event.end_date = start_date, start_date
+        end_date = start_date
+        event.start_date, event.end_date = start_date, end_date
     elif end_date:
-        event.start_date, event.end_date = end_date, end_date
+        start_date = end_date
+        event.start_date, event.end_date = start_date, end_date
     else:
         messages['date'] = "date is required"
         valid = False
@@ -478,11 +480,10 @@ def set_event_fields(event):
             event.start_time, event.end_time = None, None
             messages['time'] = "ending time cannot occur before starting time"
             valid = False
+        else:
+            event.start_time, event.end_time = start_time, end_time
     else:
-        if start_time:
-            event.start_time = start_time
-        if end_time:
-            event.end_time = end_time
+        event.start_time, event.end_time = start_time, end_time
 
     if flask.request.form['name']:
         event.name = flask.request.form['name']
