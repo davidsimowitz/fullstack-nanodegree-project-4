@@ -767,13 +767,13 @@ def google_disconnect():
                        json.dumps('Successfully disconnected.'),
                        200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return flask.redirect('/')
     else:
         response = flask.make_response(
                        json.dumps('Failed to revoke token for given user.'),
                        400)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return flask.redirect('/')
 
 
 @app.route('/facebook.connect/', methods=['POST'])
