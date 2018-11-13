@@ -5,7 +5,7 @@ Udacity - Full Stack Web Developer Nanodegree
 ---------------------------------------------
 P4: Item Catalog Application (Coordinate App)
 
-To develop a responsive application that provides a list of events within a variety of activities as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own events and activities. Functionality on each event's page allows users to mark events they are considering or planning to attend. Events can be viewed within their respective activity or the user can list all events they are hosting, attending, or considering through navigation buttons located in the user account menu.
+This project's main objective is to develop a responsive web application—providing a user registration and authentication system—that displays a list of events that can be browsed by their respective activity. Registered users will have the ability to create, modify, and cancel their own events and activities—as well as mark events they are considering or planning on attending. Logged in users also gain the ability to list all the events they are hosting, attending, or considering through navigation buttons located in the user account menu.
 
 
 Requirements
