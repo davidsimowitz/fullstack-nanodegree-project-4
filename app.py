@@ -755,6 +755,13 @@ def google_disconnect():
          '    [Result: {}]'.format(result)))
 
     if result['status'] == '200':
+        app.logger.info(
+            ('google_disconnect() - - VARS'
+             '    [Successfully disconnected : username={}]'
+             .format(flask.session.get('username', None))
+             )
+        )
+
         del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['google_account_id']
@@ -769,6 +776,13 @@ def google_disconnect():
         response.headers['Content-Type'] = 'application/json'
         return flask.redirect('/')
     else:
+        app.logger.error(
+            ('google_disconnect() - - VARS'
+             '    [Failed to revoke token for given user : username={}]'
+             .format(flask.session.get('username', None))
+             )
+        )
+
         response = flask.make_response(
                        json.dumps('Failed to revoke token for given user.'),
                        400)
