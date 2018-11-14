@@ -19,6 +19,12 @@ Requirements
 + [Vagrant](https://www.vagrantup.com/downloads.html) is installed.
 
 
+Update
+------
+* This web application has been modified to run on an Apache HTTP Server as a WSGI Application.
+* Therefore, the following steps in the 'Usage' section should no longer be followed. Updates to the code—such as file path changes—will cause the application to not run properly. Instead, please follow the steps listed in the [Web Application Server](https://github.com/davidsimowitz/fullstack-nanodegree-project-6) repository to run this application.
+
+
 Usage
 -----
 
