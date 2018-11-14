@@ -8,7 +8,6 @@ import json
 import logging
 import logging.config
 import logging.handlers
-import models
 import oauth2client.client
 import os
 import random
@@ -17,9 +16,11 @@ import requests
 import sqlalchemy
 import string
 
+sys.path.insert(0, '/var/www/flask/coordinate/')
+import models
 
 CLIENT_ID = json.loads(
-    open('client_secret.json', 'r').read())['web']['client_id']
+    open('/var/www/flask/coordinate/client_secret.json', 'r').read())['web']['client_id']
 
 logging.config.dictConfig({
     'version': 1,
@@ -448,9 +449,11 @@ def set_event_fields(event):
             messages['date'] = "ending date cannot occur before starting date"
             valid = False
     elif start_date:
-        event.start_date, event.end_date = start_date, start_date
+        end_date = start_date
+        event.start_date, event.end_date = start_date, end_date
     elif end_date:
-        event.start_date, event.end_date = end_date, end_date
+        start_date = end_date
+        event.start_date, event.end_date = start_date, end_date
     else:
         messages['date'] = "date is required"
         valid = False
@@ -477,11 +480,10 @@ def set_event_fields(event):
             event.start_time, event.end_time = None, None
             messages['time'] = "ending time cannot occur before starting time"
             valid = False
+        else:
+            event.start_time, event.end_time = start_time, end_time
     else:
-        if start_time:
-            event.start_time = start_time
-        if end_time:
-            event.end_time = end_time
+        event.start_time, event.end_time = start_time, end_time
 
     if flask.request.form['name']:
         event.name = flask.request.form['name']
@@ -631,7 +633,7 @@ def google_connect():
     try:
         # Create flow from a clientsecrets file
         oauth_flow = oauth2client.client.flow_from_clientsecrets(
-                         'client_secret.json',
+                        '/var/www/flask/coordinate/client_secret.json',
                          scope=['email', 'openid'],
                          redirect_uri='postmessage')
         # Exchange authorization code for a Credentials object
@@ -753,6 +755,13 @@ def google_disconnect():
          '    [Result: {}]'.format(result)))
 
     if result['status'] == '200':
+        app.logger.info(
+            ('google_disconnect() - - VARS'
+             '    [Successfully disconnected : username={}]'
+             .format(flask.session.get('username', None))
+             )
+        )
+
         del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['google_account_id']
@@ -765,13 +774,20 @@ def google_disconnect():
                        json.dumps('Successfully disconnected.'),
                        200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return flask.redirect('/')
     else:
+        app.logger.error(
+            ('google_disconnect() - - VARS'
+             '    [Failed to revoke token for given user : username={}]'
+             .format(flask.session.get('username', None))
+             )
+        )
+
         response = flask.make_response(
                        json.dumps('Failed to revoke token for given user.'),
                        400)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return flask.redirect('/')
 
 
 @app.route('/facebook.connect/', methods=['POST'])

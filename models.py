@@ -5,12 +5,12 @@ import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import sys
 
-
-DB = 'postgresql:///events.db'
+# Update correct user for database access.
+DB = 'postgresql://<user>:<password>@<host>:<port>/events.db'
 declarative_base = sqlalchemy.ext.declarative.declarative_base()
 
 
-def icon_list(path='static/img/'):
+def icon_list(path='/var/www/flask/coordinate/static/img/'):
     """returns a list of icon urls
 
     Args:
@@ -27,7 +27,7 @@ def icon_list(path='static/img/'):
     for root, _, images in os.walk(path):
         for image in images:
             if image.endswith('-icon.svg'):
-                icons.append('/' + root + image)
+                icons.append('/static/img/' + image)
     return icons
 
 
