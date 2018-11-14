@@ -1,6 +1,7 @@
 Item Catalog
 ============================================
 
+
 Udacity - Full Stack Web Developer Nanodegree
 ---------------------------------------------
 P4: Item Catalog Application (Coordinate App)
