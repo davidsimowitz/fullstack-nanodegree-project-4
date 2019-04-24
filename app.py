@@ -637,7 +637,7 @@ def google_connect():
     try:
         # Create flow from a clientsecrets file
         oauth_flow = oauth2client.client.flow_from_clientsecrets(
-                        '/var/www/flask/coordinate/client_secret.json',
+                         '/var/www/flask/coordinate/client_secret.json',
                          scope=['email', 'openid'],
                          redirect_uri='postmessage')
         # Exchange authorization code for a Credentials object
