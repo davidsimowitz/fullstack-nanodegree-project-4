@@ -22,6 +22,10 @@ import models
 CLIENT_ID = json.loads(
     open('/var/www/flask/coordinate/client_secret.json', 'r').read())['web']['client_id']
 
+"""
+    dictConfig() logging configuration structure from Flask
+    documentation: http://flask.pocoo.org/docs/1.0/logging/#basic-configuration
+"""
 logging.config.dictConfig({
     'version': 1,
     'formatters': {'default': {
