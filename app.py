@@ -190,14 +190,14 @@ def parse_date(str_input):
     #             MM_DD_YYYY ,
     #             MONTH_DD_YYYY
     #            ]
-    patterns = ['(?P<year>[\d]{4})[-/]?'
-                '(?P<month>[\d]{1,2})[-/]?'
-                '(?P<day>[\d]{1,2})',
-                '(?P<month>[\d]{1,2})[-/]?'
-                '(?P<day>[\d]{1,2})[-/]?'
-                '(?P<year>[\d]{4})',
-                '(?P<month>' + _MONTHS + '){1}\s'
-                '(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})']
+    patterns = [r'(?P<year>[\d]{4})[-/]?'
+                r'(?P<month>[\d]{1,2})[-/]?'
+                r'(?P<day>[\d]{1,2})',
+                r'(?P<month>[\d]{1,2})[-/]?'
+                r'(?P<day>[\d]{1,2})[-/]?'
+                r'(?P<year>[\d]{4})',
+                r'(?P<month>' + _MONTHS + r'){1}\s'
+                r'(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})']
 
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
@@ -246,22 +246,22 @@ def parse_time(str_input):
     #             HH:MM:SS (24-hour notation) ,
     #             HH:MM (24-hour notation)
     #            ]
-    patterns = ['(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})'
-                '(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})\s?'
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})\s?'
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})']
+    patterns = [r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})'
+                r'(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})\s?'
+                r'(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})\s?'
+                r'(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})']
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
