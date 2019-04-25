@@ -20,7 +20,8 @@ sys.path.insert(0, '/var/www/flask/coordinate/')
 import models
 
 CLIENT_ID = json.loads(
-    open('/var/www/flask/coordinate/client_secret.json', 'r').read())['web']['client_id']
+    open('/var/www/flask/coordinate/client_secret.json', 'r').read()
+    )['web']['client_id']
 
 """
     dictConfig() logging configuration structure from Flask
