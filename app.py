@@ -85,16 +85,10 @@ def entry_and_exit_logger(func):
     @functools.wraps(func)
     def entry_and_exit_wrapper(*args, **kwargs):
         """Entry and exit log wrapper."""
-        try:
-            input_args = ', '.join(str(arg) for arg in args)
-        except:
-            input_args = ''
+        input_args = ', '.join(str(arg) for arg in args)
 
-        try:
-            input_kwargs = ', '.join('{}={}'.format(k, v)
-                                     for k, v in kwargs.items())
-        except:
-            input_kwargs = ''
+        input_kwargs = ', '.join('{}={}'.format(k, v)
+                                 for k, v in kwargs.items())
 
         if input_args and input_kwargs:
             arguments = '{}, {}'.format(input_args, input_kwargs)
