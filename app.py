@@ -56,7 +56,7 @@ def db_session():
     db = create_sqlalchemy_session()
     try:
         yield db
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.critical(
             ('db_session() - - MSG'
              '    [database error encountered]'))
@@ -296,7 +296,7 @@ def verify_date(date_dict):
     """
     try:
         date_dict['month'] = month_to_int[date_dict['month'].lower()]
-    except:
+    except KeyError:
         pass
 
     try:
@@ -349,13 +349,13 @@ def verify_time(time_dict):
         time_dict['hours'] = int(time_dict['hours'])
         time_dict['minutes'] = int(time_dict['minutes'])
         time_dict['seconds'] = int(time_dict['seconds'])
-    except:
+    except KeyError:
         pass
 
     try:
         if time_dict['twelve_hr'].lower()[0] is 'p':
             time_dict['hours'] = time_dict['hours'] + 12
-    except:
+    except KeyError:
         pass
 
     try:
@@ -590,7 +590,7 @@ def user_logout():
         app.logger.info(
             ('user_logout() - - VARS'
              '     [Oauth Provider: {}]'.format(oauth_provider)))
-    except:
+    except KeyError:
         app.logger.info(
             ('user_logout() - - MSG'
              '     [Error: Oauth provider not detected.]'))
@@ -1709,7 +1709,7 @@ def check_attending_status(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('check_attending_status() - - VARS'
              '    [database query error: activity_id={},'
@@ -1812,7 +1812,7 @@ def attend_event(activity_id, event_id):
                                      )
                                   ) \
                                  .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -1859,7 +1859,7 @@ def attend_event(activity_id, event_id):
                 db.delete(user_considering)
             db.add(attend_event)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database error: activity_id={},'
@@ -1927,7 +1927,7 @@ def leave_event(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -1965,7 +1965,7 @@ def leave_event(activity_id, event_id):
         with db_session() as db:
             db.delete(user_attending)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2028,7 +2028,7 @@ def check_considering_status(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('check_considering_status() - - VARS'
              '    [database query error: activity_id={},'
@@ -2209,7 +2209,7 @@ def consider_event(activity_id, event_id):
                                      )
                                   ) \
                                  .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('consider_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -2256,7 +2256,7 @@ def consider_event(activity_id, event_id):
                 db.delete(user_attending)
             db.add(consider_event)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('consider_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2323,7 +2323,7 @@ def unconsider_event(activity_id, event_id):
                                      )
                                  ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('unconsider_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -2361,7 +2361,7 @@ def unconsider_event(activity_id, event_id):
         with db_session() as db:
             db.delete(user_considering)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('unconsider_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2419,7 +2419,7 @@ def hosting_events():
                                 )
                               ) \
                               .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('hosting_events() - - VARS'
              '    [database query error: username={}]'
@@ -2462,7 +2462,7 @@ def attending_events():
                                   )
                                 ) \
                                 .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attending_events() - - VARS'
              '    [database query error: username={}]'
@@ -2505,7 +2505,7 @@ def considering_events():
                                   )
                                 ) \
                                 .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('considering_events() - - VARS'
              '    [database query error: username={}]'
@@ -2549,7 +2549,7 @@ def make_user(*, session):
             user = db.query(models.UserAccount) \
                      .filter_by(email=session['email']) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('make_user() - - VARS'
              '    [database error: username={},'
@@ -2583,7 +2583,7 @@ def get_user(*, user_id):
             user = db.query(models.UserAccount) \
                      .filter_by(id=user_id) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('get_user() - - VARS'
              '    [database error: user_id={},'
@@ -2615,7 +2615,7 @@ def get_user_id(*, user_email):
             user = db.query(models.UserAccount) \
                      .filter_by(email=user_email) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('get_user_id() - - VARS'
              '    [database error: user_email={}]'
@@ -2641,7 +2641,7 @@ def activities_endpoint():
                                         .filter_by(activity_id=activity['id'])
                                         .all()]
                 activities.append(activity)
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('activities_endpoint() - - MSG    [database error]')
         )
@@ -2671,7 +2671,7 @@ def activity_endpoint(activity_id):
             activity = db.query(models.Activity) \
                          .filter_by(id=activity_id) \
                          .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('activity_endpoint() - - VARS'
              '    [NOT FOUND: activity_id={}]'.format(activity_id)))
@@ -2698,7 +2698,7 @@ def event_endpoint(activity_id, event_id):
             event = db.query(models.Event) \
                       .filter_by(id=event_id) \
                       .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('event_endpoint() - - VARS'
              '    [NOT FOUND: event_id={}]'.format(event_id)))
