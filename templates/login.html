@@ -25,15 +25,16 @@
       <div id="result"></div>
       <!-- Facebook status -->
       <div id="status"></div>
-      <!-- Google+ sign in button-->
+      <!-- Google Sign-in (new) -->
       <div id="signinButton">
-        <span class="g-signin"
+        <span class="g-signin2"
           data-scope="openid email"
-          data-clientid="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
+          data-client_id="979605471365-uf8l8t9g5a3rcmb9cb25un86tt4hqdnr.apps.googleusercontent.com"
           data-redirecturi="postmessage"
           data-accesstype="offline"
           data-cookiepolicy="single_host_origin"
-          data-callback="signInCallback"
+          data-onsuccess="signInCallback"
+          data-onfailure="signInCallback"
           data-approvalprompt="force">
         </span>
       </div>

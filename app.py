@@ -567,7 +567,7 @@ def user_login():
 
     google_oauth_2_0 = (
         "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
-        "//apis.google.com/js/platform.js?onload=start")
+        "//apis.google.com/js/platform.js?onload=init")
 
     return flask.render_template('login.html',
                                  STATE=state,
