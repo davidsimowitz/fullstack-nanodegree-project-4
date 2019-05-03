@@ -67,6 +67,18 @@ def db_session():
         db.close()
 
 
+def login_required(func):
+    @functools.wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in flask.session:
+            # Store current page to redirect back to after login
+            flask.session['prelogin_page'] = flask.request.full_path
+            return flask.redirect('/login/')
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
+
+
 def entry_and_exit_logger(func):
     """Performs DEBUG level logging when entering and exiting function.
 
@@ -1052,14 +1064,9 @@ def display_activity(activity_id):
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def make_activity():
     """Create new Activity record in DB"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for('make_activity')
-        return flask.redirect('/login/')
-
     if flask.request.method == 'POST':
         new_activity = models.Activity(
                            user_id=get_user_id(
@@ -1087,15 +1094,9 @@ def make_activity():
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'update_activity',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1131,15 +1132,9 @@ def update_activity(activity_id):
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'delete_activity',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1275,16 +1270,9 @@ def display_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/new/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def make_event(activity_id):
     """Create new Event record in DB"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'make_event',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
-
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id,
@@ -1328,17 +1316,9 @@ def make_event(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'update_event',
-                                             activity_id=activity_id,
-                                             event_id=event_id)
-        return flask.redirect('/login/')
-
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1379,17 +1359,9 @@ def update_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'delete_event',
-                                             activity_id=activity_id,
-                                             event_id=event_id)
-        return flask.redirect('/login/')
-
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1505,18 +1477,12 @@ def delete_event(activity_id, event_id):
 
 @app.route('/activities/hosting/')
 @entry_and_exit_logger
+@login_required
 def display_hosting():
     """Display Event records from DB with matching user_id.
 
     List all Event records created by user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_hosting')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
@@ -1595,19 +1561,13 @@ def display_hosting():
 
 @app.route('/activities/attending/')
 @entry_and_exit_logger
+@login_required
 def display_attending():
     """Display Event records from DB that user is attending.
 
     List all Event records that have a corresponding entry
     in the Attending table for the user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_attending')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
@@ -2082,19 +2042,13 @@ def check_considering_status(activity_id, event_id):
 
 @app.route('/activities/considering/')
 @entry_and_exit_logger
+@login_required
 def display_considering():
     """Display Event records from DB that user is considering.
 
     List all Event records that have a corresponding entry
     in the Considering table for the user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_considering')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
