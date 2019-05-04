@@ -562,6 +562,9 @@ def set_activity_fields(activity):
 @entry_and_exit_logger
 def display_activities():
     """Display all Activity records from DB."""
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     with db_session() as db:
         activities = db.query(models.Activity)
     return flask.render_template('activities.html',
@@ -988,6 +991,9 @@ def display_activity(activity_id):
     Display Activity and list all Event records corresponding to it
     in date order.
     """
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     hosting, attending, considering = None, None, None
     # User login required for hosting/attending/considering status
     if 'username' in flask.session:
@@ -1173,6 +1179,9 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
