@@ -15,13 +15,19 @@ import re
 import requests
 import sqlalchemy
 import string
+import sys
 
 sys.path.insert(0, '/var/www/flask/coordinate/')
 import models
 
 CLIENT_ID = json.loads(
-    open('/var/www/flask/coordinate/client_secret.json', 'r').read())['web']['client_id']
+    open('/var/www/flask/coordinate/client_secret.json', 'r').read()
+    )['web']['client_id']
 
+"""
+    dictConfig() logging configuration structure from Flask
+    documentation: http://flask.pocoo.org/docs/1.0/logging/#basic-configuration
+"""
 logging.config.dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -51,7 +57,7 @@ def db_session():
     db = create_sqlalchemy_session()
     try:
         yield db
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.critical(
             ('db_session() - - MSG'
              '    [database error encountered]'))
@@ -59,6 +65,18 @@ def db_session():
         raise
     finally:
         db.close()
+
+
+def login_required(func):
+    @functools.wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in flask.session:
+            # Store current page to redirect back to after login
+            flask.session['prelogin_page'] = flask.request.full_path
+            return flask.redirect('/login/')
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
 
 
 def entry_and_exit_logger(func):
@@ -80,16 +98,10 @@ def entry_and_exit_logger(func):
     @functools.wraps(func)
     def entry_and_exit_wrapper(*args, **kwargs):
         """Entry and exit log wrapper."""
-        try:
-            input_args = ', '.join(str(arg) for arg in args)
-        except:
-            input_args = ''
+        input_args = ', '.join(str(arg) for arg in args)
 
-        try:
-            input_kwargs = ', '.join('{}={}'.format(k, v)
-                                     for k, v in kwargs.items())
-        except:
-            input_kwargs = ''
+        input_kwargs = ', '.join('{}={}'.format(k, v)
+                                 for k, v in kwargs.items())
 
         if input_args and input_kwargs:
             arguments = '{}, {}'.format(input_args, input_kwargs)
@@ -186,14 +198,14 @@ def parse_date(str_input):
     #             MM_DD_YYYY ,
     #             MONTH_DD_YYYY
     #            ]
-    patterns = ['(?P<year>[\d]{4})[-/]?'
-                '(?P<month>[\d]{1,2})[-/]?'
-                '(?P<day>[\d]{1,2})',
-                '(?P<month>[\d]{1,2})[-/]?'
-                '(?P<day>[\d]{1,2})[-/]?'
-                '(?P<year>[\d]{4})',
-                '(?P<month>' + _MONTHS + '){1}\s'
-                '(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})']
+    patterns = [r'(?P<year>[\d]{4})[-/]?'
+                r'(?P<month>[\d]{1,2})[-/]?'
+                r'(?P<day>[\d]{1,2})',
+                r'(?P<month>[\d]{1,2})[-/]?'
+                r'(?P<day>[\d]{1,2})[-/]?'
+                r'(?P<year>[\d]{4})',
+                r'(?P<month>' + _MONTHS + r'){1}\s'
+                r'(?P<day>[\d]{1,2})\,?\s(?P<year>[\d]{4})']
 
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
@@ -242,22 +254,22 @@ def parse_time(str_input):
     #             HH:MM:SS (24-hour notation) ,
     #             HH:MM (24-hour notation)
     #            ]
-    patterns = ['(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})'
-                '(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})\s?'
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})\s?'
-                '(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})[:]{1}'
-                '(?P<seconds>[\d]{2})',
-                '(?P<hours>[\d]{1,2})[:]{1}'
-                '(?P<minutes>[\d]{2})']
+    patterns = [r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})'
+                r'(?P<timezone>[+-]?[\d]{2}[:]{1}[\d]{2})',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})\s?'
+                r'(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})\s?'
+                r'(?P<twelve_hr>am|pm|a\.m\.|p\.m\.){1}',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})[:]{1}'
+                r'(?P<seconds>[\d]{2})',
+                r'(?P<hours>[\d]{1,2})[:]{1}'
+                r'(?P<minutes>[\d]{2})']
     for pattern in patterns:
         if re.match(pattern, str_input, re.IGNORECASE):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
@@ -291,7 +303,7 @@ def verify_date(date_dict):
     """
     try:
         date_dict['month'] = month_to_int[date_dict['month'].lower()]
-    except:
+    except KeyError:
         pass
 
     try:
@@ -344,13 +356,13 @@ def verify_time(time_dict):
         time_dict['hours'] = int(time_dict['hours'])
         time_dict['minutes'] = int(time_dict['minutes'])
         time_dict['seconds'] = int(time_dict['seconds'])
-    except:
+    except KeyError:
         pass
 
     try:
         if time_dict['twelve_hr'].lower()[0] is 'p':
             time_dict['hours'] = time_dict['hours'] + 12
-    except:
+    except KeyError:
         pass
 
     try:
@@ -550,6 +562,9 @@ def set_activity_fields(activity):
 @entry_and_exit_logger
 def display_activities():
     """Display all Activity records from DB."""
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     with db_session() as db:
         activities = db.query(models.Activity)
     return flask.render_template('activities.html',
@@ -568,7 +583,7 @@ def user_login():
 
     google_oauth_2_0 = (
         "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
-        "//apis.google.com/js/platform.js?onload=start")
+        "//apis.google.com/js/platform.js?onload=init")
 
     return flask.render_template('login.html',
                                  STATE=state,
@@ -585,7 +600,7 @@ def user_logout():
         app.logger.info(
             ('user_logout() - - VARS'
              '     [Oauth Provider: {}]'.format(oauth_provider)))
-    except:
+    except KeyError:
         app.logger.info(
             ('user_logout() - - MSG'
              '     [Error: Oauth provider not detected.]'))
@@ -633,7 +648,7 @@ def google_connect():
     try:
         # Create flow from a clientsecrets file
         oauth_flow = oauth2client.client.flow_from_clientsecrets(
-                        '/var/www/flask/coordinate/client_secret.json',
+                         '/var/www/flask/coordinate/client_secret.json',
                          scope=['email', 'openid'],
                          redirect_uri='postmessage')
         # Exchange authorization code for a Credentials object
@@ -976,6 +991,9 @@ def display_activity(activity_id):
     Display Activity and list all Event records corresponding to it
     in date order.
     """
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     hosting, attending, considering = None, None, None
     # User login required for hosting/attending/considering status
     if 'username' in flask.session:
@@ -1052,14 +1070,9 @@ def display_activity(activity_id):
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def make_activity():
     """Create new Activity record in DB"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for('make_activity')
-        return flask.redirect('/login/')
-
     if flask.request.method == 'POST':
         new_activity = models.Activity(
                            user_id=get_user_id(
@@ -1087,15 +1100,9 @@ def make_activity():
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'update_activity',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1131,15 +1138,9 @@ def update_activity(activity_id):
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'delete_activity',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1178,6 +1179,9 @@ def delete_activity(activity_id):
 @entry_and_exit_logger
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
+    # Store current page to redirect back to after login
+    flask.session['prelogin_page'] = flask.request.full_path
+
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1275,16 +1279,9 @@ def display_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/new/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def make_event(activity_id):
     """Create new Event record in DB"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'make_event',
-                                             activity_id=activity_id)
-        return flask.redirect('/login/')
-
     if flask.request.method == 'POST':
         new_event = models.Event(name=flask.request.form['name'],
                                  activity_id=activity_id,
@@ -1328,17 +1325,9 @@ def make_event(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'update_event',
-                                             activity_id=activity_id,
-                                             event_id=event_id)
-        return flask.redirect('/login/')
-
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1379,17 +1368,9 @@ def update_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@login_required
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'delete_event',
-                                             activity_id=activity_id,
-                                             event_id=event_id)
-        return flask.redirect('/login/')
-
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1505,18 +1486,12 @@ def delete_event(activity_id, event_id):
 
 @app.route('/activities/hosting/')
 @entry_and_exit_logger
+@login_required
 def display_hosting():
     """Display Event records from DB with matching user_id.
 
     List all Event records created by user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_hosting')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
@@ -1595,19 +1570,13 @@ def display_hosting():
 
 @app.route('/activities/attending/')
 @entry_and_exit_logger
+@login_required
 def display_attending():
     """Display Event records from DB that user is attending.
 
     List all Event records that have a corresponding entry
     in the Attending table for the user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_attending')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
@@ -1704,7 +1673,7 @@ def check_attending_status(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('check_attending_status() - - VARS'
              '    [database query error: activity_id={},'
@@ -1807,7 +1776,7 @@ def attend_event(activity_id, event_id):
                                      )
                                   ) \
                                  .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -1854,7 +1823,7 @@ def attend_event(activity_id, event_id):
                 db.delete(user_considering)
             db.add(attend_event)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attend_event() - - VARS'
              '    [database error: activity_id={},'
@@ -1922,7 +1891,7 @@ def leave_event(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -1960,7 +1929,7 @@ def leave_event(activity_id, event_id):
         with db_session() as db:
             db.delete(user_attending)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('leave_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2023,7 +1992,7 @@ def check_considering_status(activity_id, event_id):
                                        )
                                    ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('check_considering_status() - - VARS'
              '    [database query error: activity_id={},'
@@ -2082,19 +2051,13 @@ def check_considering_status(activity_id, event_id):
 
 @app.route('/activities/considering/')
 @entry_and_exit_logger
+@login_required
 def display_considering():
     """Display Event records from DB that user is considering.
 
     List all Event records that have a corresponding entry
     in the Considering table for the user.
     """
-    # User login required
-    if 'username' not in flask.session:
-        # Store current page to redirect back to after login
-        flask.session['prelogin_page'] = flask.url_for(
-                                             'display_considering')
-        return flask.redirect('/login/')
-
     with db_session() as db:
         dates = db.query(
                       models.Event,
@@ -2204,7 +2167,7 @@ def consider_event(activity_id, event_id):
                                      )
                                   ) \
                                  .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('consider_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -2251,7 +2214,7 @@ def consider_event(activity_id, event_id):
                 db.delete(user_attending)
             db.add(consider_event)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('consider_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2318,7 +2281,7 @@ def unconsider_event(activity_id, event_id):
                                      )
                                  ) \
                                .first()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('unconsider_event() - - VARS'
              '    [database query error: activity_id={},'
@@ -2356,7 +2319,7 @@ def unconsider_event(activity_id, event_id):
         with db_session() as db:
             db.delete(user_considering)
             db.commit()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('unconsider_event() - - VARS'
              '    [database error: activity_id={},'
@@ -2414,7 +2377,7 @@ def hosting_events():
                                 )
                               ) \
                               .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('hosting_events() - - VARS'
              '    [database query error: username={}]'
@@ -2457,7 +2420,7 @@ def attending_events():
                                   )
                                 ) \
                                 .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('attending_events() - - VARS'
              '    [database query error: username={}]'
@@ -2500,7 +2463,7 @@ def considering_events():
                                   )
                                 ) \
                                 .all()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('considering_events() - - VARS'
              '    [database query error: username={}]'
@@ -2544,7 +2507,7 @@ def make_user(*, session):
             user = db.query(models.UserAccount) \
                      .filter_by(email=session['email']) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('make_user() - - VARS'
              '    [database error: username={},'
@@ -2578,7 +2541,7 @@ def get_user(*, user_id):
             user = db.query(models.UserAccount) \
                      .filter_by(id=user_id) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('get_user() - - VARS'
              '    [database error: user_id={},'
@@ -2610,7 +2573,7 @@ def get_user_id(*, user_email):
             user = db.query(models.UserAccount) \
                      .filter_by(email=user_email) \
                      .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('get_user_id() - - VARS'
              '    [database error: user_email={}]'
@@ -2636,7 +2599,7 @@ def activities_endpoint():
                                         .filter_by(activity_id=activity['id'])
                                         .all()]
                 activities.append(activity)
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('activities_endpoint() - - MSG    [database error]')
         )
@@ -2666,7 +2629,7 @@ def activity_endpoint(activity_id):
             activity = db.query(models.Activity) \
                          .filter_by(id=activity_id) \
                          .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('activity_endpoint() - - VARS'
              '    [NOT FOUND: activity_id={}]'.format(activity_id)))
@@ -2693,7 +2656,7 @@ def event_endpoint(activity_id, event_id):
             event = db.query(models.Event) \
                       .filter_by(id=event_id) \
                       .one()
-    except:
+    except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         app.logger.error(
             ('event_endpoint() - - VARS'
              '    [NOT FOUND: event_id={}]'.format(event_id)))

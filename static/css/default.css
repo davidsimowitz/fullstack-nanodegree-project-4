@@ -250,7 +250,6 @@ header {
   grid-area: main-content;
   grid-auto-rows: min-content;
   grid-template-columns: 1fr;
-  height: 100%;
   margin: 0 0 2vh 0;
   transition: 0.3s;
   width: minmax(100px, 450px);
