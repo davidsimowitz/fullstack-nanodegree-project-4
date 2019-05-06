@@ -71,11 +71,19 @@ def login_required(func):
     @functools.wraps(func)
     def decorated_function(*args, **kwargs):
         if 'username' not in flask.session:
-            # Store current page to redirect back to after login
-            flask.session['prelogin_page'] = flask.request.full_path
             return flask.redirect('/login/')
         else:
             return func(*args, **kwargs)
+    return decorated_function
+
+
+def url_trace(func):
+    @functools.wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'current_page' in flask.session:
+            flask.session['previous_page'] = flask.session['current_page']
+        flask.session['current_page'] = flask.request.full_path
+        return func(*args, **kwargs)
     return decorated_function
 
 
@@ -560,11 +568,9 @@ def set_activity_fields(activity):
 @app.route('/')
 @app.route('/activities/')
 @entry_and_exit_logger
+@url_trace
 def display_activities():
     """Display all Activity records from DB."""
-    # Store current page to redirect back to after login
-    flask.session['prelogin_page'] = flask.request.full_path
-
     with db_session() as db:
         activities = db.query(models.Activity)
     return flask.render_template('activities.html',
@@ -578,8 +584,8 @@ def user_login():
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     flask.session['state'] = state
 
-    if 'prelogin_page' not in flask.session:
-        flask.session['prelogin_page'] = '/'
+    if 'previous_page' not in flask.session:
+        flask.session['previous_page'] = '/'
 
     google_oauth_2_0 = (
         "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
@@ -587,7 +593,7 @@ def user_login():
 
     return flask.render_template('login.html',
                                  STATE=state,
-                                 redirect_to=flask.session['prelogin_page'],
+                                 redirect_to=flask.session['previous_page'],
                                  load_scripts=(google_oauth_2_0))
 
 
@@ -783,7 +789,8 @@ def google_disconnect():
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
-        del flask.session['prelogin_page']
+        del flask.session['previous_page']
+        del flask.session['current_page']
 
         response = flask.make_response(
                        json.dumps('Successfully disconnected.'),
@@ -967,7 +974,8 @@ def facebook_disconnect():
         del flask.session['username']
         del flask.session['email']
         del flask.session['picture']
-        del flask.session['prelogin_page']
+        del flask.session['previous_page']
+        del flask.session['current_page']
 
         response = flask.make_response(
                      json.dumps('Successfully disconnected.'),
@@ -985,15 +993,13 @@ def facebook_disconnect():
 @app.route('/activities/<int:activity_id>/')
 @app.route('/activities/<int:activity_id>/events/')
 @entry_and_exit_logger
+@url_trace
 def display_activity(activity_id):
     """Display Activity record from DB with matching activity_id.
 
     Display Activity and list all Event records corresponding to it
     in date order.
     """
-    # Store current page to redirect back to after login
-    flask.session['prelogin_page'] = flask.request.full_path
-
     hosting, attending, considering = None, None, None
     # User login required for hosting/attending/considering status
     if 'username' in flask.session:
@@ -1070,6 +1076,7 @@ def display_activity(activity_id):
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def make_activity():
     """Create new Activity record in DB"""
@@ -1100,6 +1107,7 @@ def make_activity():
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def update_activity(activity_id):
     """Update Activity record in DB with matching activity_id"""
@@ -1138,6 +1146,7 @@ def update_activity(activity_id):
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def delete_activity(activity_id):
     """Delete Activity record in DB with matching activity_id"""
@@ -1177,11 +1186,9 @@ def delete_activity(activity_id):
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
 @entry_and_exit_logger
+@url_trace
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
-    # Store current page to redirect back to after login
-    flask.session['prelogin_page'] = flask.request.full_path
-
     with db_session() as db:
         activity = db.query(models.Activity) \
                      .filter_by(id=activity_id) \
@@ -1279,6 +1286,7 @@ def display_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/new/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def make_event(activity_id):
     """Create new Event record in DB"""
@@ -1325,6 +1333,7 @@ def make_event(activity_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def update_event(activity_id, event_id):
     """Update Event record in DB with matching event_id"""
@@ -1368,6 +1377,7 @@ def update_event(activity_id, event_id):
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
            methods=['GET', 'POST'])
 @entry_and_exit_logger
+@url_trace
 @login_required
 def delete_event(activity_id, event_id):
     """Delete Event record in DB with matching event_id"""
@@ -1486,6 +1496,7 @@ def delete_event(activity_id, event_id):
 
 @app.route('/activities/hosting/')
 @entry_and_exit_logger
+@url_trace
 @login_required
 def display_hosting():
     """Display Event records from DB with matching user_id.
@@ -1570,6 +1581,7 @@ def display_hosting():
 
 @app.route('/activities/attending/')
 @entry_and_exit_logger
+@url_trace
 @login_required
 def display_attending():
     """Display Event records from DB that user is attending.
@@ -2051,6 +2063,7 @@ def check_considering_status(activity_id, event_id):
 
 @app.route('/activities/considering/')
 @entry_and_exit_logger
+@url_trace
 @login_required
 def display_considering():
     """Display Event records from DB that user is considering.
