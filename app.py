@@ -599,6 +599,7 @@ def user_login():
 
 @app.route('/logout/')
 @entry_and_exit_logger
+@url_trace
 def user_logout():
     """Logout user"""
     try:
@@ -783,6 +784,11 @@ def google_disconnect():
              )
         )
 
+        if 'previous_page' in flask.session:
+            redirect_url = flask.session['previous_page']
+        else:
+            redirect_url = '/'
+
         del flask.session['oauth_provider']
         del flask.session['access_token']
         del flask.session['google_account_id']
@@ -796,7 +802,7 @@ def google_disconnect():
                        json.dumps('Successfully disconnected.'),
                        200)
         response.headers['Content-Type'] = 'application/json'
-        return flask.redirect('/')
+        flask.redirect(redirect_url)
     else:
         app.logger.error(
             ('google_disconnect() - - VARS'
