@@ -19,6 +19,7 @@ import sys
 
 
 APPLICATION_PATH = '/var/www/flask/coordinate/'
+CLIENT_SECRETS_FILE = 'client_secret.json'
 
 
 if os.path.exists(APPLICATION_PATH):
@@ -29,9 +30,13 @@ if os.path.exists(APPLICATION_PATH):
         raise
 
 
-CLIENT_ID = json.loads(
-    open('/var/www/flask/coordinate/client_secret.json', 'r').read()
-    )['web']['client_id']
+try:
+    CLIENT_ID = json.loads(
+        open(APPLICATION_PATH + CLIENT_SECRETS_FILE, 'r').read()
+        )['web']['client_id']
+except (FileNotFoundError, IsADirectoryError, PermissionError) as err:
+    raise
+
 
 """
     dictConfig() logging configuration structure from Flask
