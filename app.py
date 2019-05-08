@@ -17,8 +17,17 @@ import sqlalchemy
 import string
 import sys
 
-sys.path.insert(0, '/var/www/flask/coordinate/')
-import models
+
+APPLICATION_PATH = '/var/www/flask/coordinate/'
+
+
+if os.path.exists(APPLICATION_PATH):
+    try:
+        sys.path.insert(1, APPLICATION_PATH)
+        import models
+    except (ModuleNotFoundError, ImportError, PermissionError) as err:
+        raise
+
 
 CLIENT_ID = json.loads(
     open('/var/www/flask/coordinate/client_secret.json', 'r').read()
