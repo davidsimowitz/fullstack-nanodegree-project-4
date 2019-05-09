@@ -608,7 +608,8 @@ def user_login():
     return flask.render_template('login.html',
                                  STATE=state,
                                  redirect_to=flask.session['previous_page'],
-                                 load_scripts=(google_oauth_2_0))
+                                 load_scripts=(google_oauth_2_0),
+                                 back=flask.session['previous_page'])
 
 
 @app.route('/logout/')
