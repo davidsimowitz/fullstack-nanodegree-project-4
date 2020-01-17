@@ -38,27 +38,6 @@ except (FileNotFoundError, IsADirectoryError, PermissionError) as err:
     raise
 
 
-"""
-    dictConfig() logging configuration structure from Flask
-    documentation: http://flask.pocoo.org/docs/1.0/logging/#basic-configuration
-"""
-logging.config.dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '{asctime} - {levelname:8} in {module:9}: {message}',
-        'style': '{',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'DEBUG',
-        'handlers': ['wsgi']
-    }
-})
-
 app = flask.Flask(__name__)
 
 engine = sqlalchemy.create_engine(models.DB)
@@ -72,9 +51,7 @@ def db_session():
     try:
         yield db
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.critical(
-            ('db_session() - - MSG'
-             '    [database error encountered]'))
+        # database error encountered
         db.rollback()
         raise
     finally:
@@ -101,55 +78,6 @@ def url_trace(func):
     return decorated_function
 
 
-def entry_and_exit_logger(func):
-    """Performs DEBUG level logging when entering and exiting function.
-
-    Logs function name and arguments when entering the function.
-    Logs function name and any return values when exiting the function.
-
-    Args:
-        func: Function to be decorated by entry_and_exit_logger.
-
-    Returns:
-        entry_and_exit_wrapper: Wrapper that extends the behavior of func
-            to include entry and exit logging.
-
-    Dependencies:
-        functools.wraps
-    """
-    @functools.wraps(func)
-    def entry_and_exit_wrapper(*args, **kwargs):
-        """Entry and exit log wrapper."""
-        input_args = ', '.join(str(arg) for arg in args)
-
-        input_kwargs = ', '.join('{}={}'.format(k, v)
-                                 for k, v in kwargs.items())
-
-        if input_args and input_kwargs:
-            arguments = '{}, {}'.format(input_args, input_kwargs)
-        elif input_args:
-            arguments = input_args
-        elif input_kwargs:
-            arguments = input_kwargs
-        else:
-            arguments = ''
-
-        message = '{action:6} {arguments}'
-        func_params = {'arguments': '{}({})'.format(func.__name__, arguments),
-                       'action': 'ENTER'}
-        app.logger.debug(message.format(**func_params))
-
-        result = func(*args, **kwargs)
-
-        func_params['arguments'] = '{}({}={})'.format(func.__name__,
-                                                      'result', result)
-        func_params['action'] = 'EXIT'
-        app.logger.debug(message.format(**func_params))
-        return result
-    return entry_and_exit_wrapper
-
-
-@entry_and_exit_logger
 def timestamp_gen(file_ext=False):
     """Timestamp generator.
 
@@ -182,7 +110,6 @@ month_to_int = {month: i for i, month in enumerate(_MONTHS.split('|'),
                                                    start=1)}
 
 
-@entry_and_exit_logger
 def parse_date(str_input):
     """Parses input and extracts date.
 
@@ -234,7 +161,6 @@ def parse_date(str_input):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
 
 
-@entry_and_exit_logger
 def parse_time(str_input):
     """Parses str input value and extracts time.
 
@@ -297,7 +223,6 @@ def parse_time(str_input):
             return re.match(pattern, str_input, re.IGNORECASE).groupdict()
 
 
-@entry_and_exit_logger
 def verify_date(date_dict):
     """Verifies value received and converts to an acceptable date format.
 
@@ -338,7 +263,6 @@ def verify_date(date_dict):
         return event_date
 
 
-@entry_and_exit_logger
 def verify_time(time_dict):
     """Verifies value received and converts to an acceptable time format.
 
@@ -396,7 +320,6 @@ def verify_time(time_dict):
         return event_time
 
 
-@entry_and_exit_logger
 def date_checker(date):
     """Authenticates date value.
 
@@ -416,7 +339,6 @@ def date_checker(date):
     return date
 
 
-@entry_and_exit_logger
 def time_checker(time):
     """Authenticates time value.
 
@@ -436,7 +358,6 @@ def time_checker(time):
     return time
 
 
-@entry_and_exit_logger
 def set_event_fields(event):
     """Set or update Event object fields.
 
@@ -533,7 +454,6 @@ def set_event_fields(event):
     return valid, messages, event
 
 
-@entry_and_exit_logger
 def set_activity_fields(activity):
     """Set or update Activity object fields.
 
@@ -581,7 +501,6 @@ def set_activity_fields(activity):
 
 @app.route('/')
 @app.route('/activities/')
-@entry_and_exit_logger
 @url_trace
 def display_activities():
     """Display all Activity records from DB."""
@@ -592,7 +511,6 @@ def display_activities():
 
 
 @app.route('/login/')
-@entry_and_exit_logger
 def user_login():
     """Create an anti-forgery state token and store it in the session"""
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
@@ -613,19 +531,12 @@ def user_login():
 
 
 @app.route('/logout/')
-@entry_and_exit_logger
 @url_trace
 def user_logout():
     """Logout user"""
     try:
         oauth_provider = flask.session['oauth_provider']
-        app.logger.info(
-            ('user_logout() - - VARS'
-             '     [Oauth Provider: {}]'.format(oauth_provider)))
     except KeyError:
-        app.logger.info(
-            ('user_logout() - - MSG'
-             '     [Error: Oauth provider not detected.]'))
         response = flask.make_response(
                      json.dumps('Current user not logged in.'),
                      401)
@@ -657,7 +568,6 @@ def login_splash_page(*, picture):
 
 
 @app.route('/google.connect/', methods=['POST'])
-@entry_and_exit_logger
 def google_connect():
     """OAuth via Google"""
     validated, response = validate_state_token()
@@ -763,41 +673,22 @@ def google_connect():
 
 
 @app.route('/google.disconnect/')
-@entry_and_exit_logger
 def google_disconnect():
     """Disconnect a login session that was setup with Google"""
     access_token = flask.session.get('access_token')
     if access_token is None:
-        app.logger.info(
-            ('google_disconnect() - - MSG'
-             '     [Access Token is None]'))
         response = flask.make_response(
                      json.dumps('Current user not connected.'),
                      401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    app.logger.info(
-        ('google_disconnect() - - VARS'
-         '    [Access Token: {}]'.format(access_token)))
-    app.logger.info(
-        ('google_disconnect() - - VARS'
-         '    [User Name: {}]'.format(flask.session['username'])))
     url = ('https://accounts.google.com/o/oauth2/revoke?'
            'token={}'.format(flask.session['access_token']))
     http = httplib2.Http()
     result = http.request(url, 'GET')[0]
-    app.logger.info(
-        ('google_disconnect() - - VARS'
-         '    [Result: {}]'.format(result)))
 
     if result['status'] == '200':
-        app.logger.info(
-            ('google_disconnect() - - VARS'
-             '    [Successfully disconnected : username={}]'
-             .format(flask.session.get('username', None))
-             )
-        )
 
         if 'previous_page' in flask.session:
             redirect_url = flask.session['previous_page']
@@ -819,13 +710,6 @@ def google_disconnect():
         response.headers['Content-Type'] = 'application/json'
         flask.redirect(redirect_url)
     else:
-        app.logger.error(
-            ('google_disconnect() - - VARS'
-             '    [Failed to revoke token for given user : username={}]'
-             .format(flask.session.get('username', None))
-             )
-        )
-
         response = flask.make_response(
                        json.dumps('Failed to revoke token for given user.'),
                        400)
@@ -834,7 +718,6 @@ def google_disconnect():
 
 
 @app.route('/facebook.connect/', methods=['POST'])
-@entry_and_exit_logger
 def facebook_connect():
     """OAuth via Facebook"""
     validated, response = validate_state_token()
@@ -843,9 +726,6 @@ def facebook_connect():
 
     # Obtain short-lived access token and decode from bytes
     access_token = str(flask.request.data, 'utf-8')
-    app.logger.info(
-        ('facebook_connect() - - VARS'
-         '    [Short-Lived Access Token: {}]'.format(access_token)))
 
     # Construct url to request long-lived token from Facebook
     fb_client_secret = json.loads(open('fb_client_secret.json', 'r').read())
@@ -854,32 +734,16 @@ def facebook_connect():
     url = ('https://graph.facebook.com/oauth/access_token?'
            'grant_type=fb_exchange_token&client_id={}&client_secret={}&'
            'fb_exchange_token={}'.format(app_id, app_secret, access_token))
-    app.logger.info(
-        ('facebook_connect() - - VARS'
-         '    [url: {}]'.format(url)))
 
     try:
         # Request long-lived token from Facebook.
         http = httplib2.Http()
         http_response, http_content = http.request(url, 'GET')
-        app.logger.info(
-            ('facebook_connect() - - VARS'
-             '    [http.request.response: {}]'.format(http_response)))
-        app.logger.info(
-            ('facebook_connect() - - VARS'
-             '    [http.request.content: {}]'.format(http_content)))
 
         # Convert from bytes to str to Python object.
         result = json.loads(str(http_content, 'utf-8'))
-        app.logger.info(
-            ('facebook_connect() - - VARS'
-             '    [result: {}]'.format(result)))
     except json.decoder.JSONDecodeError:
-        app.logger.error(
-            ('facebook_connect() - - VARS'
-             '    [JSONDecodeError: {}]'.format(("Exception when converting"
-                                                 " http_content to Python"
-                                                 " object."))))
+        # Exception converting http_content to Python object.
         response = flask.make_response(
                        json.dumps(('Format of ``str`` instance containing'
                                    ' a JSON document is invalid.')),
@@ -887,22 +751,14 @@ def facebook_connect():
         response.headers['Content-Type'] = 'application/json'
         return response
     except httplib2.RelativeURIError:
-        app.logger.error(
-            ('facebook_connect() - - VARS'
-             '    [RelativeURIError: {}]'.format(("Format of Facebook exchange"
-                                                  " token URL is invalid."))))
         response = flask.make_response(
             json.dumps('Format of Facebook exchange token URL is invalid.'),
             401)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        app.logger.info('facebook_connect() - - VARS'
-                        '    [Facebook Reply: {}]'.format(result))
         if result.get('access_token'):
             token = result['access_token']
-            app.logger.info('facebook_connect() - - VARS'
-                            '    [Token: {}]'.format(token))
         else:
             # Error exchanging short-lived token for a long-lived token.
             response = flask.make_response(
@@ -913,18 +769,11 @@ def facebook_connect():
             response.headers['Content-Type'] = 'application/json'
             return response
 
-    app.logger.info(
-        ('facebook_connect() - - VARS'
-         '    [Long-Lived Token: {}]'.format(token)))
-
     # Get user info
     url = ('https://graph.facebook.com/v2.11/me?'
            'access_token={}&fields=name,id,email'.format(token))
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
-    app.logger.info(
-        ('facebook_connect() - - VARS'
-         '    [Facebook API Call: {}]'.format(result)))
 
     data = json.loads(result)
     flask.session['oauth_provider'] = 'facebook'
@@ -937,9 +786,6 @@ def facebook_connect():
            'access_token={}&redirect=0&height=200&width=200'.format(token))
     http = httplib2.Http()
     result = str(http.request(url, 'GET')[1], 'utf-8')
-    app.logger.info(
-        ('facebook_connect() - - VARS'
-         '    [Facebook Picture: {}]'.format(result)))
     data = json.loads(result)
     flask.session['picture'] = data["data"]["url"]
 
@@ -956,36 +802,21 @@ def facebook_connect():
 
 
 @app.route('/facebook.disconnect/')
-@entry_and_exit_logger
 def facebook_disconnect():
     """Disconnect a login session that was setup with Facebook"""
     facebook_id = flask.session.get('facebook_id')
     if facebook_id is None:
-        app.logger.info(
-            ('facebook_disconnect() - - MSG'
-             '    [Facebook ID is None]'))
         response = flask.make_response(
                        json.dumps('Current user not connected.'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    app.logger.info(
-        ('facebook_disconnect() - - VARS'
-         '    [Facebook ID: {}]'.format(facebook_id)))
-    app.logger.info(
-        ('facebook_disconnect() - - VARS'
-         '    [User Name: {}]'.format(flask.session['username'])))
-
     url = ('https://graph.facebook.com/{}/permissions?'
            'access_token={}'.format(facebook_id,
                                     flask.session['access_token']))
     http = httplib2.Http()
     result = json.loads(str(http.request(url, 'DELETE')[1], 'utf-8'))
-
-    app.logger.info(
-        ('facebook_disconnect() - - VARS'
-         '    [Result: {}]'.format(result)))
 
     logged_out = result.get('success')
     if logged_out:
@@ -1013,7 +844,6 @@ def facebook_disconnect():
 
 @app.route('/activities/<int:activity_id>/')
 @app.route('/activities/<int:activity_id>/events/')
-@entry_and_exit_logger
 @url_trace
 def display_activity(activity_id):
     """Display Activity record from DB with matching activity_id.
@@ -1096,7 +926,6 @@ def display_activity(activity_id):
 
 
 @app.route('/activities/new/', methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def make_activity():
@@ -1127,7 +956,6 @@ def make_activity():
 
 
 @app.route('/activities/<int:activity_id>/edit/', methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def update_activity(activity_id):
@@ -1166,7 +994,6 @@ def update_activity(activity_id):
 
 
 @app.route('/activities/<int:activity_id>/delete/', methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def delete_activity(activity_id):
@@ -1206,7 +1033,6 @@ def delete_activity(activity_id):
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/')
-@entry_and_exit_logger
 @url_trace
 def display_event(activity_id, event_id):
     """Display Event record from DB with matching event_id"""
@@ -1306,7 +1132,6 @@ def display_event(activity_id, event_id):
 
 @app.route('/activities/<int:activity_id>/events/new/',
            methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def make_event(activity_id):
@@ -1353,7 +1178,6 @@ def make_event(activity_id):
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/edit/',
            methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def update_event(activity_id, event_id):
@@ -1397,7 +1221,6 @@ def update_event(activity_id, event_id):
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/delete/',
            methods=['GET', 'POST'])
-@entry_and_exit_logger
 @url_trace
 @login_required
 def delete_event(activity_id, event_id):
@@ -1516,7 +1339,6 @@ def delete_event(activity_id, event_id):
 
 
 @app.route('/activities/hosting/')
-@entry_and_exit_logger
 @url_trace
 @login_required
 def display_hosting():
@@ -1601,7 +1423,6 @@ def display_hosting():
 
 
 @app.route('/activities/attending/')
-@entry_and_exit_logger
 @url_trace
 @login_required
 def display_attending():
@@ -1677,14 +1498,10 @@ def display_attending():
     '/activities/<int:activity_id>/events/<int:event_id>/attending.status/',
     methods=['GET']
     )
-@entry_and_exit_logger
 def check_attending_status(activity_id, event_id):
     """Check if the user is attending the associated event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('check_attending_status() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -1707,16 +1524,6 @@ def check_attending_status(activity_id, event_id):
                                    ) \
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('check_attending_status() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1724,16 +1531,6 @@ def check_attending_status(activity_id, event_id):
         return response
     else:
         if user_attending:
-            app.logger.debug(
-                ('check_attending_status() - - VARS'
-                 '    [attending : activity_id={},'
-                 ' event_id={},'
-                 ' username={}]'
-                 .format(activity_id,
-                         event_id,
-                         flask.session.get('username', None))
-                 )
-            )
             response = json.dumps(
                 {'Attending_Status_Image': flask.url_for(
                                                'static',
@@ -1742,16 +1539,6 @@ def check_attending_status(activity_id, event_id):
                  'Attending_Status_Button': 'leaveEvent()'}
             )
         else:
-            app.logger.debug(
-                ('check_attending_status() - - VARS'
-                 '    [not attending : activity_id={},'
-                 ' event_id={},'
-                 ' username={}]'
-                 .format(activity_id,
-                         event_id,
-                         flask.session.get('username', None))
-                 )
-            )
             response = json.dumps(
                 {'Attending_Status_Image': flask.url_for(
                                                'static',
@@ -1767,14 +1554,10 @@ def check_attending_status(activity_id, event_id):
     '/activities/<int:activity_id>/events/<int:event_id>/attend/',
     methods=['POST']
     )
-@entry_and_exit_logger
 def attend_event(activity_id, event_id):
     """Update attending table to show user is attending the associated event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('attend_event() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -1810,16 +1593,6 @@ def attend_event(activity_id, event_id):
                                   ) \
                                  .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('attend_event() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1827,16 +1600,6 @@ def attend_event(activity_id, event_id):
         return response
 
     if user_attending:
-        app.logger.error(
-            ('attend_event() - - VARS'
-             '    [user already attending : activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('User already attending'),
                        500)
@@ -1857,32 +1620,12 @@ def attend_event(activity_id, event_id):
             db.add(attend_event)
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('attend_event() - - VARS'
-             '    [database error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        app.logger.debug(
-            ('attend_event() - - VARS'
-             '    [user now attending : activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                      json.dumps('Successfully marked as attending event.'),
                      200)
@@ -1894,14 +1637,10 @@ def attend_event(activity_id, event_id):
     '/activities/<int:activity_id>/events/<int:event_id>/leave/',
     methods=['POST']
     )
-@entry_and_exit_logger
 def leave_event(activity_id, event_id):
     """Update attending table to show user is not attending associated event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('leave_event() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -1925,16 +1664,6 @@ def leave_event(activity_id, event_id):
                                    ) \
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('leave_event() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -1942,16 +1671,6 @@ def leave_event(activity_id, event_id):
         return response
 
     if not user_attending:
-        app.logger.error(
-            ('leave_event() - - VARS'
-             '    [user was not attending : activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('User was not attending event'),
                        500)
@@ -1963,28 +1682,12 @@ def leave_event(activity_id, event_id):
             db.delete(user_attending)
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('leave_event() - - VARS'
-             '    [database error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))))
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        app.logger.debug(
-            ('leave_event() - - VARS'
-             '    [user no longer attending : activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))))
         response = flask.make_response(
                      json.dumps('Successfully marked as not attending event.'),
                      200)
@@ -1996,14 +1699,10 @@ def leave_event(activity_id, event_id):
     '/activities/<int:activity_id>/events/<int:event_id>/considering.status/',
     methods=['GET']
     )
-@entry_and_exit_logger
 def check_considering_status(activity_id, event_id):
     """Check if the user is considering attending the associated event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('check_considering_status() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2026,16 +1725,6 @@ def check_considering_status(activity_id, event_id):
                                    ) \
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('check_considering_status() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2043,16 +1732,6 @@ def check_considering_status(activity_id, event_id):
         return response
     else:
         if user_considering:
-            app.logger.debug(
-                ('check_considering_status() - - VARS'
-                 '    [considering : activity_id={},'
-                 ' event_id={},'
-                 ' username={}]'
-                 .format(activity_id,
-                         event_id,
-                         flask.session.get('username', None))
-                 )
-            )
             response = json.dumps(
                 {'Considering_Status_Image': flask.url_for(
                                                'static',
@@ -2061,16 +1740,6 @@ def check_considering_status(activity_id, event_id):
                  'Considering_Status_Button': 'unconsiderEvent()'}
             )
         else:
-            app.logger.debug(
-                ('check_considering_status() - - VARS'
-                 '    [not considering : activity_id={},'
-                 ' event_id={},'
-                 ' username={}]'
-                 .format(activity_id,
-                         event_id,
-                         flask.session.get('username', None))
-                 )
-            )
             response = json.dumps(
                 {'Considering_Status_Image':
                     flask.url_for('static',
@@ -2083,7 +1752,6 @@ def check_considering_status(activity_id, event_id):
 
 
 @app.route('/activities/considering/')
-@entry_and_exit_logger
 @url_trace
 @login_required
 def display_considering():
@@ -2159,14 +1827,10 @@ def display_considering():
     '/activities/<int:activity_id>/events/<int:event_id>/consider/',
     methods=['POST']
     )
-@entry_and_exit_logger
 def consider_event(activity_id, event_id):
     """Update attending table to show user is considering the event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('consider_event() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2202,16 +1866,6 @@ def consider_event(activity_id, event_id):
                                   ) \
                                  .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('consider_event() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2219,16 +1873,6 @@ def consider_event(activity_id, event_id):
         return response
 
     if user_considering:
-        app.logger.error(
-            ('consider_event() - - VARS'
-             '    [user already considering: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('User already considering'),
                        500)
@@ -2249,32 +1893,12 @@ def consider_event(activity_id, event_id):
             db.add(consider_event)
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('consider_event() - - VARS'
-             '    [database error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        app.logger.debug(
-            ('consider_event() - - VARS'
-             '    [user now considering: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                      json.dumps('Successfully marked as considering event.'),
                      200)
@@ -2286,14 +1910,10 @@ def consider_event(activity_id, event_id):
     '/activities/<int:activity_id>/events/<int:event_id>/unconsider/',
     methods=['POST']
     )
-@entry_and_exit_logger
 def unconsider_event(activity_id, event_id):
     """Update considering table to show user has unconsidered the event"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('unconsider_event() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2316,16 +1936,6 @@ def unconsider_event(activity_id, event_id):
                                  ) \
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('unconsider_event() - - VARS'
-             '    [database query error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2333,16 +1943,6 @@ def unconsider_event(activity_id, event_id):
         return response
 
     if not user_considering:
-        app.logger.error(
-            ('unconsider_event() - - VARS'
-             '    [user was not considering: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('User was not considering event'),
                        500)
@@ -2354,28 +1954,12 @@ def unconsider_event(activity_id, event_id):
             db.delete(user_considering)
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('unconsider_event() - - VARS'
-             '    [database error: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))))
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        app.logger.debug(
-            ('unconsider_event() - - VARS'
-             '    [user no longer considering: activity_id={},'
-             ' event_id={},'
-             ' username={}]'
-             .format(activity_id,
-                     event_id,
-                     flask.session.get('username', None))))
         response = flask.make_response(
                      json.dumps(
                          'Successfully marked as not considering event.'
@@ -2385,14 +1969,10 @@ def unconsider_event(activity_id, event_id):
         return response
 
 
-@entry_and_exit_logger
 def hosting_events():
     """Return a list of ids for all events being hosted by the user"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('hosting_events() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2412,12 +1992,6 @@ def hosting_events():
                               ) \
                               .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('hosting_events() - - VARS'
-             '    [database query error: username={}]'
-             .format(flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2428,14 +2002,10 @@ def hosting_events():
         return hosted_event_ids
 
 
-@entry_and_exit_logger
 def attending_events():
     """Return a list of ids for all events being attended by the user"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('attending_events() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2455,12 +2025,6 @@ def attending_events():
                                 ) \
                                 .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('attending_events() - - VARS'
-             '    [database query error: username={}]'
-             .format(flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2471,14 +2035,10 @@ def attending_events():
         return attended_event_ids
 
 
-@entry_and_exit_logger
 def considering_events():
     """Return a list of ids for all events being considered by the user"""
     # User login required
     if 'username' not in flask.session:
-        app.logger.error(
-            ('considering_events() - - MSG'
-             '    [user login required]'))
         response = flask.make_response(
                        json.dumps('User login required'),
                        401)
@@ -2498,12 +2058,6 @@ def considering_events():
                                 ) \
                                 .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('considering_events() - - VARS'
-             '    [database query error: username={}]'
-             .format(flask.session.get('username', None))
-             )
-        )
         response = flask.make_response(
                        json.dumps('Database error encountered'),
                        500)
@@ -2514,7 +2068,6 @@ def considering_events():
         return considered_event_ids
 
 
-@entry_and_exit_logger
 def make_user(*, session):
     """Create User object.
 
@@ -2542,21 +2095,12 @@ def make_user(*, session):
                      .filter_by(email=session['email']) \
                      .one()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('make_user() - - VARS'
-             '    [database error: username={},'
-             ' email={},'
-             ' picture={}]'
-             .format(flask.session.get('username', None),
-                     flask.session.get('email', None),
-                     flask.session.get('picture', None))
-             )
-        )
+        # database error
+        pass
     else:
         return user.id
 
 
-@entry_and_exit_logger
 def get_user(*, user_id):
     """Returns user account object corresponding to the id passed to function.
 
@@ -2576,19 +2120,12 @@ def get_user(*, user_id):
                      .filter_by(id=user_id) \
                      .one()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('get_user() - - VARS'
-             '    [database error: user_id={},'
-             ' username={}]'
-             .format(user_id,
-                     flask.session.get('username', None))
-             )
-        )
+        # database error
+        pass
     else:
         return user
 
 
-@entry_and_exit_logger
 def get_user_id(*, user_email):
     """If email matches a user record, returns its id field. Else, None.
 
@@ -2608,19 +2145,12 @@ def get_user_id(*, user_email):
                      .filter_by(email=user_email) \
                      .one()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('get_user_id() - - VARS'
-             '    [database error: user_email={}]'
-             .format(user_email)
-             )
-        )
         return None
     else:
         return user.id
 
 
 @app.route('/activities/JSON/')
-@entry_and_exit_logger
 def activities_endpoint():
     """Returns a JSON endpoint for all activities"""
     activities = []
@@ -2634,18 +2164,12 @@ def activities_endpoint():
                                         .all()]
                 activities.append(activity)
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('activities_endpoint() - - MSG    [database error]')
-        )
         return flask.jsonify({
                               'status': 500,
                               'error': 'database error',
                              })
     else:
         if not activities:
-            app.logger.error(
-                ('activities_endpoint() - - MSG'
-                 '    [NO Activities FOUND]'))
             return flask.jsonify({
                                   'status': 404,
                                   'error': 'No Activities found',
@@ -2655,7 +2179,6 @@ def activities_endpoint():
 
 
 @app.route('/activities/<int:activity_id>/events/JSON/')
-@entry_and_exit_logger
 def activity_endpoint(activity_id):
     """Returns a JSON endpoint for an activity"""
     try:
@@ -2664,9 +2187,6 @@ def activity_endpoint(activity_id):
                          .filter_by(id=activity_id) \
                          .one()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('activity_endpoint() - - VARS'
-             '    [NOT FOUND: activity_id={}]'.format(activity_id)))
         return flask.jsonify({
                               'status': 404,
                               'error': 'Activity not found',
@@ -2682,7 +2202,6 @@ def activity_endpoint(activity_id):
 
 
 @app.route('/activities/<int:activity_id>/events/<int:event_id>/JSON/')
-@entry_and_exit_logger
 def event_endpoint(activity_id, event_id):
     """Returns a JSON endpoint for an event"""
     try:
@@ -2691,9 +2210,6 @@ def event_endpoint(activity_id, event_id):
                       .filter_by(id=event_id) \
                       .one()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
-        app.logger.error(
-            ('event_endpoint() - - VARS'
-             '    [NOT FOUND: event_id={}]'.format(event_id)))
         return flask.jsonify({
                               'status': 404,
                               'error': 'Event not found',
@@ -2703,16 +2219,7 @@ def event_endpoint(activity_id, event_id):
 
 
 if __name__ == '__main__':
-    """Setup logging and run app"""
-#    file_handler = logging.handlers.RotatingFileHandler(
-#                       'APP_{}.log'.format(timestamp_gen(file_ext=True)),
-#                       maxBytes=16384,
-#                       backupCount=4)
-#    file_formatter = logging.Formatter('{levelname:9} {name:10} {message}',
-#                                        style='{')
-#    file_handler.setFormatter(file_formatter)
-#    file_handler.setLevel(logging.DEBUG)
-#    app.logger.addHandler(file_handler)
+    """runs app on a local development server"""
 
     app.debug = True
     app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
