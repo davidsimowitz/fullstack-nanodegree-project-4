@@ -503,7 +503,7 @@ def set_activity_fields(activity):
 @app.route('/activities/')
 @url_trace
 def display_activities():
-    """Display all Activity records from DB."""
+    """Display all Activity records from DB"""
     with db_session() as db:
         activities = db.query(models.Activity)
     return flask.render_template('activities.html',
@@ -538,7 +538,7 @@ def user_logout():
         oauth_provider = flask.session['oauth_provider']
     except KeyError:
         response = flask.make_response(
-                     json.dumps('Current user not logged in.'),
+                     json.dumps('current user not logged in'),
                      401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -554,7 +554,7 @@ def validate_state_token(*, session=flask.session):
     # Validate state token
     if flask.request.args.get('state') != flask.session['state']:
         response = flask.make_response(
-                       json.dumps('Invalid state parameter'),
+                       json.dumps('invalid state parameter'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return (False, response)
@@ -563,7 +563,7 @@ def validate_state_token(*, session=flask.session):
 
 
 def login_splash_page(*, picture):
-    """display login splash page"""
+    """Display login splash page"""
     return ('<img src="{}" id="login-image">'.format(flask.session['picture']))
 
 
@@ -588,17 +588,17 @@ def google_connect():
     except oauth2client.client.InvalidClientSecretsError:
         # Format of ClientSecrets file is invalid.
         response = flask.make_response(
-                       json.dumps(('Format of ClientSecrets'
-                                   ' file is invalid.')),
+                       json.dumps(('format of ClientSecrets'
+                                   ' file is invalid')),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
     except oauth2client.client.FlowExchangeError:
         # Error trying to exchange an authorization grant for an access token.
         response = flask.make_response(
-                       json.dumps(('Error trying to exchange'
+                       json.dumps(('error trying to exchange'
                                    ' an authorization grant'
-                                   ' for an access token.')),
+                                   ' for an access token')),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -622,8 +622,8 @@ def google_connect():
     google_account_id = credentials.id_token['sub']
     if result['user_id'] != google_account_id:
         response = flask.make_response(
-                       json.dumps(("Token's user ID does not"
-                                   " match given user ID.")),
+                       json.dumps(("token's user ID does not"
+                                   " match given user ID")),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -631,9 +631,8 @@ def google_connect():
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = flask.make_response(
-                       json.dumps("Token's client ID does not match app's."),
+                       json.dumps("token's client ID does not match app's"),
                        401)
-        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -642,7 +641,7 @@ def google_connect():
     if (stored_access_token is not None and
             google_account_id == stored_google_account_id):
         response = flask.make_response(
-                       json.dumps('Current user is already connected.'),
+                       json.dumps('current user is already connected'),
                        200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -678,7 +677,7 @@ def google_disconnect():
     access_token = flask.session.get('access_token')
     if access_token is None:
         response = flask.make_response(
-                     json.dumps('Current user not connected.'),
+                     json.dumps('current user not connected'),
                      401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -705,13 +704,13 @@ def google_disconnect():
         del flask.session['current_page']
 
         response = flask.make_response(
-                       json.dumps('Successfully disconnected.'),
+                       json.dumps('successfully disconnected'),
                        200)
         response.headers['Content-Type'] = 'application/json'
         flask.redirect(redirect_url)
     else:
         response = flask.make_response(
-                       json.dumps('Failed to revoke token for given user.'),
+                       json.dumps('failed to revoke token for given user'),
                        400)
         response.headers['Content-Type'] = 'application/json'
         return flask.redirect('/')
@@ -745,14 +744,14 @@ def facebook_connect():
     except json.decoder.JSONDecodeError:
         # Exception converting http_content to Python object.
         response = flask.make_response(
-                       json.dumps(('Format of ``str`` instance containing'
-                                   ' a JSON document is invalid.')),
+                       json.dumps(('format of ``str`` instance containing'
+                                   ' a JSON document is invalid')),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
     except httplib2.RelativeURIError:
         response = flask.make_response(
-            json.dumps('Format of Facebook exchange token URL is invalid.'),
+            json.dumps('format of Facebook exchange token URL is invalid'),
             401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -762,9 +761,9 @@ def facebook_connect():
         else:
             # Error exchanging short-lived token for a long-lived token.
             response = flask.make_response(
-                           json.dumps(('Error trying to exchange a'
+                           json.dumps(('error trying to exchange a'
                                        ' short-lived access token for'
-                                       ' a long-lived access token.')),
+                                       ' a long-lived access token')),
                            500)
             response.headers['Content-Type'] = 'application/json'
             return response
@@ -807,7 +806,7 @@ def facebook_disconnect():
     facebook_id = flask.session.get('facebook_id')
     if facebook_id is None:
         response = flask.make_response(
-                       json.dumps('Current user not connected.'),
+                       json.dumps('current user not connected'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -830,13 +829,13 @@ def facebook_disconnect():
         del flask.session['current_page']
 
         response = flask.make_response(
-                     json.dumps('Successfully disconnected.'),
+                     json.dumps('successfully disconnected'),
                      200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = flask.make_response(
-                     json.dumps('Failed to revoke token for given user.'),
+                     json.dumps('failed to revoke token for given user'),
                      400)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1503,7 +1502,7 @@ def check_attending_status(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1525,7 +1524,7 @@ def check_attending_status(activity_id, event_id):
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1559,7 +1558,7 @@ def attend_event(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1594,14 +1593,14 @@ def attend_event(activity_id, event_id):
                                  .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     if user_attending:
         response = flask.make_response(
-                       json.dumps('User already attending'),
+                       json.dumps('user already attending'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1621,13 +1620,13 @@ def attend_event(activity_id, event_id):
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = flask.make_response(
-                     json.dumps('Successfully marked as attending event.'),
+                     json.dumps('successfully marked as attending event'),
                      200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1642,7 +1641,7 @@ def leave_event(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1665,14 +1664,14 @@ def leave_event(activity_id, event_id):
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     if not user_attending:
         response = flask.make_response(
-                       json.dumps('User was not attending event'),
+                       json.dumps('user was not attending event'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1683,13 +1682,13 @@ def leave_event(activity_id, event_id):
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = flask.make_response(
-                     json.dumps('Successfully marked as not attending event.'),
+                     json.dumps('successfully marked as not attending event'),
                      200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1704,7 +1703,7 @@ def check_considering_status(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1726,7 +1725,7 @@ def check_considering_status(activity_id, event_id):
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1832,7 +1831,7 @@ def consider_event(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1867,14 +1866,14 @@ def consider_event(activity_id, event_id):
                                  .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     if user_considering:
         response = flask.make_response(
-                       json.dumps('User already considering'),
+                       json.dumps('user already considering'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1894,13 +1893,13 @@ def consider_event(activity_id, event_id):
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = flask.make_response(
-                     json.dumps('Successfully marked as considering event.'),
+                     json.dumps('successfully marked as considering event'),
                      200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1915,7 +1914,7 @@ def unconsider_event(activity_id, event_id):
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1937,14 +1936,14 @@ def unconsider_event(activity_id, event_id):
                                .first()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     if not user_considering:
         response = flask.make_response(
-                       json.dumps('User was not considering event'),
+                       json.dumps('user was not considering event'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1955,14 +1954,14 @@ def unconsider_event(activity_id, event_id):
             db.commit()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = flask.make_response(
                      json.dumps(
-                         'Successfully marked as not considering event.'
+                         'successfully marked as not considering event'
                      ),
                      200)
         response.headers['Content-Type'] = 'application/json'
@@ -1974,7 +1973,7 @@ def hosting_events():
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -1993,7 +1992,7 @@ def hosting_events():
                               .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -2007,7 +2006,7 @@ def attending_events():
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -2026,7 +2025,7 @@ def attending_events():
                                 .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -2040,7 +2039,7 @@ def considering_events():
     # User login required
     if 'username' not in flask.session:
         response = flask.make_response(
-                       json.dumps('User login required'),
+                       json.dumps('user login required'),
                        401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -2059,7 +2058,7 @@ def considering_events():
                                 .all()
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         response = flask.make_response(
-                       json.dumps('Database error encountered'),
+                       json.dumps('database error encountered'),
                        500)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -2172,7 +2171,7 @@ def activities_endpoint():
         if not activities:
             return flask.jsonify({
                                   'status': 404,
-                                  'error': 'No Activities found',
+                                  'error': 'activities not found',
                                  })
         else:
             return flask.jsonify(activities)
@@ -2189,7 +2188,7 @@ def activity_endpoint(activity_id):
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         return flask.jsonify({
                               'status': 404,
-                              'error': 'Activity not found',
+                              'error': 'activity not found',
                              })
     else:
         activity = activity.serialize
@@ -2212,14 +2211,14 @@ def event_endpoint(activity_id, event_id):
     except (sqlalchemy.exc.DBAPIError, sqlalchemy.exc.SQLAlchemyError) as err:
         return flask.jsonify({
                               'status': 404,
-                              'error': 'Event not found',
+                              'error': 'event not found',
                              })
     else:
         return flask.jsonify(event.serialize)
 
 
 if __name__ == '__main__':
-    """runs app on a local development server"""
+    """Runs app on a local development server"""
 
     app.debug = True
     app.secret_key = 'PLACEHOLDER FOR DEV TESTING'
