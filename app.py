@@ -707,7 +707,7 @@ def google_disconnect():
                        json.dumps('successfully disconnected'),
                        200)
         response.headers['Content-Type'] = 'application/json'
-        flask.redirect(redirect_url)
+        return flask.redirect(redirect_url)
     else:
         response = flask.make_response(
                        json.dumps('failed to revoke token for given user'),
