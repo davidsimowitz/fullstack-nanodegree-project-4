@@ -9,6 +9,10 @@ P4: Item Catalog Application (Coordinate App)
 This project's main objective was to develop a responsive web application—providing a user registration and authentication system—that displays a list of events that can be browsed by their respective activity. Registered users have the ability to create, modify, and cancel their own events and activities—as well as mark events they are considering or planning on attending. Logged in users also gain the ability to list all the events they are hosting, attending, or considering through navigation buttons located in the user account menu.
 
 
+## Achieved performance score of 100 using Lighthouse in Chrome DevTools:
+![Lighthouse report displaying a performance score of 100](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/lighthouse-report-chrome-devtools.png)
+
+
 
 Walkthrough
 -----------
