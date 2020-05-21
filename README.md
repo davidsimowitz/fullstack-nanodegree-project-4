@@ -88,6 +88,7 @@ Walkthrough
 
 
 ## Update Event
+#### * Events can only be updated by the user account that created them.
 
 
 ### You Can Update An Event You Created By Selecting It From Its Activity:
@@ -99,7 +100,57 @@ Walkthrough
 
 
 ### Select 'update' Once You Have Completed Modifying The Event:
-![Click on the event](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-3.png)
+![Click on the event to edit it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-3.png)
+
+
+
+## Mark Yourself As Attending Or Considering An Event
+
+
+### Browse Events After Logging In:
+![Activity page, displaying events associated with it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-1.png)
+
+
+### Select An Event You Wish To Attend:
+![Selecting an event from an activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-2.png)
+
+
+### Click Either The Check Mark (Attending) Or The Question Mark (Considering) Located Toward The Top Right Of The Event Details:
+![Event details](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-3.png)
+
+
+### Your Choice Updates To Green:
+![Event has been updated to show that you are attending it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-4.png)
+
+
+### Events You Are Attending And Considering Will Be Marked By Either A Check Mark Or A Question Mark, Respectively:
+![Events you are attending and considering will be marked by either a check mark or a question mark, respectively](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-5.png)
+
+
+
+## View The Events You Are Attending
+
+
+### Select 'attending' From The User Navigation Menu While Logged In:
+![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-4.png)
+
+
+### The Events You Are Attending Are Now Displayed:
+![Attending Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-events-1.png)
+![Attending Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-events-2.png)
+
+
+
+## View The Events You Are Considering
+
+
+### Select 'considering' From The User Navigation Menu While Logged In:
+![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-5.png)
+
+
+### The Events You Are Considering Are Now Displayed:
+![Considering Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/considering-events-1.png)
+
 
 
 Requirements
