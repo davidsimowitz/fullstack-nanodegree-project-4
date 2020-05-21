@@ -9,6 +9,32 @@ P4: Item Catalog Application (Coordinate App)
 This project's main objective was to develop a responsive web application—providing a user registration and authentication system—that displays a list of events that can be browsed by their respective activity. Registered users have the ability to create, modify, and cancel their own events and activities—as well as mark events they are considering or planning on attending. Logged in users also gain the ability to list all the events they are hosting, attending, or considering through navigation buttons located in the user account menu.
 
 
+Walkthrough
+-----------
+
+## Login
+
+
+### Application Main Page:
+![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-1.png)
+
+
+### Open Navigation Menu:
+![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-1.png)
+
+
+### Log In Using Google Sign In:
+![User login page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-login-page.png)
+
+
+### You Successfully Logged In:
+![User logged in page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-logged-in-page.png)
+
+
+### Redirected To Previous Page Upon Logging In:
+![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-logged-in.png)
+
+
 Requirements
 ------------
 
