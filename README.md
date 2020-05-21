@@ -62,6 +62,46 @@ Walkthrough
 ### For Now, The Activity Will Be Displayed On The Main Page:
 ![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-5.png)
 
+
+
+## Create Event
+
+
+### Select An Activity After Logging In:
+![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-2.png)
+
+
+### Select 'plan event' From The Navigation Menu:
+![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-3.png)
+
+
+### Enter The Event Details And Submit:
+![Hosting an event](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-event-1.png)
+
+
+### Your New Event Has Been Created:
+![Event details](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-event-2.png)
+
+
+### Your Event Is Listed Under The Activity In Which It Was Created:
+![Activity page, displaying events associated with it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-event-3.png)
+
+
+## Update Event
+
+
+### You Can Update An Event You Created By Selecting It From Its Activity:
+![Select event from activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-1.png)
+
+
+### Select The Event Again From Its Event Page:
+![Click on the event](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-2.png)
+
+
+### Select 'update' Once You Have Completed Modifying The Event:
+![Click on the event](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-3.png)
+
+
 Requirements
 ------------
 
