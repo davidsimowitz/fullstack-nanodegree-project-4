@@ -9,34 +9,37 @@ P4: Item Catalog Application (Coordinate App)
 This project's main objective was to develop a responsive web application—providing a user registration and authentication system—that displays a list of events that can be browsed by their respective activity. Registered users have the ability to create, modify, and cancel their own events and activities—as well as mark events they are considering or planning on attending. Logged in users also gain the ability to list all the events they are hosting, attending, or considering through navigation buttons located in the user account menu.
 
 
+
 Walkthrough
 -----------
 
-## Login
+
+## Log In
 
 
-### Application Main Page:
-![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-1.png)
+### Start At The Application Main Page:
+#### * You can log in from any page, though.
+![Coordinate app, displaying activities](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/activities-1.png)
 
 
-### Open Navigation Menu:
+### Open The Navigation Menu:
 ![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-1.png)
 
 
 ### Log In Using Google Sign In:
-![User login page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-login-page.png)
+![User login](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-login.png)
 
 
 ### You Successfully Logged In:
-![User logged in page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-logged-in-page.png)
+![User logged in](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-logged-in.png)
 
 
-### Redirected To Previous Page Upon Logging In:
-![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-logged-in.png)
+### You Now Have Access To Additional Features:
+![Coordinate app, displaying activities](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/activities-2.png)
 
 
 
-## Create Activity
+## Create An Activity
 
 
 ### Open Navigation Menu After Logging In:
@@ -47,7 +50,7 @@ Walkthrough
 ![Create activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-1.png)
 
 
-### Enter A Name And Select An Icon:
+### Enter An Activity Name And Select An Icon:
 ![Select icon for new activity](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-2.png)
 
 
@@ -60,15 +63,15 @@ Walkthrough
 
 
 ### For Now, The Activity Will Be Displayed On The Main Page:
-![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-5.png)
+![Coordinate app, displaying activities](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-5.png)
 
 
 
-## Create Event
+## Create An Event
 
 
 ### Select An Activity After Logging In:
-![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-2.png)
+![Coordinate app, displaying activities](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/activities-3.png)
 
 
 ### Select 'plan event' From The Navigation Menu:
@@ -87,7 +90,7 @@ Walkthrough
 ![Activity page, displaying events associated with it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-event-3.png)
 
 
-## Update Event
+## Update An Event
 #### * Events can only be updated by the user account that created them.
 
 
@@ -95,7 +98,7 @@ Walkthrough
 ![Select event from activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-1.png)
 
 
-### Select The Event Again From Its Event Page:
+### Select The Event From Its Event Page:
 ![Click on the event](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/update-event-2.png)
 
 
@@ -111,11 +114,12 @@ Walkthrough
 ![Activity page, displaying events associated with it](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-1.png)
 
 
-### Select An Event You Wish To Attend:
+### Select An Event You Wish To Attend/Consider:
 ![Selecting an event from an activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-2.png)
 
 
-### Click Either The Check Mark (Attending) Or The Question Mark (Considering) Located Toward The Top Right Of The Event Details:
+### Click The Appropriate Icon Located Toward The Top Right Of The Event Details:
+##### * The `check mark` signifies 'attending' while the `question mark` represents 'considering'.
 ![Event details](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-event-3.png)
 
 
@@ -135,7 +139,7 @@ Walkthrough
 ![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-4.png)
 
 
-### The Events You Are Attending Are Now Displayed:
+### The Events You Are Attending Are Displayed:
 ![Attending Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-events-1.png)
 ![Attending Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/attending-events-2.png)
 
@@ -148,7 +152,7 @@ Walkthrough
 ![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-5.png)
 
 
-### The Events You Are Considering Are Now Displayed:
+### The Events You Are Considering Are Displayed:
 ![Considering Events](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/considering-events-1.png)
 
 
