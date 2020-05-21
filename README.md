@@ -35,6 +35,33 @@ Walkthrough
 ![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/main-page-logged-in.png)
 
 
+
+## Create Activity
+
+
+### Open Navigation Menu After Logging In:
+![User navigation menu](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/user-navigation-menu-2.png)
+
+
+### Select 'new activity':
+![Create activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-1.png)
+
+
+### Enter A Name And Select An Icon:
+![Select icon for new activity](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-2.png)
+
+
+### Submit Your New Activity:
+![Submit new activity](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-3.png)
+
+
+### In The Next Section We'll Walkthrough Creating Events:
+![Activity page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-4.png)
+
+
+### For Now, The Activity Will Be Displayed On The Main Page:
+![Coordinate app main page](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/create-activity-5.png)
+
 Requirements
 ------------
 
