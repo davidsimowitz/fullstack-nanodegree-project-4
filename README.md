@@ -14,6 +14,14 @@ This project's main objective was to develop a responsive web application—prov
 
 
 
+Application  URL
+----------------
+
++ Access the web application using a [wildcard DNS](http://itemcatalog.com.35.168.251.43.xip.io/) provided by [xip.io](http://xip.io/).
+  * `http://itemcatalog.com.35.168.251.43.xip.io/`
+
+
+
 Walkthrough
 -----------
 
