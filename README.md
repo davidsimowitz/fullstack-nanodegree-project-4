@@ -1,29 +1,31 @@
-Item Catalog
-============================================
+Coordinate Application
+======================
 
 
 Udacity - Full Stack Web Developer Nanodegree
 ---------------------------------------------
-P4: Item Catalog Application (Coordinate App)
+The Backend: Databases & Applications Project
 
-This project's main objective was to develop a responsive web application—providing a user registration and authentication system—that displays a list of events that can be browsed by their respective activity. Registered users have the ability to create, modify, and cancel their own events and activities—as well as mark events they are considering or planning on attending. Logged in users also gain the ability to list all the events they are hosting, attending, or considering through navigation buttons located in the user account menu.
+
+Objective
+---------
+Develop a responsive, RESTful application—using the Python framework Flask—that provides a list of events within a variety of categories that are stored in a database for persistence. Implement a third-party OAuth authentication service to provide user registration. Registered users have the ability to post, edit, and delete their own events and activities—as well as mark events that they are attending or considering. Events that a user is hosting, attending, or considering can also be listed by selecting the appropriate button from the user navigation menu.
 
 
 ## Achieved performance score of 100 using [Lighthouse](https://developers.google.com/web/tools/lighthouse) in Chrome DevTools:
 ![Lighthouse report displaying a performance score of 100](https://github.com/davidsimowitz/fullstack-nanodegree-project-4/blob/master/images/lighthouse-report-chrome-devtools.png)
 
 
-
 Application  URL
-----------------
+================
 
 + Access the web application using a [wildcard DNS](http://itemcatalog.com.35.168.251.43.xip.io/) provided by [xip.io](http://xip.io/).
   * `http://itemcatalog.com.35.168.251.43.xip.io/`
 
 
 
-Walkthrough
------------
+App Walkthrough
+===============
 
 
 ## Log In
@@ -170,23 +172,26 @@ Walkthrough
 
 
 Requirements
-------------
+============
 
-+ A Web Browser such as [Chrome](https://www.google.com/chrome/browser/) is installed.
-+ [Git](https://git-scm.com/downloads) is installed.
+* A Web Browser such as [Chrome](https://www.google.com/chrome/browser/) is installed.
+* [Git](https://git-scm.com/downloads) is installed.
   (Optional, if you wish to clone the project repository.)
-+ [VirtualBox](https://www.virtualbox.org/wiki/Downloads) is installed.
-+ [Vagrant](https://www.vagrantup.com/downloads.html) is installed.
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads) is installed.
+* [Vagrant](https://www.vagrantup.com/downloads.html) is installed.
+
 
 
 Update
-------
+======
 * This web application has been modified to run on an Apache HTTP Server as a WSGI Application.
 * Therefore, the following steps in the 'Usage' section should no longer be followed. Updates to the code—such as file path changes—will cause the application to not run properly. Instead, please follow the steps listed in the [Web Application Server](https://github.com/davidsimowitz/fullstack-nanodegree-project-6) repository to run this application.
 
 
+
 Usage
------
+=====
+
 
 * Run the following commands to clone the complete web site.
 
@@ -211,6 +216,7 @@ $ cd fullstack-nanodegree-project-4
     * templates
     * Vagrantfile
 
+
 * Setup the environment:
 
   + Run the following command inside the directory containing the Vagrantfile to bring up the Vagrant environment.
@@ -222,6 +228,7 @@ $ vagrant up
 ```bash
 $ vagrant ssh
 ```
+
 
 * Startup the backend for the site:
 
@@ -235,6 +242,7 @@ $ python3 app.py
 * Connect to the frontend:
 
   + Connect to the [frontend of the site](http://localhost:5000) using your web browser.
+
 
 * Accessing API endpoints:
 
